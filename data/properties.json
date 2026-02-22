@@ -1,392 +1,371 @@
 {
-  "scraped_date": "2026-02-22T08:31:20.521858",
+  "scraped_date": "2026-02-22T08:48:08.882705",
   "total_properties": 18,
   "regions": {
-    "thessaloniki": {
-      "name": "Thessaloniki & Halkidiki",
-      "city_pop": "~1.1M (metro)",
-      "airport": "SKG - Thessaloniki International",
-      "beach_distance": "30 min drive to Halkidiki beaches",
-      "description": "Greece's 2nd largest city. University town with strong rental demand. Halkidiki peninsula has world-class beaches just 30 min away.",
-      "avg_price_sqm": 2625,
-      "rental_yield": "4.5-5.5%",
-      "why_invest": "Strong rental demand from students & tourists, growing digital nomad scene, excellent food scene, cheaper than Athens, direct flights from many EU cities."
+    "ionian_islands": {
+      "name": "Corfu & Cephalonia, Ionian Islands",
+      "city_pop": "Corfu Town ~40,000; Argostoli ~14,000",
+      "airport": "CFU (Corfu), EFL (Cephalonia) - seasonal EU flights",
+      "beach_distance": "Islands are entirely coastal - beaches everywhere",
+      "description": "The Ionian Islands on Greece's west coast have lush green landscapes, crystal-clear turquoise waters, and Venetian architecture. Corfu and Cephalonia offer some of Greece's most affordable island properties.",
+      "avg_price_sqm": 900,
+      "rental_yield": "4-6% (Airbnb seasonal)",
+      "why_invest": "Affordable island properties, strong summer Airbnb demand, Venetian charm, international airport access, EU ferry routes, authentic character homes, renovation potential with high upside."
     },
-    "chania": {
-      "name": "Chania, Crete",
+    "northern_greece": {
+      "name": "Drama & Serres, Northern Greece",
+      "city_pop": "Drama ~60,000; Serres ~76,000",
+      "airport": "SKG - Thessaloniki International (1-2 hr drive)",
+      "beach_distance": "1-2 hours to Kavala coast & Thassos island beaches",
+      "description": "Affordable cities in Northern Greece with very low cost of living. Drama is known for wine country and scenic mountains, Serres for its cultural heritage. Cheapest property market in Greece.",
+      "avg_price_sqm": 500,
+      "rental_yield": "5-7%",
+      "why_invest": "Cheapest property prices in Greece, high rental yields relative to price, growing domestic tourism, university rental demand, large houses for the price of a studio elsewhere, cross-border visitors from Bulgaria."
+    },
+    "crete": {
+      "name": "Chania, Western Crete",
       "city_pop": "~110,000",
       "airport": "CHQ - Chania International",
       "beach_distance": "City is on the coast - beaches within walking distance",
-      "description": "One of the most beautiful cities in Crete with a stunning Venetian harbor. World-famous beaches like Elafonissi and Balos nearby.",
-      "avg_price_sqm": 2100,
-      "rental_yield": "4.0-5.0%",
-      "why_invest": "Tourism hotspot with year-round appeal, Venetian old town charm, top beaches in Europe, strong Airbnb demand, growing expat community."
+      "description": "One of the most beautiful cities in Crete with a stunning Venetian harbor. World-famous beaches like Elafonissi and Balos nearby. Budget properties available in mountain villages with easy beach access.",
+      "avg_price_sqm": 1400,
+      "rental_yield": "4-5%",
+      "why_invest": "Tourism hotspot with year-round appeal, Venetian old town charm, top beaches in Europe, strong Airbnb demand. Mountain village renovations offer great value within budget."
     },
-    "heraklion": {
-      "name": "Heraklion, Crete",
-      "city_pop": "~175,000",
-      "airport": "HER - Heraklion International (busiest in Crete)",
-      "beach_distance": "City is coastal - beaches 5-15 min drive",
-      "description": "Largest city in Crete and the island's capital. Rich history (Knossos), vibrant culture, and easy access to beaches.",
-      "avg_price_sqm": 1900,
-      "rental_yield": "4.2-5.0%",
-      "why_invest": "Crete's main hub, biggest airport on the island, strong year-round rental market, rich culture, and access to south coast beaches."
+    "pelion_sporades": {
+      "name": "Pelion & Alonnisos, Thessaly",
+      "city_pop": "Volos ~145,000 (nearby hub)",
+      "airport": "VOL - Volos Nea Anchialos (seasonal); SKG 2.5hr",
+      "beach_distance": "Pelion has beaches on both sides; Alonnisos is entirely coastal",
+      "description": "Pelion peninsula combines mountain villages with beautiful beaches. Alonnisos is a pristine Sporades island with Greece's first marine park. Both are off the mass-tourism radar, offering authentic Greek experiences.",
+      "avg_price_sqm": 800,
+      "rental_yield": "4-5% (seasonal)",
+      "why_invest": "Hidden gem destinations, growing ecotourism, affordable prices, Pelion ski + beach combo, Alonnisos marine park, less competition from mass tourism, authentic character properties."
     },
-    "kalamata": {
-      "name": "Kalamata, Peloponnese",
-      "city_pop": "~70,000",
-      "airport": "KLX - Kalamata International",
-      "beach_distance": "City is on the coast - beach in the city center",
-      "description": "Beautiful coastal city in the Peloponnese known for its olives, stunning Messinian coastline, and growing tourism.",
-      "avg_price_sqm": 1600,
-      "rental_yield": "4.0-5.0%",
-      "why_invest": "Emerging destination, Costa Navarino luxury resort nearby, beautiful beaches, excellent food, still affordable compared to islands."
-    },
-    "halkidiki": {
-      "name": "Halkidiki",
-      "city_pop": "Resort area near Thessaloniki",
-      "airport": "SKG - Thessaloniki International (1hr drive)",
-      "beach_distance": "Direct beachfront - some of the best beaches in Greece",
-      "description": "The three-fingered peninsula near Thessaloniki with crystal-clear waters, pine forests meeting the sea, and resort towns.",
-      "avg_price_sqm": 2000,
-      "rental_yield": "4.0-5.5%",
-      "why_invest": "Top beach destination, strong summer rental income, close to Thessaloniki airport, new developments with pools, year-round livability improving."
-    },
-    "piraeus_athens": {
-      "name": "Piraeus / Athens Riviera",
+    "attica": {
+      "name": "Athens / Attica",
       "city_pop": "~3.7M (Athens metro)",
       "airport": "ATH - Athens International (major hub)",
-      "beach_distance": "Piraeus is coastal; Athens Riviera beaches 20-30 min from center",
-      "description": "Greece's capital region. Piraeus is the port city with sea views, while the Athens Riviera (Glyfada, Voula, Vouliagmeni) offers beach lifestyle.",
-      "avg_price_sqm": 2800,
-      "rental_yield": "4.5-5.4%",
-      "why_invest": "Capital city with highest rental demand, major international airport hub, year-round rentals, Piraeus has great metro connectivity, Athens Riviera is premium."
+      "beach_distance": "Athens Riviera beaches 20-30 min from center",
+      "description": "Greece's capital region. Student areas like Zografos near universities offer affordable apartments with strong year-round rental demand. Best city for non-seasonal rental income.",
+      "avg_price_sqm": 1800,
+      "rental_yield": "5-6%",
+      "why_invest": "Capital city with highest rental demand, major international airport hub, year-round rentals (not seasonal), university district properties have consistent tenant demand, metro connectivity."
     }
   },
   "properties": [
     {
-      "title": "Gated Residence with Swimming Pools, 600m from Sea - Halkidiki",
-      "price": 185000,
-      "area_sqm": 65,
-      "bedrooms": 2,
-      "url": "https://tranio.com/greece/adt/residential-complex-in-chalkidiki-2329906/",
-      "image_url": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600",
-      "source": "Tranio",
-      "region": "halkidiki",
-      "features": [
-        "Swimming pool",
-        "Gated community",
-        "600m from beach",
-        "Built 2023"
-      ],
-      "roi": "4.0%",
-      "property_type": "Apartment in complex"
-    },
-    {
-      "title": "New Build Residence with 2 Pools, 650m from Sea - Kallithea, Halkidiki",
-      "price": 170000,
+      "title": "1-Bed Stone House - Corfu Island",
+      "price": 58000,
       "area_sqm": 55,
       "bedrooms": 1,
-      "url": "https://tranio.com/greece/adt/residential-complex-in-kallithea-2388048/",
-      "image_url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
-      "source": "Tranio",
-      "region": "halkidiki",
+      "url": "https://www.rightmove.co.uk/properties/169757939#/?channel=OVERSEAS",
+      "image_url": "https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/f501791a2/169757939/f501791a2928226c700059ba540bd212_max_476x317.jpeg",
+      "source": "Rightmove",
+      "region": "ionian_islands",
       "features": [
-        "2 swimming pools",
-        "650m from sea",
-        "New build",
-        "Resort area"
+        "Stone house",
+        "Renovation potential",
+        "Corfu island"
       ],
-      "roi": "4.5%",
-      "property_type": "Apartment in complex"
+      "roi": "4-6% (Airbnb)",
+      "property_type": "House"
     },
     {
-      "title": "Investment Complex - 30 Apartments, 5.8% Yield - Central Thessaloniki",
-      "price": 103000,
-      "area_sqm": 50,
-      "bedrooms": 1,
-      "url": "https://tranio.com/greece/adt/residential-complex-in-thessaloniki-2337693/",
-      "image_url": "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600",
-      "source": "Tranio",
-      "region": "thessaloniki",
-      "features": [
-        "Central location",
-        "5.8% rental yield",
-        "30-unit complex",
-        "High rental demand"
-      ],
-      "roi": "5.8%",
-      "property_type": "Apartment in complex"
-    },
-    {
-      "title": "2-Bed Sea View Apartment, 95m² - Thessaloniki",
-      "price": 255000,
-      "area_sqm": 95,
+      "title": "2-Bed Property - Episkepsi, Corfu",
+      "price": 60000,
+      "area_sqm": 65,
       "bedrooms": 2,
-      "url": "https://tranio.com/greece/adt/apartment-in-thessaloniki-1962558/",
-      "image_url": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600",
-      "source": "Tranio",
-      "region": "thessaloniki",
+      "url": "https://www.rightmove.co.uk/properties/147192746#/?channel=OVERSEAS",
+      "image_url": "https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/52bf02e40/147192746/52bf02e402b24e10d1554e133d5e1f20_max_476x317.jpeg",
+      "source": "Rightmove",
+      "region": "ionian_islands",
       "features": [
-        "Sea view",
-        "95m²",
         "2 bedrooms",
-        "Near waterfront"
+        "North Corfu village",
+        "Character property"
       ],
-      "roi": "4.5%",
-      "property_type": "Apartment"
+      "roi": "4-5%",
+      "property_type": "Property"
     },
     {
-      "title": "2-Bed Sea View Apartment, 90m² - Thessaloniki Waterfront",
-      "price": 280000,
-      "area_sqm": 90,
-      "bedrooms": 2,
-      "url": "https://tranio.com/greece/adt/apartment-in-thessaloniki-2373000/",
-      "image_url": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600",
-      "source": "Tranio",
-      "region": "thessaloniki",
-      "features": [
-        "Sea view",
-        "90m²",
-        "2 bedrooms",
-        "City waterfront"
-      ],
-      "roi": "4.2%",
-      "property_type": "Apartment"
-    },
-    {
-      "title": "4-Bed Villa with Sea View, 500m from Beach - Thessaloniki",
-      "price": 360000,
-      "area_sqm": 170,
-      "bedrooms": 4,
-      "url": "https://tranio.com/greece/adt/villa-in-thessaloniki-1888946/",
-      "image_url": "https://images.unsplash.com/photo-1600585152220-90363fe7e115?w=600",
-      "source": "Tranio",
-      "region": "thessaloniki",
-      "features": [
-        "Sea view",
-        "500m from sea",
-        "170m²",
-        "4 bedrooms"
-      ],
-      "roi": "3.8%",
-      "property_type": "Villa"
-    },
-    {
-      "title": "Beachfront Townhouses - Chania, Crete",
-      "price": 198000,
+      "title": "2-Bed House - Karoussades, Corfu",
+      "price": 69000,
       "area_sqm": 70,
       "bedrooms": 2,
-      "url": "https://tranio.com/greece/adt/residential-complex-in-chania-2237774/",
-      "image_url": "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=600",
-      "source": "Tranio",
-      "region": "chania",
+      "url": "https://www.rightmove.co.uk/properties/157731170#/?channel=OVERSEAS",
+      "image_url": "https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/1b5a9b9fe/157731170/1b5a9b9fe22825c0dbe215304a13d6d3_max_476x317.jpeg",
+      "source": "Rightmove",
+      "region": "ionian_islands",
       "features": [
-        "Beachfront",
-        "Townhouse complex",
-        "New build",
-        "Near beaches"
-      ],
-      "roi": "4.5%",
-      "property_type": "Townhouse in complex"
-    },
-    {
-      "title": "Luxury Beachfront Apartments - Chania, Crete",
-      "price": 235000,
-      "area_sqm": 65,
-      "bedrooms": 1,
-      "url": "https://tranio.com/greece/adt/residential-complex-in-chania-2385609/",
-      "image_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
-      "source": "Tranio",
-      "region": "chania",
-      "features": [
-        "Luxury finish",
-        "Beachfront",
-        "Furnished",
-        "Airbnb ready"
-      ],
-      "roi": "4.8%",
-      "property_type": "Apartment in complex"
-    },
-    {
-      "title": "2-Bed Townhome, 86m² - Chania, Crete",
-      "price": 275000,
-      "area_sqm": 86,
-      "bedrooms": 2,
-      "url": "https://tranio.com/greece/adt/townhome-in-chania-2444295/",
-      "image_url": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600",
-      "source": "Tranio",
-      "region": "chania",
-      "features": [
-        "86m²",
         "2 bedrooms",
-        "Near old town",
-        "Renovated"
+        "Near north coast beaches",
+        "Village charm"
       ],
-      "roi": "4.3%",
-      "property_type": "Townhouse"
+      "roi": "4-5%",
+      "property_type": "House"
     },
     {
-      "title": "Furnished House with Sea & Mountain Views - Pitsidia, Crete",
-      "price": 250000,
-      "area_sqm": 80,
-      "bedrooms": 2,
-      "url": "https://tranio.com/greece/adt/townhome-in-heraklion-2348545/",
-      "image_url": "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?w=600",
-      "source": "Tranio",
-      "region": "heraklion",
+      "title": "3-Bed Property - Karoussades, Corfu",
+      "price": 70000,
+      "area_sqm": 85,
+      "bedrooms": 3,
+      "url": "https://www.rightmove.co.uk/properties/147192809#/?channel=OVERSEAS",
+      "image_url": "https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/00fb7730c/147192809/00fb7730c403292ec505cb1ff08ed713_max_476x317.jpeg",
+      "source": "Rightmove",
+      "region": "ionian_islands",
       "features": [
-        "Furnished",
-        "Sea & mountain views",
-        "Balcony/terrace",
+        "3 bedrooms",
+        "North Corfu",
         "Near beaches"
       ],
-      "roi": "4.5%",
+      "roi": "4-5%",
+      "property_type": "Property"
+    },
+    {
+      "title": "Property - Lakones, Corfu (Paleokastritsa area)",
+      "price": 69000,
+      "area_sqm": 60,
+      "bedrooms": null,
+      "url": "https://www.rightmove.co.uk/properties/147192770#/?channel=OVERSEAS",
+      "image_url": "https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/9ee07dcfe/147192770/9ee07dcfe83bebe53a96d432940f7c3a_max_476x317.jpeg",
+      "source": "Rightmove",
+      "region": "ionian_islands",
+      "features": [
+        "Near Paleokastritsa",
+        "Corfu west coast",
+        "Scenic location"
+      ],
+      "roi": "4-6% (Airbnb)",
+      "property_type": "Property"
+    },
+    {
+      "title": "2-Bed House - Agia Irini, Cephalonia",
+      "price": 58000,
+      "area_sqm": 70,
+      "bedrooms": 2,
+      "url": "https://www.rightmove.co.uk/properties/164335409#/?channel=OVERSEAS",
+      "image_url": "https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/ccbf671f7/164335409/ccbf671f791c9dd8962d06901e2cd4c7_max_476x317.jpeg",
+      "source": "Rightmove",
+      "region": "ionian_islands",
+      "features": [
+        "2 bedrooms",
+        "Cephalonia island",
+        "Reduced price"
+      ],
+      "roi": "4-5%",
       "property_type": "House"
     },
     {
-      "title": "Spacious House Near Village Centre - Pitsidia, Crete",
-      "price": 265000,
-      "area_sqm": 170,
-      "bedrooms": 2,
-      "url": "https://tranio.com/greece/adt/townhome-in-heraklion-2348705/",
-      "image_url": "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=600",
-      "source": "Tranio",
-      "region": "heraklion",
-      "features": [
-        "170m²",
-        "Garden",
-        "1,330m² land",
-        "Village location"
-      ],
-      "roi": "4.0%",
-      "property_type": "House"
-    },
-    {
-      "title": "Villa with Pool Near Beaches - Pitsidia, Crete",
-      "price": 350000,
-      "area_sqm": 115,
-      "bedrooms": 2,
-      "url": "https://tranio.com/greece/adt/villa-in-heraklion-2348546/",
-      "image_url": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600",
-      "source": "Tranio",
-      "region": "heraklion",
-      "features": [
-        "Swimming pool",
-        "BBQ area",
-        "Mountain views",
-        "Near beaches"
-      ],
-      "roi": "4.2%",
-      "property_type": "Villa"
-    },
-    {
-      "title": "New Duplex Apartment, 101m² - Kalamata",
-      "price": 290000,
-      "area_sqm": 101,
-      "bedrooms": 2,
-      "url": "https://tranio.com/greece/adt/new-home-in-kalamata-2397686/",
-      "image_url": "https://images.unsplash.com/photo-1560185009-5bf9f2849488?w=600",
-      "source": "Tranio",
-      "region": "kalamata",
-      "features": [
-        "New build",
-        "Duplex",
-        "101m²",
-        "2 bathrooms"
-      ],
-      "roi": "4.0%",
-      "property_type": "Apartment"
-    },
-    {
-      "title": "House with Sea Views & Large Plot - Kalamata",
-      "price": 350000,
-      "area_sqm": 110,
-      "bedrooms": 3,
-      "url": "https://tranio.com/greece/adt/townhome-in-kalamata-2263132/",
-      "image_url": "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=600",
-      "source": "Tranio",
-      "region": "kalamata",
-      "features": [
-        "Sea views",
-        "5,800m² land",
-        "Garden",
-        "3 bedrooms"
-      ],
-      "roi": "3.8%",
-      "property_type": "House"
-    },
-    {
-      "title": "Furnished Villa with Sea Views - Kalamata",
-      "price": 400000,
-      "area_sqm": 155,
-      "bedrooms": 3,
-      "url": "https://tranio.com/greece/adt/villa-in-kalamata-2343660/",
-      "image_url": "https://images.unsplash.com/photo-1599809275671-b5942cabc7a2?w=600",
-      "source": "Tranio",
-      "region": "kalamata",
-      "features": [
-        "Sea view",
-        "Furnished",
-        "2 storeys",
-        "1,000m² land"
-      ],
-      "roi": "4.2%",
-      "property_type": "Villa"
-    },
-    {
-      "title": "First-Class Residence with Rooftop Pool - Piraeus",
-      "price": 250000,
-      "area_sqm": 58,
+      "title": "1-Bed Detached House - Kaminarata, Cephalonia",
+      "price": 60000,
+      "area_sqm": 50,
       "bedrooms": 1,
-      "url": "https://tranio.com/greece/adt/residential-complex-in-pireas-2379937/",
-      "image_url": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=600",
-      "source": "Tranio",
-      "region": "piraeus_athens",
+      "url": "https://www.rightmove.co.uk/properties/169522346#/?channel=OVERSEAS",
+      "image_url": "https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/f02587829/169522346/f025878293b87c713ee22cc648c961cd_max_476x317.jpeg",
+      "source": "Rightmove",
+      "region": "ionian_islands",
       "features": [
-        "Rooftop pool",
-        "Restaurant",
-        "Near beach",
-        "5% yield guaranteed"
+        "Detached house",
+        "Cephalonia village",
+        "Close to beaches"
       ],
-      "roi": "5.0%",
-      "property_type": "Apartment in complex"
+      "roi": "4-5%",
+      "property_type": "Detached house"
     },
     {
-      "title": "Modern Residence with Pool, 170m from Sea - Piraeus",
-      "price": 279000,
-      "area_sqm": 72,
+      "title": "2-Bed Detached House - Topolia, Chania, Crete",
+      "price": 60000,
+      "area_sqm": 70,
       "bedrooms": 2,
-      "url": "https://tranio.com/greece/adt/residential-complex-in-pireas-2391363/",
-      "image_url": "https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=600",
-      "source": "Tranio",
-      "region": "piraeus_athens",
+      "url": "https://www.rightmove.co.uk/properties/159737804#/?channel=OVERSEAS",
+      "image_url": "https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/a2b84270d/159737804/a2b84270d253ce62ea8aecae2c83f063_max_476x317.jpeg",
+      "source": "Rightmove",
+      "region": "crete",
       "features": [
-        "Swimming pool",
-        "170m from sea",
-        "New build 2027",
-        "Metro access"
+        "2 bedrooms",
+        "Chania area",
+        "Mountain village",
+        "Character property"
       ],
-      "roi": "3.8%",
-      "property_type": "Apartment in complex"
+      "roi": "3-5%",
+      "property_type": "Detached house"
     },
     {
-      "title": "Sea View Residence Near Metro - Piraeus",
-      "price": 310000,
+      "title": "Studio Flat - Drama City Centre",
+      "price": 56000,
+      "area_sqm": 40,
+      "bedrooms": 0,
+      "url": "https://www.rightmove.co.uk/properties/162955775#/?channel=OVERSEAS",
+      "image_url": "https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/793fe631c/162955775/793fe631cab7895c47f2ceebada11d35_max_476x317.jpeg",
+      "source": "Rightmove",
+      "region": "northern_greece",
+      "features": [
+        "City centre",
+        "Studio",
+        "Ready to rent",
+        "Lowest entry price"
+      ],
+      "roi": "5-7%",
+      "property_type": "Studio flat"
+    },
+    {
+      "title": "2-Bed Detached House - Efkarpia, Serres",
+      "price": 57000,
       "area_sqm": 85,
       "bedrooms": 2,
-      "url": "https://tranio.com/greece/adt/residential-complex-in-pireas-2387211/",
-      "image_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
-      "source": "Tranio",
-      "region": "piraeus_athens",
+      "url": "https://www.rightmove.co.uk/properties/166495556#/?channel=OVERSEAS",
+      "image_url": "https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/88e10b9f3/166495556/88e10b9f3311b29c12fc0c634fbe0f1b_max_476x317.jpeg",
+      "source": "Rightmove",
+      "region": "northern_greece",
       "features": [
-        "Sea view",
-        "Metro station",
-        "New build",
-        "City center access"
+        "2 bedrooms",
+        "Detached",
+        "85m²",
+        "Serres area"
       ],
-      "roi": "4.0%",
-      "property_type": "Apartment in complex"
+      "roi": "5-6%",
+      "property_type": "Detached house"
+    },
+    {
+      "title": "5-Bed Detached House - Chryso, Serres",
+      "price": 57000,
+      "area_sqm": 120,
+      "bedrooms": 5,
+      "url": "https://www.rightmove.co.uk/properties/169430747#/?channel=OVERSEAS",
+      "image_url": "https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/4c5da3c84/169430747/4c5da3c841ead16360bc9541203fad0b_max_476x317.jpeg",
+      "source": "Rightmove",
+      "region": "northern_greece",
+      "features": [
+        "5 bedrooms",
+        "120m²",
+        "Large family home",
+        "Incredible value"
+      ],
+      "roi": "5-7%",
+      "property_type": "Detached house"
+    },
+    {
+      "title": "Studio Flat - Serres City",
+      "price": 58000,
+      "area_sqm": 38,
+      "bedrooms": 0,
+      "url": "https://www.rightmove.co.uk/properties/170088143#/?channel=OVERSEAS",
+      "image_url": "https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/705ae7346/170088143/705ae7346705e8d66d72ed72f1d04ed9_max_476x317.jpeg",
+      "source": "Rightmove",
+      "region": "northern_greece",
+      "features": [
+        "City location",
+        "Studio flat",
+        "Rental ready"
+      ],
+      "roi": "5-7%",
+      "property_type": "Studio flat"
+    },
+    {
+      "title": "2-Bed Flat - Drama City",
+      "price": 70000,
+      "area_sqm": 65,
+      "bedrooms": 2,
+      "url": "https://www.rightmove.co.uk/properties/169011563#/?channel=OVERSEAS",
+      "image_url": "https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/b8e9e150e/169011563/b8e9e150e454d86cf1bab5110e7d7ae4_max_476x317.jpeg",
+      "source": "Rightmove",
+      "region": "northern_greece",
+      "features": [
+        "2 bedrooms",
+        "City apartment",
+        "Ready to move in"
+      ],
+      "roi": "5-6%",
+      "property_type": "Flat"
+    },
+    {
+      "title": "2-Bed Detached House - Adriani, Drama",
+      "price": 70000,
+      "area_sqm": 80,
+      "bedrooms": 2,
+      "url": "https://www.rightmove.co.uk/properties/159071498#/?channel=OVERSEAS",
+      "image_url": "https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/443ad7c8a/159071498/443ad7c8a30b49564efaf26ffc4464c7_max_476x317.jpeg",
+      "source": "Rightmove",
+      "region": "northern_greece",
+      "features": [
+        "2 bedrooms",
+        "Detached",
+        "80m²",
+        "Village setting"
+      ],
+      "roi": "5-6%",
+      "property_type": "Detached house"
+    },
+    {
+      "title": "4-Bed Detached House - Rodolivos, Serres",
+      "price": 70000,
+      "area_sqm": 130,
+      "bedrooms": 4,
+      "url": "https://www.rightmove.co.uk/properties/169742507#/?channel=OVERSEAS",
+      "image_url": "https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/3633cb896/169742507/3633cb89629d936b52fb63a8b6e2b50e_max_476x317.jpeg",
+      "source": "Rightmove",
+      "region": "northern_greece",
+      "features": [
+        "4 bedrooms",
+        "130m²",
+        "Large family home"
+      ],
+      "roi": "5-6%",
+      "property_type": "Detached house"
+    },
+    {
+      "title": "2-Bed Property - Alonnisos Island",
+      "price": 60000,
+      "area_sqm": 55,
+      "bedrooms": 2,
+      "url": "https://www.rightmove.co.uk/properties/169527362#/?channel=OVERSEAS",
+      "image_url": "https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/ada9f3d64/169527362/ada9f3d641dc27ff3d07974a56d7e5d3_max_476x317.jpeg",
+      "source": "Rightmove",
+      "region": "pelion_sporades",
+      "features": [
+        "Island living",
+        "2 bedrooms",
+        "Marine park island",
+        "Reduced price"
+      ],
+      "roi": "4-5% (seasonal)",
+      "property_type": "Property"
+    },
+    {
+      "title": "Detached House - Portaria, Pelion",
+      "price": 70000,
+      "area_sqm": 75,
+      "bedrooms": null,
+      "url": "https://www.rightmove.co.uk/properties/172463645#/?channel=OVERSEAS",
+      "image_url": "https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/6331d4b20/172463645/6331d4b209afdc646bc0370a530a2c1f_max_476x317.jpeg",
+      "source": "Rightmove",
+      "region": "pelion_sporades",
+      "features": [
+        "Pelion mountain village",
+        "Near beaches",
+        "Character property"
+      ],
+      "roi": "4-5%",
+      "property_type": "Detached house"
+    },
+    {
+      "title": "2-Bed Flat - Zografos, Athens (University area)",
+      "price": 73000,
+      "area_sqm": 65,
+      "bedrooms": 2,
+      "url": "https://www.rightmove.co.uk/properties/172039565#/?channel=OVERSEAS",
+      "image_url": "https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/db7d7fd42/172039565/db7d7fd420cb1ededdddb6734a54cc59_max_476x317.jpeg",
+      "source": "Rightmove",
+      "region": "attica",
+      "features": [
+        "Athens location",
+        "2 bedrooms",
+        "Near university",
+        "Strong rental demand"
+      ],
+      "roi": "5-6%",
+      "property_type": "Flat"
     }
   ],
   "market_context": {
@@ -396,6 +375,8 @@
     "notary_fees": "0.65-1% of property value",
     "legal_fees": "1-2% of property value",
     "total_buying_costs": "~8-10% on top of purchase price",
+    "budget": "100,000 CAD ≈ €65,000 EUR (Feb 2026 rate)",
+    "budget_note": "At this price point, expect smaller apartments, character houses needing renovation, or properties in less touristy areas. Northern Greece (Drama, Serres) offers the best value per square meter.",
     "golden_visa_threshold": "€250,000 (higher in prime areas)",
     "eu_citizen_note": "As an Estonian passport holder, you are an EU citizen. No restrictions on buying property in Greece. No need for Golden Visa. Full property rights identical to Greek citizens.",
     "canadian_note": "Your Canadian citizenship provides additional travel flexibility. With Estonian (EU) passport, you have the right to live, work, and own property anywhere in the EU without any permits.",

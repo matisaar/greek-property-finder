@@ -601,8 +601,8 @@ def generate_site():
 <div class="hero">
     <h1>🏖️ Greek Property Finder</h1>
     <p class="subtitle">
-        Investment properties near beaches & cities in Greece.
-        Curated for a Canadian/Estonian EU citizen looking for the perfect blend of investment returns and personal enjoyment.
+        Budget investment properties under 100,000 CAD (≈€65,000) near beaches & cities in Greece.
+        Curated for a Canadian/Estonian EU citizen exploring affordable Greek real estate.
     </p>
     <div class="hero-badges">
         <span class="hero-badge">🇬🇷 {len(properties)} Properties</span>
@@ -755,24 +755,18 @@ def generate_site():
         <p class="section-subtitle">Direct links to search on major Greek real estate portals. Prices and availability change daily.</p>
         <div class="search-links">
             <div class="search-link-card">
+                <h4>�🇧 Rightmove Overseas (Budget under £55k / €65k)</h4>
+                <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece.html?maxPrice=55000&sortByPriceDescending=false" target="_blank">All Greece under £55k</a>
+                <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Corfu.html?maxPrice=55000" target="_blank">Corfu listings</a>
+                <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Crete.html?maxPrice=55000" target="_blank">Crete listings</a>
+                <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Cephalonia.html?maxPrice=55000" target="_blank">Cephalonia listings</a>
+            </div>
+            <div class="search-link-card">
                 <h4>🏠 Spitogatos.gr (Largest Greek portal)</h4>
                 <a href="https://en.spitogatos.gr/search/results/residential/buy" target="_blank">Browse all Greece</a>
-                <a href="https://en.spitogatos.gr/search/results/residential/buy?geo_place_ids[]=ChIJ8UNwBh-9oRQR3Y1mdkU1Nic" target="_blank">Thessaloniki area</a>
+                <a href="https://en.spitogatos.gr/search/results/residential/buy?geo_place_ids[]=ChIJ8UNwBh-9oRQR3Y1mdkU1Nic" target="_blank">Northern Greece</a>
                 <a href="https://en.spitogatos.gr/search/results/residential/buy?geo_place_ids[]=ChIJZ07eRWGEhBQRIL8BPxhkSaQ" target="_blank">Chania, Crete</a>
-                <a href="https://en.spitogatos.gr/search/results/residential/buy?geo_place_ids[]=ChIJoQLn3YvhgxQRp9lfWq2IJis" target="_blank">Halkidiki</a>
-            </div>
-            <div class="search-link-card">
-                <h4>🌍 Tranio.com (International portal)</h4>
-                <a href="https://tranio.com/greece/makedonia_thraki/chalkidiki/" target="_blank">Halkidiki properties</a>
-                <a href="https://tranio.com/greece/makedonia_thraki/thessaloniki/" target="_blank">Thessaloniki properties</a>
-                <a href="https://tranio.com/greece/crete/" target="_blank">Crete properties</a>
-                <a href="https://tranio.com/greece/peloponnese_western_greece_and_the_ionian_islands/kalamata/" target="_blank">Kalamata properties</a>
-                <a href="https://tranio.com/greece/coastal/" target="_blank">All coastal properties</a>
-            </div>
-            <div class="search-link-card">
-                <h4>🇬🇧 Rightmove Overseas</h4>
-                <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece.html" target="_blank">All Greece listings</a>
-                <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Crete.html" target="_blank">Crete listings</a>
+                <a href="https://en.spitogatos.gr/search/results/residential/buy?geo_place_ids[]=ChIJoQLn3YvhgxQRp9lfWq2IJis" target="_blank">Ionian Islands</a>
             </div>
             <div class="search-link-card">
                 <h4>🔍 Properstar.com</h4>
@@ -790,10 +784,10 @@ def generate_site():
             </div>
             <div class="search-link-card">
                 <h4>✈️ Flight Connections</h4>
-                <a href="https://www.google.com/flights?q=flights+to+thessaloniki" target="_blank">Flights to Thessaloniki (SKG)</a>
+                <a href="https://www.google.com/flights?q=flights+to+corfu" target="_blank">Flights to Corfu (CFU)</a>
                 <a href="https://www.google.com/flights?q=flights+to+chania" target="_blank">Flights to Chania (CHQ)</a>
-                <a href="https://www.google.com/flights?q=flights+to+heraklion" target="_blank">Flights to Heraklion (HER)</a>
-                <a href="https://www.google.com/flights?q=flights+to+kalamata" target="_blank">Flights to Kalamata (KLX)</a>
+                <a href="https://www.google.com/flights?q=flights+to+thessaloniki" target="_blank">Flights to Thessaloniki (SKG)</a>
+                <a href="https://www.google.com/flights?q=flights+to+volos" target="_blank">Flights to Volos (VOL)</a>
                 <a href="https://www.google.com/flights?q=flights+to+athens" target="_blank">Flights to Athens (ATH)</a>
             </div>
         </div>

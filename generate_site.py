@@ -574,6 +574,10 @@ input[type="range"]::-webkit-slider-thumb {{
     <span class="nav-icon">🤖</span>
     <span class="nav-label">T661 AI Trainer<small>AI training tool</small></span>
   </a>
+  <a href="https://matisaar.github.io/calgary-grocery-scraper/">
+    <span class="nav-icon">🛒</span>
+    <span class="nav-label">Calgary Grocery Scraper<small>Grocery price tracker</small></span>
+  </a>
 </nav>
 
 <div class="page-hero">

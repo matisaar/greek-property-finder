@@ -52,8 +52,11 @@ def generate_site():
             f'region:"{p.get("region","")}",'
             f'regionName:"{region_name.replace(chr(34),chr(39))}",'
             f'airport:{p.get("airport_drive_min", 60)},'
+            f'airportName:"{p.get("airport_name","").replace(chr(34),chr(39))}",'
             f'beach:{p.get("beach_min", 30)},'
             f'reno:{1 if p.get("needs_renovation") else 0},'
+            f'nearestCity:"{p.get("nearest_city","").replace(chr(34),chr(39))}",'
+            f'nearestCityMin:{p.get("nearest_city_min", 60)},'
             f'airbnbRate:{airbnb_rate},'
             f'airbnbOcc:{airbnb_occ},'
             f'annualIncome:{annual_income},'
@@ -569,8 +572,8 @@ input[type="range"]::-webkit-slider-thumb {{
 
 <div class="page-hero">
   <h1>🏖️ Greek Property Finder</h1>
-  <p>Budget investment properties under 100,000 CAD ranked by your priorities — adjust the
-  sliders to weight airport proximity, price, beach distance, size &amp; rental yield.</p>
+  <p>Live-scraped properties across all of Greece, under 100,000 CAD — ranked by your priorities.
+  Adjust sliders to weight airport proximity, price, beach distance, size &amp; rental yield.</p>
   <div class="hero-badges">
     <span class="hero-badge">🇬🇷 {len(properties)} Properties</span>
     <span class="hero-badge">✈️ Airport Distance</span>
@@ -692,8 +695,8 @@ input[type="range"]::-webkit-slider-thumb {{
     </div>
     <div class="explainer-item">
       <h3>📊 What we analyzed</h3>
-      <p>{len(properties)} curated properties from Rightmove Overseas, all under €75,000 (CA$100k).
-      Airport distances verified via Google Maps. Airbnb rental estimates based on regional comps.
+      <p>{len(properties)} properties live-scraped from Rightmove Overseas, all under €75,000 (CA$100k).
+      Airport &amp; beach distances auto-computed from GPS coordinates. Airbnb rental estimates based on regional comps.
       Data collected {scraped_date}.</p>
     </div>
   </div>
@@ -756,22 +759,24 @@ input[type="range"]::-webkit-slider-thumb {{
   <div class="search-grid">
     <div class="search-card">
       <h4>🇬🇧 Rightmove Overseas</h4>
-      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece.html?maxPrice=55000&amp;sortByPriceDescending=false" target="_blank">All Greece under £55k</a>
-      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Corfu.html?maxPrice=55000" target="_blank">Corfu</a>
-      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Crete.html?maxPrice=55000" target="_blank">Crete</a>
-      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Cephalonia.html?maxPrice=55000" target="_blank">Cephalonia</a>
+      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece.html?maxPrice=60000&amp;sortByPriceDescending=false" target="_blank">All Greece under £60k</a>
+      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Corfu.html?maxPrice=60000" target="_blank">Corfu</a>
+      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Crete.html?maxPrice=60000" target="_blank">Crete</a>
+      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Thessaloniki.html?maxPrice=60000" target="_blank">Thessaloniki Area</a>
     </div>
     <div class="search-card">
-      <h4>🏠 Spitogatos.gr</h4>
-      <a href="https://en.spitogatos.gr/search/results/residential/buy" target="_blank">All Greece</a>
-      <a href="https://en.spitogatos.gr/search/results/residential/buy?geo_place_ids[]=ChIJ8UNwBh-9oRQR3Y1mdkU1Nic" target="_blank">Northern Greece</a>
-      <a href="https://en.spitogatos.gr/search/results/residential/buy?geo_place_ids[]=ChIJZ07eRWGEhBQRIL8BPxhkSaQ" target="_blank">Chania, Crete</a>
+      <h4>🏠 Greek Portals (manual)</h4>
+      <a href="https://en.spitogatos.gr/search/results/residential/buy" target="_blank">Spitogatos.gr</a>
+      <a href="https://www.xe.gr/property/en" target="_blank">xe.gr</a>
+      <a href="https://www.tospitimou.gr/" target="_blank">tospitimou.gr</a>
+      <p style="font-size:0.7rem;color:var(--muted);margin-top:6px;">Greek sites require manual browsing (bot-protected)</p>
     </div>
     <div class="search-card">
       <h4>✈️ Flights</h4>
+      <a href="https://www.google.com/flights?q=flights+to+thessaloniki" target="_blank">→ Thessaloniki (SKG)</a>
+      <a href="https://www.google.com/flights?q=flights+to+kavala" target="_blank">→ Kavala (KVA)</a>
       <a href="https://www.google.com/flights?q=flights+to+corfu" target="_blank">→ Corfu (CFU)</a>
       <a href="https://www.google.com/flights?q=flights+to+chania" target="_blank">→ Chania (CHQ)</a>
-      <a href="https://www.google.com/flights?q=flights+to+thessaloniki" target="_blank">→ Thessaloniki (SKG)</a>
       <a href="https://www.google.com/flights?q=flights+to+athens" target="_blank">→ Athens (ATH)</a>
     </div>
     <div class="search-card">
@@ -813,8 +818,8 @@ input[type="range"]::-webkit-slider-thumb {{
 </div>
 
 <div class="footer">
-  {len(properties)} curated properties from Rightmove Overseas · Data scraped {scraped_date} · Prices in EUR (CA$1 ≈ €0.68)<br>
-  Built for a 🍁 Canadian / 🇪🇪 Estonian exploring Greek investment · ⚠️ Verify all listings before purchasing
+  {len(properties)} properties live-scraped from Rightmove Overseas · Data scraped {scraped_date} · Prices in EUR (CA$1 ≈ €0.68)<br>
+  Covers all of Greece — beach &amp; airport distances auto-computed · ⚠️ Verify all listings before purchasing
 </div>
 
 <script>
@@ -886,7 +891,7 @@ function makeCard(d) {{
       <div class="card-body">
         <div class="card-name">${{d.title}}</div>
         <div class="card-area">📍 ${{d.regionName}}</div>
-        <div class="card-row"><span class="hl">${{d.area}}m²</span> · ${{d.beds}} bed · 🏖️ ${{d.beach}} min · Yield ${{d.grossYield}}%</div>
+        <div class="card-row"><span class="hl">${{d.area}}m²</span> · ${{d.beds}} bed · 🏖️ ${{d.beach}} min · 🏘️ ${{d.nearestCity}} ${{d.nearestCityMin}} min · Yield ${{d.grossYield}}%</div>
         <div class="card-score-bar">
           <div class="bar-track"><div class="bar-fill ${{t}}" style="width:${{s.toFixed(0)}}%"></div></div>
           <span class="bar-num">${{Math.round(s)}}</span>

@@ -115,6 +115,53 @@ def generate_site():
 * {{ margin: 0; padding: 0; box-sizing: border-box; }}
 body {{ font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--dark); line-height: 1.6; -webkit-font-smoothing: antialiased; }}
 
+/* ── Hamburger Nav ── */
+.hamburger-btn {{
+  position: fixed; top: 14px; right: 16px; z-index: 9999;
+  background: rgba(0,0,0,0.25); backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.2); border-radius: 10px;
+  width: 40px; height: 40px; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+  transition: background 0.2s;
+}}
+.hamburger-btn:hover {{ background: rgba(0,0,0,0.4); }}
+.hamburger-btn span {{
+  display: block; width: 20px; height: 2px; background: white; border-radius: 2px;
+  transition: transform 0.3s, opacity 0.3s;
+}}
+.hamburger-btn.open span:nth-child(1) {{ transform: translateY(7px) rotate(45deg); }}
+.hamburger-btn.open span:nth-child(2) {{ opacity: 0; }}
+.hamburger-btn.open span:nth-child(3) {{ transform: translateY(-7px) rotate(-45deg); }}
+
+.nav-drawer-overlay {{
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9990;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}}
+.nav-drawer-overlay.open {{ opacity: 1; pointer-events: auto; }}
+
+.nav-drawer {{
+  position: fixed; top: 0; right: -300px; width: 280px; height: 100%;
+  background: linear-gradient(180deg, #1e3a5f 0%, #0e4a6f 100%);
+  z-index: 9995; padding: 70px 24px 32px; transition: right 0.3s ease;
+  box-shadow: -4px 0 20px rgba(0,0,0,0.3);
+}}
+.nav-drawer.open {{ right: 0; }}
+.nav-drawer h3 {{
+  color: rgba(255,255,255,0.5); font-size: 0.7rem; text-transform: uppercase;
+  letter-spacing: 1.5px; margin-bottom: 16px; font-weight: 600;
+}}
+.nav-drawer a {{
+  display: flex; align-items: center; gap: 12px;
+  color: white; text-decoration: none; padding: 14px 16px;
+  border-radius: 12px; margin-bottom: 6px; font-size: 0.88rem;
+  font-weight: 500; transition: background 0.2s;
+}}
+.nav-drawer a:hover {{ background: rgba(255,255,255,0.1); }}
+.nav-drawer a.active {{ background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); }}
+.nav-drawer .nav-icon {{ font-size: 1.2rem; width: 28px; text-align: center; }}
+.nav-drawer .nav-label {{ line-height: 1.3; }}
+.nav-drawer .nav-label small {{ display: block; font-size: 0.7rem; color: rgba(255,255,255,0.5); font-weight: 400; }}
+
 /* ── Hero ── */
 .page-hero {{
   background: linear-gradient(135deg, #1e3a5f 0%, #0e76a8 50%, #1a9bc7 100%);
@@ -498,6 +545,27 @@ input[type="range"]::-webkit-slider-thumb {{
 </style>
 </head>
 <body>
+
+<!-- HAMBURGER NAV -->
+<button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu">
+  <span></span><span></span><span></span>
+</button>
+<div class="nav-drawer-overlay" id="navOverlay"></div>
+<nav class="nav-drawer" id="navDrawer">
+  <h3>My Projects</h3>
+  <a href="https://matisaar.github.io/greek-property-finder/" class="active">
+    <span class="nav-icon">🏖️</span>
+    <span class="nav-label">Greek Property Finder<small>Investment properties under 100k CAD</small></span>
+  </a>
+  <a href="https://matisaar.github.io/beach-trip-planner/">
+    <span class="nav-icon">🌊</span>
+    <span class="nav-label">Beach Trip Planner<small>Summer 2026 trip planning</small></span>
+  </a>
+  <a href="https://matisaar.github.io/T661-Checker/">
+    <span class="nav-icon">🤖</span>
+    <span class="nav-label">T661 AI Trainer<small>AI training tool</small></span>
+  </a>
+</nav>
 
 <div class="page-hero">
   <h1>🏖️ Greek Property Finder</h1>
@@ -1037,6 +1105,18 @@ function closeModal() {{
   document.getElementById('modalOverlay').classList.remove('visible');
 }}
 document.addEventListener('keydown', e => {{ if (e.key === 'Escape') closeModal(); }});
+
+// ── Hamburger menu ──
+const hBtn = document.getElementById('hamburgerBtn');
+const nDrawer = document.getElementById('navDrawer');
+const nOverlay = document.getElementById('navOverlay');
+function toggleNav() {{
+  hBtn.classList.toggle('open');
+  nDrawer.classList.toggle('open');
+  nOverlay.classList.toggle('open');
+}}
+hBtn.addEventListener('click', toggleNav);
+nOverlay.addEventListener('click', toggleNav);
 
 // ── Smooth scroll for nav links ──
 document.querySelectorAll('.page-hero-nav a[href^="#"]').forEach(a => {{

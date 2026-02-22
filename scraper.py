@@ -158,8 +158,23 @@ def nearest_airport(lat, lng):
     return code, info["name"], drive_min, info["year_round"]
 
 
+def _osrm_route(lat1, lng1, lat2, lng2):
+    """Get actual driving distance (km) and duration (min) via OSRM."""
+    try:
+        url = (f"https://router.project-osrm.org/route/v1/driving/"
+               f"{lng1},{lat1};{lng2},{lat2}?overview=false")
+        resp = requests.get(url, timeout=10)
+        data = resp.json()
+        if data.get("code") == "Ok" and data.get("routes"):
+            route = data["routes"][0]
+            return round(route["distance"] / 1000, 1), max(1, int(route["duration"] / 60))
+    except Exception:
+        pass
+    return None, None
+
+
 def nearest_beach(lat, lng):
-    """Find nearest real beach from OSM data.
+    """Find nearest real beach from OSM data using actual road distance (OSRM).
     Returns (name, beach_lat, beach_lng, km, drive_min, directions_url).
     """
     beaches = _load_beaches()
@@ -167,31 +182,40 @@ def nearest_beach(lat, lng):
         url = f"https://www.google.com/maps/search/beach/@{lat},{lng},13z"
         return "Unknown", lat, lng, 0, 30, url
 
-    best = None
-    best_km = 9999
+    # Step 1: Find top 5 nearest by straight-line (fast pre-filter)
+    candidates = []
     for b in beaches:
         km = _haversine_km(lat, lng, b["lat"], b["lng"])
-        if km < best_km:
-            best_km = km
+        candidates.append((km, b))
+    candidates.sort(key=lambda x: x[0])
+    top = candidates[:5]
+
+    # Step 2: Get actual road distance for top candidates via OSRM
+    best = None
+    best_road_km = 9999
+    best_drive_min = 999
+    for crow_km, b in top:
+        road_km, drive_min = _osrm_route(lat, lng, b["lat"], b["lng"])
+        if road_km is not None and road_km < best_road_km:
+            best_road_km = road_km
+            best_drive_min = drive_min
             best = b
+        time.sleep(0.15)  # Be polite to OSRM demo server
+
+    # Fallback to haversine if OSRM fails
+    if best is None:
+        _, best = top[0]
+        best_road_km = round(top[0][0] * 1.3, 1)  # rough road factor
+        best_drive_min = max(2, int(best_road_km / 40 * 60))
 
     beach_name = best.get("name", "") or "Beach"
     blat, blng = best["lat"], best["lng"]
-
-    # Driving estimate: road factor 1.3x, 40 km/h average on Greek roads
-    if best_km < 0.5:
-        drive_min = 2  # basically on the beach
-    elif best_km < 2:
-        drive_min = 5
-    else:
-        drive_min = max(5, int(best_km * 1.3 / 40 * 60))
-    drive_min = min(drive_min, 180)
 
     # Google Maps directions link from property to beach
     directions_url = (f"https://www.google.com/maps/dir/{lat},{lng}/"
                       f"{blat},{blng}")
 
-    return beach_name, blat, blng, round(best_km, 1), drive_min, directions_url
+    return beach_name, blat, blng, best_road_km, best_drive_min, directions_url
 
 
 def nearest_city(lat, lng):

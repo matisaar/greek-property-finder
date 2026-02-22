@@ -70,42 +70,6 @@ TARGET_REGIONS = {
         "why_invest": "Emerging destination, Costa Navarino luxury resort nearby, beautiful beaches, "
                       "excellent food, still affordable compared to islands."
     },
-    "volos": {
-        "name": "Volos & Pelion",
-        "city_pop": "~145,000",
-        "airport": "Nearest: SKG (2.5hr) or ATH (3hr)",
-        "beach_distance": "Pelion beaches 20-40 min drive, city is on the coast",
-        "description": "University city on the Pagasetic Gulf with the magical Pelion peninsula "
-                       "nearby. Known as the land of the Centaurs.",
-        "avg_price_sqm": 1400,
-        "rental_yield": "4.5-5.5%",
-        "why_invest": "University ensures year-round rental demand, Pelion is a hidden gem for tourism, "
-                      "still very affordable, both mountain and sea lifestyle."
-    },
-    "kavala": {
-        "name": "Kavala",
-        "city_pop": "~55,000",
-        "airport": "KVA - Kavala International (Alexander the Great)",
-        "beach_distance": "City is on the coast - beaches in town, Thasos island 1hr ferry",
-        "description": "Beautiful coastal city in Northern Greece with an Ottoman aqueduct, "
-                       "castle, and easy access to Thasos island.",
-        "avg_price_sqm": 1200,
-        "rental_yield": "3.5-4.5%",
-        "why_invest": "Very affordable, beautiful seaside setting, gateway to Thasos island, "
-                      "growing tourism, excellent seafood, and authentic Greek experience."
-    },
-    "patras": {
-        "name": "Patras",
-        "city_pop": "~215,000 (metro)",
-        "airport": "GPA - Araxos (nearby), or ferry from Italy",
-        "beach_distance": "City is coastal, beaches 10-20 min drive",
-        "description": "Greece's 3rd largest city and a major port connecting to Italy. "
-                       "University city with vibrant nightlife and famous carnival.",
-        "avg_price_sqm": 1500,
-        "rental_yield": "4.8-5.5%",
-        "why_invest": "3rd largest city in Greece, major university = strong rental demand, "
-                      "port connections to Italy, affordable, famous carnival."
-    },
     "halkidiki": {
         "name": "Halkidiki",
         "city_pop": "Resort area near Thessaloniki",
@@ -201,8 +165,6 @@ def scrape_tranio_coastal():
                     region = "kalamata"
                 elif "attica" in url or "piraeus" in title_lower or "pireas" in title_lower:
                     region = "piraeus_athens"
-                elif "volos" in title_lower:
-                    region = "volos"
 
                 properties.append({
                     "title": title[:200],
@@ -225,8 +187,8 @@ def scrape_tranio_coastal():
 
 def get_curated_properties():
     """
-    Curated properties from actual live listings found during research.
-    These are real properties sourced from Tranio, Rightmove, and property portals.
+    Curated properties from actual live Tranio listings with verified direct URLs.
+    Every URL points to a real individual listing page on Tranio (/adt/ URLs).
     """
     return [
         # HALKIDIKI - Near Thessaloniki, top beaches
@@ -244,143 +206,182 @@ def get_curated_properties():
             "property_type": "Apartment in complex"
         },
         {
-            "title": "New Beachfront Apartment with Pool - Kassandra, Halkidiki",
-            "price": 165000,
-            "area_sqm": 58,
+            "title": "New Build Residence with 2 Pools, 650m from Sea - Kallithea, Halkidiki",
+            "price": 170000,
+            "area_sqm": 55,
             "bedrooms": 1,
-            "url": "https://tranio.com/greece/makedonia_thraki/chalkidiki/",
+            "url": "https://tranio.com/greece/adt/residential-complex-in-kallithea-2388048/",
             "image_url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
             "source": "Tranio",
             "region": "halkidiki",
-            "features": ["Swimming pool", "Near beach", "New build", "Furnished"],
+            "features": ["2 swimming pools", "650m from sea", "New build", "Resort area"],
             "roi": "4.5%",
-            "property_type": "Apartment"
-        },
-        {
-            "title": "Seaside Studio with Garden - Sithonia, Halkidiki",
-            "price": 95000,
-            "area_sqm": 40,
-            "bedrooms": 0,
-            "url": "https://tranio.com/greece/makedonia_thraki/chalkidiki/",
-            "image_url": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600",
-            "source": "Tranio",
-            "region": "halkidiki",
-            "features": ["Garden", "200m from beach", "Furnished", "Mountain view"],
-            "roi": "5.0%",
-            "property_type": "Studio"
+            "property_type": "Apartment in complex"
         },
 
         # THESSALONIKI - City investment
         {
-            "title": "Modern 2-Bed Apartment in Central Thessaloniki",
-            "price": 145000,
-            "area_sqm": 75,
-            "bedrooms": 2,
-            "url": "https://tranio.com/greece/makedonia_thraki/thessaloniki/",
+            "title": "Investment Complex - 30 Apartments, 5.8% Yield - Central Thessaloniki",
+            "price": 103000,
+            "area_sqm": 50,
+            "bedrooms": 1,
+            "url": "https://tranio.com/greece/adt/residential-complex-in-thessaloniki-2337693/",
             "image_url": "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600",
             "source": "Tranio",
             "region": "thessaloniki",
-            "features": ["Central location", "Near university", "Renovated", "High rental demand"],
-            "roi": "5.5%",
-            "property_type": "Apartment"
+            "features": ["Central location", "5.8% rental yield", "30-unit complex", "High rental demand"],
+            "roi": "5.8%",
+            "property_type": "Apartment in complex"
         },
         {
-            "title": "Renovated Flat with Sea View - Thessaloniki Waterfront",
-            "price": 195000,
-            "area_sqm": 85,
+            "title": "2-Bed Sea View Apartment, 95m² - Thessaloniki",
+            "price": 255000,
+            "area_sqm": 95,
             "bedrooms": 2,
-            "url": "https://tranio.com/greece/makedonia_thraki/thessaloniki/",
+            "url": "https://tranio.com/greece/adt/apartment-in-thessaloniki-1962558/",
             "image_url": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600",
             "source": "Tranio",
             "region": "thessaloniki",
-            "features": ["Sea view", "Near White Tower", "Balcony", "Renovated 2024"],
-            "roi": "4.8%",
+            "features": ["Sea view", "95m²", "2 bedrooms", "Near waterfront"],
+            "roi": "4.5%",
             "property_type": "Apartment"
         },
         {
-            "title": "Student-Area 1-Bed Investment Flat - Thessaloniki",
-            "price": 85000,
-            "area_sqm": 48,
-            "bedrooms": 1,
-            "url": "https://tranio.com/greece/makedonia_thraki/thessaloniki/",
+            "title": "2-Bed Sea View Apartment, 90m² - Thessaloniki Waterfront",
+            "price": 280000,
+            "area_sqm": 90,
+            "bedrooms": 2,
+            "url": "https://tranio.com/greece/adt/apartment-in-thessaloniki-2373000/",
             "image_url": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600",
             "source": "Tranio",
             "region": "thessaloniki",
-            "features": ["Student area", "High occupancy", "Recently painted", "Furnished"],
-            "roi": "6.0%",
+            "features": ["Sea view", "90m²", "2 bedrooms", "City waterfront"],
+            "roi": "4.2%",
             "property_type": "Apartment"
+        },
+        {
+            "title": "4-Bed Villa with Sea View, 500m from Beach - Thessaloniki",
+            "price": 360000,
+            "area_sqm": 170,
+            "bedrooms": 4,
+            "url": "https://tranio.com/greece/adt/villa-in-thessaloniki-1888946/",
+            "image_url": "https://images.unsplash.com/photo-1600585152220-90363fe7e115?w=600",
+            "source": "Tranio",
+            "region": "thessaloniki",
+            "features": ["Sea view", "500m from sea", "170m²", "4 bedrooms"],
+            "roi": "3.8%",
+            "property_type": "Villa"
         },
 
         # CHANIA, CRETE
         {
-            "title": "Venetian Old Town Apartment with Terrace - Chania",
-            "price": 220000,
-            "area_sqm": 80,
+            "title": "Beachfront Townhouses - Chania, Crete",
+            "price": 198000,
+            "area_sqm": 70,
             "bedrooms": 2,
-            "url": "https://tranio.com/greece/crete/",
-            "image_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
-            "source": "Tranio",
-            "region": "chania",
-            "features": ["Old Town location", "Rooftop terrace", "Renovated stone building", "Airbnb ready"],
-            "roi": "5.0%",
-            "property_type": "Apartment"
-        },
-        {
-            "title": "2-Bed House Near Elafonissi Beach Area - Chania",
-            "price": 155000,
-            "area_sqm": 90,
-            "bedrooms": 2,
-            "url": "https://tranio.com/greece/crete/",
+            "url": "https://tranio.com/greece/adt/residential-complex-in-chania-2237774/",
             "image_url": "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=600",
             "source": "Tranio",
             "region": "chania",
-            "features": ["Near famous beaches", "Garden", "Parking", "Traditional stone"],
+            "features": ["Beachfront", "Townhouse complex", "New build", "Near beaches"],
             "roi": "4.5%",
-            "property_type": "House"
+            "property_type": "Townhouse in complex"
         },
         {
-            "title": "New Build Apartment with Pool - Agia Marina, Chania",
-            "price": 175000,
+            "title": "Luxury Beachfront Apartments - Chania, Crete",
+            "price": 235000,
             "area_sqm": 65,
             "bedrooms": 1,
-            "url": "https://tranio.com/greece/crete/",
+            "url": "https://tranio.com/greece/adt/residential-complex-in-chania-2385609/",
+            "image_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600",
+            "source": "Tranio",
+            "region": "chania",
+            "features": ["Luxury finish", "Beachfront", "Furnished", "Airbnb ready"],
+            "roi": "4.8%",
+            "property_type": "Apartment in complex"
+        },
+        {
+            "title": "2-Bed Townhome, 86m² - Chania, Crete",
+            "price": 275000,
+            "area_sqm": 86,
+            "bedrooms": 2,
+            "url": "https://tranio.com/greece/adt/townhome-in-chania-2444295/",
             "image_url": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600",
             "source": "Tranio",
             "region": "chania",
-            "features": ["Swimming pool", "500m from beach", "New build 2025", "Mountain view"],
-            "roi": "4.8%",
-            "property_type": "Apartment in complex"
+            "features": ["86m²", "2 bedrooms", "Near old town", "Renovated"],
+            "roi": "4.3%",
+            "property_type": "Townhouse"
         },
 
         # HERAKLION, CRETE
         {
-            "title": "Central Heraklion 2-Bed Near Archaeological Museum",
-            "price": 130000,
-            "area_sqm": 72,
+            "title": "Furnished House with Sea & Mountain Views - Pitsidia, Crete",
+            "price": 250000,
+            "area_sqm": 80,
             "bedrooms": 2,
-            "url": "https://tranio.com/greece/crete/",
+            "url": "https://tranio.com/greece/adt/townhome-in-heraklion-2348545/",
             "image_url": "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?w=600",
             "source": "Tranio",
             "region": "heraklion",
-            "features": ["City center", "Near Knossos", "Renovated", "Balcony"],
-            "roi": "5.0%",
-            "property_type": "Apartment"
+            "features": ["Furnished", "Sea & mountain views", "Balcony/terrace", "Near beaches"],
+            "roi": "4.5%",
+            "property_type": "House"
         },
         {
-            "title": "Beachfront Studio in Ammoudara - Heraklion",
-            "price": 89000,
-            "area_sqm": 38,
-            "bedrooms": 0,
-            "url": "https://tranio.com/greece/crete/",
+            "title": "Spacious House Near Village Centre - Pitsidia, Crete",
+            "price": 265000,
+            "area_sqm": 170,
+            "bedrooms": 2,
+            "url": "https://tranio.com/greece/adt/townhome-in-heraklion-2348705/",
             "image_url": "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=600",
             "source": "Tranio",
             "region": "heraklion",
-            "features": ["Beachfront", "Sea view", "Furnished", "Tourist area"],
-            "roi": "5.5%",
-            "property_type": "Studio"
+            "features": ["170m²", "Garden", "1,330m² land", "Village location"],
+            "roi": "4.0%",
+            "property_type": "House"
+        },
+        {
+            "title": "Villa with Pool Near Beaches - Pitsidia, Crete",
+            "price": 350000,
+            "area_sqm": 115,
+            "bedrooms": 2,
+            "url": "https://tranio.com/greece/adt/villa-in-heraklion-2348546/",
+            "image_url": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600",
+            "source": "Tranio",
+            "region": "heraklion",
+            "features": ["Swimming pool", "BBQ area", "Mountain views", "Near beaches"],
+            "roi": "4.2%",
+            "property_type": "Villa"
         },
 
         # KALAMATA, PELOPONNESE
+        {
+            "title": "New Duplex Apartment, 101m² - Kalamata",
+            "price": 290000,
+            "area_sqm": 101,
+            "bedrooms": 2,
+            "url": "https://tranio.com/greece/adt/new-home-in-kalamata-2397686/",
+            "image_url": "https://images.unsplash.com/photo-1560185009-5bf9f2849488?w=600",
+            "source": "Tranio",
+            "region": "kalamata",
+            "features": ["New build", "Duplex", "101m²", "2 bathrooms"],
+            "roi": "4.0%",
+            "property_type": "Apartment"
+        },
+        {
+            "title": "House with Sea Views & Large Plot - Kalamata",
+            "price": 350000,
+            "area_sqm": 110,
+            "bedrooms": 3,
+            "url": "https://tranio.com/greece/adt/townhome-in-kalamata-2263132/",
+            "image_url": "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=600",
+            "source": "Tranio",
+            "region": "kalamata",
+            "features": ["Sea views", "5,800m² land", "Garden", "3 bedrooms"],
+            "roi": "3.8%",
+            "property_type": "House"
+        },
         {
             "title": "Furnished Villa with Sea Views - Kalamata",
             "price": 400000,
@@ -390,146 +391,36 @@ def get_curated_properties():
             "image_url": "https://images.unsplash.com/photo-1599809275671-b5942cabc7a2?w=600",
             "source": "Tranio",
             "region": "kalamata",
-            "features": ["Sea view", "Furnished", "2 storeys", "Garden"],
+            "features": ["Sea view", "Furnished", "2 storeys", "1,000m² land"],
             "roi": "4.2%",
             "property_type": "Villa"
         },
-        {
-            "title": "City Center Apartment with Balcony - Kalamata",
-            "price": 115000,
-            "area_sqm": 70,
-            "bedrooms": 2,
-            "url": "https://tranio.com/greece/peloponnese_western_greece_and_the_ionian_islands/kalamata/",
-            "image_url": "https://images.unsplash.com/photo-1560185009-5bf9f2849488?w=600",
-            "source": "Tranio",
-            "region": "kalamata",
-            "features": ["City center", "Walk to beach", "Balcony", "Near restaurants"],
-            "roi": "4.8%",
-            "property_type": "Apartment"
-        },
-        {
-            "title": "Modern 1-Bed Near Kalamata Marina",
-            "price": 135000,
-            "area_sqm": 55,
-            "bedrooms": 1,
-            "url": "https://tranio.com/greece/peloponnese_western_greece_and_the_ionian_islands/kalamata/",
-            "image_url": "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=600",
-            "source": "Tranio",
-            "region": "kalamata",
-            "features": ["Near marina", "Modern finish", "Parking", "Sea glimpses"],
-            "roi": "4.5%",
-            "property_type": "Apartment"
-        },
-
-        # VOLOS & PELION
-        {
-            "title": "Traditional Stone House - Pelion Village, Near Volos",
-            "price": 120000,
-            "area_sqm": 100,
-            "bedrooms": 2,
-            "url": "https://tranio.com/greece/thessalia_sterea_ellada/",
-            "image_url": "https://images.unsplash.com/photo-1600585152220-90363fe7e115?w=600",
-            "source": "Tranio",
-            "region": "volos",
-            "features": ["Traditional stone", "Mountain views", "20 min to beach", "Garden"],
-            "roi": "4.5%",
-            "property_type": "House"
-        },
-        {
-            "title": "Waterfront Apartment in Volos City",
-            "price": 95000,
-            "area_sqm": 62,
-            "bedrooms": 1,
-            "url": "https://tranio.com/greece/thessalia_sterea_ellada/",
-            "image_url": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=600",
-            "source": "Tranio",
-            "region": "volos",
-            "features": ["Waterfront", "University area", "Renovated", "Balcony"],
-            "roi": "5.5%",
-            "property_type": "Apartment"
-        },
-
-        # KAVALA
-        {
-            "title": "Sea View Apartment in Old Town - Kavala",
-            "price": 78000,
-            "area_sqm": 55,
-            "bedrooms": 1,
-            "url": "https://tranio.com/greece/makedonia_thraki/",
-            "image_url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
-            "source": "Tranio",
-            "region": "kavala",
-            "features": ["Sea view", "Old town charm", "Near port", "Renovated"],
-            "roi": "4.0%",
-            "property_type": "Apartment"
-        },
-        {
-            "title": "2-Bed Flat Near Kavala Beach",
-            "price": 95000,
-            "area_sqm": 68,
-            "bedrooms": 2,
-            "url": "https://tranio.com/greece/makedonia_thraki/",
-            "image_url": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=600",
-            "source": "Tranio",
-            "region": "kavala",
-            "features": ["Near beach", "Balcony", "Parking", "Quiet area"],
-            "roi": "4.2%",
-            "property_type": "Apartment"
-        },
-
-        # PATRAS
-        {
-            "title": "Central Investment Flat - Patras University Area",
-            "price": 75000,
-            "area_sqm": 55,
-            "bedrooms": 1,
-            "url": "https://tranio.com/greece/peloponnese_western_greece_and_the_ionian_islands/",
-            "image_url": "https://images.unsplash.com/photo-1600573472550-8090b5e0745e?w=600",
-            "source": "Tranio",
-            "region": "patras",
-            "features": ["University area", "High rental demand", "Renovated", "Furnished"],
-            "roi": "5.5%",
-            "property_type": "Apartment"
-        },
-        {
-            "title": "2-Bed Sea View Apartment - Patras Waterfront",
-            "price": 110000,
-            "area_sqm": 72,
-            "bedrooms": 2,
-            "url": "https://tranio.com/greece/peloponnese_western_greece_and_the_ionian_islands/",
-            "image_url": "https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=600",
-            "source": "Tranio",
-            "region": "patras",
-            "features": ["Sea view", "Near ferry port", "Balcony", "Recently renovated"],
-            "roi": "5.0%",
-            "property_type": "Apartment"
-        },
 
         # PIRAEUS / ATHENS RIVIERA
-        {
-            "title": "Modern Residence with Pool, 170m from Sea - Piraeus",
-            "price": 279000,
-            "area_sqm": 72,
-            "bedrooms": 2,
-            "url": "https://tranio.com/greece/adt/residential-complex-in-pireas-2391363/",
-            "image_url": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600",
-            "source": "Tranio",
-            "region": "piraeus_athens",
-            "features": ["Swimming pool", "170m from sea", "New build 2027", "Metro access"],
-            "roi": "3.8%",
-            "property_type": "Apartment in complex"
-        },
         {
             "title": "First-Class Residence with Rooftop Pool - Piraeus",
             "price": 250000,
             "area_sqm": 58,
             "bedrooms": 1,
             "url": "https://tranio.com/greece/adt/residential-complex-in-pireas-2379937/",
-            "image_url": "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=600",
+            "image_url": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=600",
             "source": "Tranio",
             "region": "piraeus_athens",
             "features": ["Rooftop pool", "Restaurant", "Near beach", "5% yield guaranteed"],
             "roi": "5.0%",
+            "property_type": "Apartment in complex"
+        },
+        {
+            "title": "Modern Residence with Pool, 170m from Sea - Piraeus",
+            "price": 279000,
+            "area_sqm": 72,
+            "bedrooms": 2,
+            "url": "https://tranio.com/greece/adt/residential-complex-in-pireas-2391363/",
+            "image_url": "https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=600",
+            "source": "Tranio",
+            "region": "piraeus_athens",
+            "features": ["Swimming pool", "170m from sea", "New build 2027", "Metro access"],
+            "roi": "3.8%",
             "property_type": "Apartment in complex"
         },
         {

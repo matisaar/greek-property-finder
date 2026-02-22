@@ -89,7 +89,7 @@ def generate_site():
     # Market context cards HTML
     market_cards = ""
     market_items = [
-        ("Budget", "100,000 CAD / ~\u20ac65,000"),
+        ("Budget", "150,000 CAD / ~\u20ac102,000"),
         ("Appreciation", market['avg_annual_appreciation']),
         ("Transfer Tax", market['transfer_tax']),
         ("Total Buy Costs", market['total_buying_costs']),
@@ -558,7 +558,7 @@ input[type="range"]::-webkit-slider-thumb {{
   <h3>My Projects</h3>
   <a href="https://matisaar.github.io/greek-property-finder/" class="active">
     <span class="nav-icon">🏖️</span>
-    <span class="nav-label">Greek Property Finder<small>Investment properties under 100k CAD</small></span>
+    <span class="nav-label">Greek Property Finder<small>Investment properties under 150k CAD</small></span>
   </a>
   <a href="https://matisaar.github.io/beach-trip-planner/">
     <span class="nav-icon">🌊</span>
@@ -572,7 +572,7 @@ input[type="range"]::-webkit-slider-thumb {{
 
 <div class="page-hero">
   <h1>🏖️ Greek Property Finder</h1>
-  <p>Live-scraped properties across all of Greece, under 100,000 CAD — ranked by your priorities.
+  <p>Live-scraped properties across all of Greece, under 150,000 CAD — ranked by your priorities.
   Adjust sliders to weight airport proximity, price, beach distance, size &amp; rental yield.</p>
   <div class="hero-badges">
     <span class="hero-badge">🇬🇷 {len(properties)} Properties</span>
@@ -695,7 +695,7 @@ input[type="range"]::-webkit-slider-thumb {{
     </div>
     <div class="explainer-item">
       <h3>📊 What we analyzed</h3>
-      <p>{len(properties)} properties live-scraped from Rightmove Overseas, all under €75,000 (CA$100k).
+      <p>{len(properties)} properties live-scraped from Rightmove Overseas, all under €102,000 (CA$150k).
       Airport &amp; beach distances auto-computed from GPS coordinates. Airbnb rental estimates based on regional comps.
       Data collected {scraped_date}.</p>
     </div>
@@ -759,10 +759,10 @@ input[type="range"]::-webkit-slider-thumb {{
   <div class="search-grid">
     <div class="search-card">
       <h4>🇬🇧 Rightmove Overseas</h4>
-      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece.html?maxPrice=60000&amp;sortByPriceDescending=false" target="_blank">All Greece under £60k</a>
-      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Corfu.html?maxPrice=60000" target="_blank">Corfu</a>
-      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Crete.html?maxPrice=60000" target="_blank">Crete</a>
-      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Thessaloniki.html?maxPrice=60000" target="_blank">Thessaloniki Area</a>
+      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece.html?maxPrice=87000&amp;sortByPriceDescending=false" target="_blank">All Greece under £87k</a>
+      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Corfu.html?maxPrice=87000" target="_blank">Corfu</a>
+      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Crete.html?maxPrice=87000" target="_blank">Crete</a>
+      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Thessaloniki.html?maxPrice=87000" target="_blank">Thessaloniki Area</a>
     </div>
     <div class="search-card">
       <h4>🏠 Greek Portals (manual)</h4>

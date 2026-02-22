@@ -2,7 +2,7 @@
 Greek Property Finder - Web Scraper
 Scrapes Rightmove Overseas + Spitogatos for budget Greek investment properties.
 Computes beach & airport distances from coordinates.
-Budget: 100,000 CAD ≈ €65,000–75,000 EUR.
+Budget: 150,000 CAD ≈ €102,000 EUR.
 """
 
 import requests
@@ -229,13 +229,13 @@ def classify_region(lat, lng, display_address):
 # ── GBP to EUR conversion ──────────────────────────────────────────
 GBP_TO_EUR = 1.18  # approximate Feb 2026
 CAD_TO_EUR = 0.68  # approximate Feb 2026
-MAX_EUR = 75000
-MAX_GBP = int(MAX_EUR / GBP_TO_EUR)  # ~63,559
+MAX_EUR = 102000
+MAX_GBP = int(MAX_EUR / GBP_TO_EUR)  # ~86,440
 
 
 # ── Rightmove Overseas Scraper ──────────────────────────────────────
 
-def scrape_rightmove_overseas(max_pages=6):
+def scrape_rightmove_overseas(max_pages=10):
     """
     Live scrape Rightmove Overseas Greece — all regions.
     Returns list of property dicts with standardised fields.
@@ -683,7 +683,7 @@ def run_scraper():
     # 1. Live scrape Rightmove Overseas Greece
     print("\n[1/2] Live scraping Rightmove Overseas Greece...")
     try:
-        rightmove = scrape_rightmove_overseas(max_pages=8)
+        rightmove = scrape_rightmove_overseas(max_pages=12)
         all_properties.extend(rightmove)
         print(f"  → Got {len(rightmove)} properties from Rightmove")
     except Exception as e:
@@ -753,7 +753,7 @@ def run_scraper():
             "notary_fees": "0.65-1% of property value",
             "legal_fees": "1-2% of property value",
             "total_buying_costs": "~8-10% on top of purchase price",
-            "budget": "100,000 CAD ≈ €65,000 EUR (Feb 2026 rate)",
+            "budget": "150,000 CAD ≈ €102,000 EUR (Feb 2026 rate)",
             "budget_note": "Searching all of Greece for properties near beaches and civilization.",
             "golden_visa_threshold": "€250,000 (higher in prime areas)",
             "eu_citizen_note": "As an Estonian passport holder, you are an EU citizen. "

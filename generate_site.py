@@ -1,5 +1,6 @@
 """
 Generate a beautiful static HTML site from scraped property data.
+Beach-trip-planner style: weighted preference sliders, live scoring, Airbnb comparison.
 Outputs to docs/ for GitHub Pages deployment.
 """
 
@@ -18,894 +19,1036 @@ def generate_site():
     market = data["market_context"]
     scraped_date = data["scraped_date"][:10]
 
-    # Sort properties by price
-    properties.sort(key=lambda p: p.get("price", 999999))
-
-    # Group by region
-    by_region = {}
-    for p in properties:
-        r = p.get("region", "other")
-        if r not in by_region:
-            by_region[r] = []
-        by_region[r].append(p)
-
-    # Generate property cards HTML
-    def card_html(p):
-        price = p.get("price", 0)
-        price_fmt = f"€{price:,.0f}" if price else "Price on request"
-        area = p.get("area_sqm")
-        area_str = f"{area} m²" if area else "N/A"
-        beds = p.get("bedrooms")
-        bed_str = f"{beds} bed" if beds and beds > 0 else ("Studio" if beds == 0 else "N/A")
-        roi = p.get("roi", "")
-        features = p.get("features", [])
-        ptype = p.get("property_type", "Property")
-        img = p.get("image_url", "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600")
+    # Build JS data array from properties
+    js_data_items = []
+    for i, p in enumerate(properties):
         region_info = regions.get(p.get("region", ""), {})
         region_name = region_info.get("name", p.get("region", "").replace("_", " ").title())
-        price_per_sqm = f"€{price // area:,.0f}/m²" if price and area else ""
-        cad_price = f"CA${int(price * 1.48):,.0f}" if price else ""
-
-        features_html = ""
-        if features:
-            features_html = '<div class="features">' + "".join(
-                f'<span class="feature-tag">{f}</span>' for f in features[:4]
-            ) + "</div>"
-
-        roi_badge = f'<span class="roi-badge">ROI {roi}</span>' if roi else ""
-
-        return f'''
-        <div class="property-card" data-region="{p.get('region', 'other')}" data-price="{price}" data-beds="{beds if beds else -1}" data-area="{area if area else 0}">
-            <div class="card-image">
-                <img src="{img}" alt="{p.get('title', 'Property')}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
-                <span class="card-region">{region_name}</span>
-                <span class="card-type">{ptype}</span>
-                {roi_badge}
-            </div>
-            <div class="card-body">
-                <h3 class="card-title">{p.get('title', 'Property')}</h3>
-                <div class="card-price">
-                    <span class="price-eur">{price_fmt}</span>
-                    <span class="price-cad">{cad_price}</span>
-                </div>
-                <div class="card-stats">
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor" stroke="none">m²</text></svg> {area_str}</span>
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V7"/><path d="M3 7l9-4 9 4"/></svg> {bed_str}</span>
-                    <span class="stat price-sqm">{price_per_sqm}</span>
-                </div>
-                {features_html}
-                <a href="{p.get('url', '#')}" target="_blank" rel="noopener" class="card-link">
-                    View on {p.get('source', 'Source')} &rarr;
-                </a>
-            </div>
-        </div>'''
-
-    # Generate region summary cards
-    def region_summary(key, info):
-        props = by_region.get(key, [])
-        if not props:
-            return ""
-        prices = [p["price"] for p in props if p.get("price")]
-        min_p = min(prices) if prices else 0
-        max_p = max(prices) if prices else 0
-        count = len(props)
-
-        return f'''
-        <div class="region-card" data-region-key="{key}">
-            <h3>{info["name"]}</h3>
-            <div class="region-stats">
-                <div class="region-stat">
-                    <span class="stat-label">Population</span>
-                    <span class="stat-value">{info["city_pop"]}</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Airport</span>
-                    <span class="stat-value">{info["airport"]}</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Beach</span>
-                    <span class="stat-value">{info["beach_distance"]}</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Avg Price/m²</span>
-                    <span class="stat-value">€{info["avg_price_sqm"]:,}</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Rental Yield</span>
-                    <span class="stat-value">{info["rental_yield"]}</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Listings</span>
-                    <span class="stat-value">{count} properties</span>
-                </div>
-            </div>
-            <p class="region-desc">{info["description"]}</p>
-            <p class="region-why"><strong>Why invest:</strong> {info["why_invest"]}</p>
-            <div class="region-price-range">
-                Price range: <strong>€{min_p:,.0f} - €{max_p:,.0f}</strong>
-                (CA${int(min_p*1.48):,.0f} - CA${int(max_p*1.48):,.0f})
-            </div>
-            <button class="btn-filter-region" onclick="filterByRegion('{key}')">
-                Show {count} Properties &darr;
-            </button>
-        </div>'''
-
-    all_cards = "\n".join(card_html(p) for p in properties)
-    all_regions = "\n".join(
-        region_summary(k, v)
-        for k, v in sorted(regions.items(), key=lambda x: x[1]["avg_price_sqm"])
-        if k in by_region
-    )
-
-    # Region filter buttons
-    region_filters = '<button class="filter-btn active" onclick="filterByRegion(\'all\')">All Regions</button>\n'
-    for k, v in sorted(regions.items(), key=lambda x: x[1]["name"]):
-        if k in by_region:
-            count = len(by_region[k])
-            region_filters += f'<button class="filter-btn" onclick="filterByRegion(\'{k}\')">{v["name"]} ({count})</button>\n'
-
-    # Build comparison table rows (outside f-string to avoid escaping issues)
-    comparison_rows = ""
-    for p in properties:
-        empty = {}
-        region_name = regions.get(p.get("region", ""), empty).get("name", p.get("region", "").replace("_", " ").title())
-        title = p.get("title", "")[:50]
-        price = p.get("price", 0)
-        cad = int(price * 1.48)
+        beds = p.get("bedrooms")
+        beds_str = str(beds) if beds and beds > 0 else ("Studio" if beds == 0 else "N/A")
         area = p.get("area_sqm", 0) or 0
+        price = p.get("price", 0) or 0
         psqm = price // area if area else 0
-        psqm_str = f"€{psqm:,.0f}" if area else "N/A"
-        beds = p.get("bedrooms", -1) if p.get("bedrooms") is not None else -1
-        beds_str = str(p.get("bedrooms", "N/A"))
-        roi = p.get("roi", "")
-        ptype = p.get("property_type", "")
-        url = p.get("url", "#")
-        comparison_rows += f'''<tr>
-            <td>{region_name}</td>
-            <td>{title}</td>
-            <td data-sort="{price}">€{price:,.0f}</td>
-            <td data-sort="{cad}">CA${cad:,.0f}</td>
-            <td data-sort="{area}">{area} m²</td>
-            <td data-sort="{psqm}">{psqm_str}</td>
-            <td data-sort="{beds}">{beds_str}</td>
-            <td>{roi}</td>
-            <td>{ptype}</td>
-            <td><a href="{url}" target="_blank" rel="noopener">View &rarr;</a></td>
-        </tr>\n'''
+        cad = int(price * 1.48)
+        features = p.get("features", [])
+        img = p.get("image_url", "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600")
+
+        airbnb_rate = p.get("airbnb_night_rate", 50)
+        airbnb_occ = p.get("airbnb_occupancy_pct", 40)
+        annual_income = int(airbnb_rate * 365 * airbnb_occ / 100)
+        gross_yield = round(annual_income / price * 100, 1) if price else 0
+
+        js_data_items.append(
+            f'{{id:{i},title:"{p.get("title","").replace(chr(34),chr(39))}",'
+            f'price:{price},cad:{cad},area:{area},psqm:{psqm},'
+            f'beds:"{beds_str}",bedsN:{beds if beds else 0},'
+            f'roi:"{p.get("roi","")}",'
+            f'ptype:"{p.get("property_type","")}",'
+            f'region:"{p.get("region","")}",'
+            f'regionName:"{region_name.replace(chr(34),chr(39))}",'
+            f'airport:{p.get("airport_drive_min", 60)},'
+            f'beach:{p.get("beach_min", 30)},'
+            f'reno:{1 if p.get("needs_renovation") else 0},'
+            f'airbnbRate:{airbnb_rate},'
+            f'airbnbOcc:{airbnb_occ},'
+            f'annualIncome:{annual_income},'
+            f'grossYield:{gross_yield},'
+            f'img:"{img}",'
+            f'url:"{p.get("url","#")}",'
+            f'source:"{p.get("source","")}",'
+            f'features:{json.dumps(features[:4])}'
+            f'}}'
+        )
+
+    js_data = "const DATA = [\n  " + ",\n  ".join(js_data_items) + "\n];"
+
+    # Build region data for JS
+    js_regions = []
+    for k, v in regions.items():
+        js_regions.append(
+            f'"{k}":{{name:"{v["name"].replace(chr(34),chr(39))}",'
+            f'airportCode:"{v.get("airport_code","")}",airportMin:{v.get("airport_drive_min",60)},'
+            f'airportNote:"{v.get("airport_note","").replace(chr(34),chr(39))}",'
+            f'beachMin:{v.get("beach_distance_min",30)},'
+            f'yieldMid:{v.get("rental_yield_mid",4.5)},'
+            f'avgPsqm:{v.get("avg_price_sqm",1000)}}}'
+        )
+    js_region_data = "const REGIONS = {" + ",".join(js_regions) + "};"
+
+    # Market context cards HTML
+    market_cards = ""
+    market_items = [
+        ("Budget", "100,000 CAD / ~\u20ac65,000"),
+        ("Appreciation", market['avg_annual_appreciation']),
+        ("Transfer Tax", market['transfer_tax']),
+        ("Total Buy Costs", market['total_buying_costs']),
+        ("Rental Tax", "15% (first \u20ac12k)"),
+        ("ENFIA Tax", "\u20ac2-13/m\u00b2/yr"),
+    ]
+    for label, value in market_items:
+        market_cards += f'<div class="m-card"><div class="m-label">{label}</div><div class="m-value">{value}</div></div>\n'
 
     html = f'''<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Greek Property Finder - Investment Properties Near Beach & City</title>
-    <meta name="description" content="Find investment properties in Greece near beaches and cities. Curated listings for Canadian/EU investors.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {{
-            --blue: #0066cc;
-            --blue-dark: #004d99;
-            --blue-light: #e6f0ff;
-            --green: #059669;
-            --green-light: #d1fae5;
-            --orange: #ea580c;
-            --orange-light: #fff7ed;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-500: #6b7280;
-            --gray-700: #374151;
-            --gray-900: #111827;
-            --shadow: 0 1px 3px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
-            --radius: 12px;
-        }}
-        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-        body {{
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--gray-50);
-            color: var(--gray-900);
-            line-height: 1.6;
-        }}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greek Property Finder — Investment Properties Ranked</title>
+<meta name="description" content="Budget Greek investment properties ranked by your priorities. Weighted scoring for airport proximity, price, size, beach distance, rental yield.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+:root {{
+  --ocean: #0077b6; --ocean-dark: #023e8a;
+  --sunset: #ff6b35; --coral: #e63946;
+  --palm: #2d6a4f; --dark: #1a1a2e; --gray: #6b7280;
+  --gold: #f59e0b; --bg: #faf8f5; --border: #e8e4df;
+  --card: #ffffff; --muted: #7a7a7a; --accent: #c2956a;
+}}
+* {{ margin: 0; padding: 0; box-sizing: border-box; }}
+body {{ font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--dark); line-height: 1.6; -webkit-font-smoothing: antialiased; }}
 
-        /* HERO */
-        .hero {{
-            background: linear-gradient(135deg, #1e3a5f 0%, #0e76a8 50%, #1a9bc7 100%);
-            color: white;
-            padding: 60px 20px 40px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }}
-        .hero::before {{
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: url('https://images.unsplash.com/photo-1555993539-1732b0258235?w=1600') center/cover;
-            opacity: 0.15;
-        }}
-        .hero > * {{ position: relative; z-index: 1; }}
-        .hero h1 {{ font-size: 2.5rem; font-weight: 700; margin-bottom: 12px; }}
-        .hero .subtitle {{ font-size: 1.15rem; opacity: 0.9; max-width: 700px; margin: 0 auto 20px; }}
-        .hero-badges {{ display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }}
-        .hero-badge {{
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }}
+/* ── Hero ── */
+.page-hero {{
+  background: linear-gradient(135deg, #1e3a5f 0%, #0e76a8 50%, #1a9bc7 100%);
+  color: white; padding: 44px 24px 32px; text-align: center;
+  position: relative; overflow: hidden;
+}}
+.page-hero::before {{
+  content: ''; position: absolute; inset: 0;
+  background: url('https://images.unsplash.com/photo-1555993539-1732b0258235?w=1600') center/cover;
+  opacity: 0.12;
+}}
+.page-hero > * {{ position: relative; z-index: 1; }}
+.page-hero h1 {{ font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 900; margin-bottom: 6px; letter-spacing: -0.5px; }}
+.page-hero p {{ font-size: 0.88rem; opacity: 0.8; margin-bottom: 16px; max-width: 620px; margin-left: auto; margin-right: auto; }}
+.hero-badges {{ display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }}
+.hero-badge {{
+  background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2); padding: 5px 14px;
+  border-radius: 20px; font-size: 0.78rem; font-weight: 500;
+}}
+.page-hero-nav {{ display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }}
+.page-hero-nav a {{
+  color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.78rem;
+  padding: 6px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2);
+  transition: all 0.2s;
+}}
+.page-hero-nav a:hover {{ background: rgba(255,255,255,0.12); color: white; }}
 
-        /* NOTICE BAR */
-        .notice-bar {{
-            background: var(--green-light);
-            border-bottom: 1px solid #a7f3d0;
-            padding: 14px 20px;
-            text-align: center;
-            font-size: 0.9rem;
-            color: #065f46;
-        }}
-        .notice-bar strong {{ color: #047857; }}
+.container {{ max-width: 1100px; margin: 0 auto; padding: 0 20px; }}
 
-        /* CONTAINER */
-        .container {{ max-width: 1280px; margin: 0 auto; padding: 0 20px; }}
+/* ── EU Notice ── */
+.eu-bar {{
+  background: linear-gradient(90deg, #d1fae5, #e0f2fe);
+  border-bottom: 1px solid #a7f3d0; padding: 12px 20px;
+  text-align: center; font-size: 0.82rem; color: #065f46;
+}}
+.eu-bar strong {{ color: #047857; }}
 
-        /* SECTION */
-        .section {{ padding: 40px 0; }}
-        .section-title {{
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: var(--gray-900);
-        }}
-        .section-subtitle {{
-            color: var(--gray-500);
-            margin-bottom: 24px;
-            font-size: 1rem;
-        }}
+/* ── Weight Sliders Panel ── */
+.weights-panel {{ margin: -20px auto 0; max-width: 1100px; padding: 0 20px; position: relative; z-index: 20; }}
+.weights-card {{
+  background: var(--card); border-radius: 16px; padding: 20px 24px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08); border: 1px solid var(--border);
+}}
+.weights-header {{ display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }}
+.weights-title {{ font-size: 0.85rem; font-weight: 700; color: var(--dark); }}
+.weights-reset {{
+  font-size: 0.72rem; color: var(--ocean); cursor: pointer; border: none;
+  background: none; font-family: inherit; font-weight: 600; padding: 4px 8px;
+  border-radius: 6px; transition: background 0.2s;
+}}
+.weights-reset:hover {{ background: #e0f2fe; }}
+.sliders {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 24px; }}
+.slider-group {{ }}
+.slider-label {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }}
+.slider-name {{ font-size: 0.72rem; font-weight: 700; }}
+.slider-name.s-price {{ color: var(--palm); }}
+.slider-name.s-airport {{ color: var(--coral); }}
+.slider-name.s-beach {{ color: var(--ocean); }}
+.slider-name.s-size {{ color: #7c3aed; }}
+.slider-name.s-yield {{ color: var(--gold); }}
+.slider-name.s-reno {{ color: var(--accent); }}
+.slider-val {{ font-size: 0.72rem; font-weight: 800; color: var(--dark); }}
+input[type="range"] {{
+  width: 100%; height: 6px; -webkit-appearance: none; appearance: none;
+  border-radius: 3px; outline: none; cursor: pointer;
+}}
+input[type="range"]::-webkit-slider-thumb {{
+  -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.2); cursor: pointer;
+}}
+#sPrice {{ background: linear-gradient(90deg, #dcfce7, var(--palm)); }}
+#sPrice::-webkit-slider-thumb {{ background: var(--palm); }}
+#sAirport {{ background: linear-gradient(90deg, #fee2e2, var(--coral)); }}
+#sAirport::-webkit-slider-thumb {{ background: var(--coral); }}
+#sBeach {{ background: linear-gradient(90deg, #dbeafe, var(--ocean)); }}
+#sBeach::-webkit-slider-thumb {{ background: var(--ocean); }}
+#sSize {{ background: linear-gradient(90deg, #ede9fe, #7c3aed); }}
+#sSize::-webkit-slider-thumb {{ background: #7c3aed; }}
+#sYield {{ background: linear-gradient(90deg, #fef3c7, var(--gold)); }}
+#sYield::-webkit-slider-thumb {{ background: var(--gold); }}
+#sReno {{ background: linear-gradient(90deg, #fde8d8, var(--accent)); }}
+#sReno::-webkit-slider-thumb {{ background: var(--accent); }}
 
-        /* MARKET CONTEXT */
-        .market-grid {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-            margin-bottom: 30px;
-        }}
-        .market-card {{
-            background: white;
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--gray-200);
-        }}
-        .market-card .label {{ font-size: 0.8rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }}
-        .market-card .value {{ font-size: 1.1rem; font-weight: 600; color: var(--gray-900); }}
+/* ── #1 Pick Hero Card ── */
+.pick-hero {{ margin: 20px auto 0; max-width: 1100px; padding: 0 20px; }}
+.pick-hero-card {{
+  display: grid; grid-template-columns: 1fr 1fr; border-radius: 20px; overflow: hidden;
+  background: var(--card); box-shadow: 0 16px 60px rgba(0,0,0,0.12);
+  border: 1px solid var(--border); cursor: pointer; transition: all 0.3s;
+}}
+.pick-hero-card:hover {{ box-shadow: 0 20px 70px rgba(0,0,0,0.18); transform: translateY(-2px); }}
+.pick-hero-img {{ width: 100%; height: 340px; object-fit: cover; display: block; }}
+.pick-hero-body {{ padding: 32px 36px; display: flex; flex-direction: column; justify-content: center; }}
+.pick-hero-badge {{
+  display: inline-flex; align-items: center; gap: 6px;
+  background: linear-gradient(135deg, #e87d3e, #d4363b);
+  color: white; font-size: 0.72rem; font-weight: 800; padding: 5px 14px;
+  border-radius: 20px; width: fit-content; margin-bottom: 14px; letter-spacing: 0.3px;
+}}
+.pick-hero-name {{ font-size: 1.4rem; font-weight: 800; margin-bottom: 4px; line-height: 1.3; }}
+.pick-hero-area {{ font-size: 0.82rem; color: var(--muted); margin-bottom: 18px; }}
+.pick-hero-stats {{ display: flex; gap: 20px; margin-bottom: 18px; flex-wrap: wrap; }}
+.pick-hero-stat {{ text-align: center; }}
+.pick-hero-stat .val {{ font-size: 1.2rem; font-weight: 800; }}
+.pick-hero-stat .val.price-c {{ color: var(--palm); }}
+.pick-hero-stat .val.airport-c {{ color: var(--coral); }}
+.pick-hero-stat .val.beach-c {{ color: var(--ocean); }}
+.pick-hero-stat .val.yield-c {{ color: var(--gold); }}
+.pick-hero-stat .lbl {{ font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }}
+.pick-hero-score {{
+  display: flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, #fff8f0, #fff5eb);
+  border: 1px solid #fed7aa; border-radius: 12px; padding: 12px 16px;
+}}
+.score-ring {{ width: 48px; height: 48px; position: relative; }}
+.score-ring svg {{ width: 48px; height: 48px; transform: rotate(-90deg); }}
+.score-ring .bg {{ fill: none; stroke: #f5e6d3; stroke-width: 4; }}
+.score-ring .fg {{ fill: none; stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }}
+.score-ring .num {{
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 0.82rem; font-weight: 900; color: var(--ocean-dark);
+}}
+.score-info {{ flex: 1; }}
+.score-info .title {{ font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #92400e; }}
+.score-info .desc {{ font-size: 0.72rem; color: var(--muted); line-height: 1.4; }}
 
-        /* EU NOTICE */
-        .eu-notice {{
-            background: var(--blue-light);
-            border: 1px solid #bfdbfe;
-            border-radius: var(--radius);
-            padding: 24px;
-            margin-bottom: 30px;
-        }}
-        .eu-notice h3 {{ color: var(--blue-dark); margin-bottom: 8px; font-size: 1.1rem; }}
-        .eu-notice p {{ color: #1e40af; font-size: 0.95rem; }}
+/* ── Sections ── */
+.section {{ padding: 40px 0 16px; }}
+.section-header {{ margin-bottom: 18px; padding: 0 20px; max-width: 1100px; margin-left: auto; margin-right: auto; }}
+.section-emoji {{ font-size: 1.5rem; margin-bottom: 4px; display: block; }}
+.section-title {{ font-size: 1.2rem; font-weight: 800; letter-spacing: -0.3px; }}
+.section-sub {{ font-size: 0.82rem; color: var(--muted); margin-top: 2px; }}
+.section-divider {{ width: 40px; height: 3px; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--sunset)); margin-top: 10px; }}
 
-        /* REGION CARDS */
-        .region-grid {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }}
-        .region-card {{
-            background: white;
-            border-radius: var(--radius);
-            padding: 24px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--gray-200);
-            transition: box-shadow 0.2s;
-        }}
-        .region-card:hover {{ box-shadow: var(--shadow-lg); }}
-        .region-card h3 {{ font-size: 1.25rem; margin-bottom: 12px; color: var(--blue-dark); }}
-        .region-stats {{
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 12px;
-        }}
-        .region-stat {{ text-align: center; }}
-        .stat-label {{ display: block; font-size: 0.7rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; }}
-        .stat-value {{ display: block; font-size: 0.85rem; font-weight: 600; }}
-        .region-desc {{ font-size: 0.9rem; color: var(--gray-700); margin-bottom: 8px; }}
-        .region-why {{ font-size: 0.85rem; color: var(--green); margin-bottom: 10px; }}
-        .region-price-range {{ font-size: 0.9rem; margin-bottom: 12px; color: var(--gray-700); }}
-        .btn-filter-region {{
-            width: 100%;
-            padding: 10px;
-            background: var(--blue);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.2s;
-        }}
-        .btn-filter-region:hover {{ background: var(--blue-dark); }}
+/* ── Horizontal scroll row ── */
+.scroll-row {{
+  display: flex; gap: 16px; overflow-x: auto; padding: 0 20px 16px;
+  max-width: 1100px; margin: 0 auto;
+  scroll-snap-type: x mandatory; -ms-overflow-style: none; scrollbar-width: none;
+}}
+.scroll-row::-webkit-scrollbar {{ display: none; }}
 
-        /* FILTERS */
-        .filters {{
-            background: white;
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--gray-200);
-            margin-bottom: 24px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-        }}
-        .filters label {{ font-weight: 600; font-size: 0.85rem; color: var(--gray-700); }}
-        .filter-btn {{
-            padding: 8px 16px;
-            border: 1px solid var(--gray-300);
-            border-radius: 20px;
-            background: white;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }}
-        .filter-btn:hover {{ border-color: var(--blue); color: var(--blue); }}
-        .filter-btn.active {{ background: var(--blue); color: white; border-color: var(--blue); }}
-        .filter-sort {{
-            margin-left: auto;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }}
-        .filter-sort select {{
-            padding: 8px 12px;
-            border: 1px solid var(--gray-300);
-            border-radius: 8px;
-            font-size: 0.85rem;
-            background: white;
-        }}
-        .filter-range {{
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }}
-        .filter-range input {{
-            width: 100px;
-            padding: 8px;
-            border: 1px solid var(--gray-300);
-            border-radius: 8px;
-            font-size: 0.85rem;
-        }}
+/* ── Card ── */
+.card {{
+  flex: 0 0 280px; scroll-snap-align: start;
+  background: var(--card); border-radius: 16px; overflow: hidden;
+  border: 1px solid var(--border); transition: all 0.25s; cursor: pointer;
+}}
+.card:hover {{ box-shadow: 0 10px 35px rgba(0,0,0,0.1); transform: translateY(-3px); }}
+.card-img-wrap {{ position: relative; overflow: hidden; }}
+.card-img {{ width: 100%; height: 175px; object-fit: cover; display: block; transition: transform 0.4s; }}
+.card:hover .card-img {{ transform: scale(1.04); }}
+.card-overlay {{ position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 50%); }}
+.card-rank {{
+  position: absolute; top: 10px; left: 10px;
+  min-width: 26px; height: 26px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; padding: 0 8px;
+  font-size: 0.68rem; font-weight: 800; color: white;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}}
+.card-rank.high {{ background: rgba(212,54,59,0.85); }}
+.card-rank.mid {{ background: rgba(230,167,86,0.85); }}
+.card-rank.low {{ background: rgba(160,174,192,0.85); }}
+.card-price-tag {{
+  position: absolute; bottom: 10px; left: 10px;
+  background: rgba(0,0,0,0.55); color: white; font-size: 0.82rem;
+  padding: 4px 10px; border-radius: 8px; font-weight: 700;
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+}}
+.card-airport-tag {{
+  position: absolute; bottom: 10px; right: 10px;
+  background: rgba(230,57,70,0.75); color: white; font-size: 0.68rem;
+  padding: 3px 8px; border-radius: 6px; font-weight: 600;
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+}}
+.card-body {{ padding: 14px 16px 16px; }}
+.card-name {{ font-size: 0.88rem; font-weight: 700; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
+.card-area {{ font-size: 0.72rem; color: var(--muted); margin-bottom: 10px; }}
+.card-row {{ display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 0.72rem; color: var(--muted); }}
+.card-row .hl {{ font-weight: 700; color: var(--dark); }}
+.card-score-bar {{ display: flex; align-items: center; gap: 6px; margin-top: 8px; }}
+.bar-track {{ flex: 1; height: 5px; border-radius: 3px; background: #f0ece7; overflow: hidden; }}
+.bar-fill {{ height: 100%; border-radius: 3px; transition: width 0.4s ease; }}
+.bar-fill.high {{ background: linear-gradient(90deg, #e87d3e, #d4363b); }}
+.bar-fill.mid {{ background: linear-gradient(90deg, #f0c27f, #e6a756); }}
+.bar-fill.low {{ background: #b8c9d6; }}
+.bar-num {{ font-size: 0.7rem; font-weight: 800; color: var(--ocean-dark); min-width: 20px; transition: all 0.3s; }}
 
-        /* PROPERTY GRID */
-        .property-grid {{
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
-        }}
-        .property-card {{
-            background: white;
-            border-radius: var(--radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--gray-200);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }}
-        .property-card:hover {{ transform: translateY(-4px); box-shadow: var(--shadow-lg); }}
-        .card-image {{
-            position: relative;
-            height: 200px;
-            overflow: hidden;
-        }}
-        .card-image img {{
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }}
-        .card-region {{
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }}
-        .card-type {{
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: var(--blue);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }}
-        .roi-badge {{
-            position: absolute;
-            bottom: 12px;
-            right: 12px;
-            background: var(--green);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }}
-        .card-body {{ padding: 16px; }}
-        .card-title {{ font-size: 1rem; font-weight: 600; margin-bottom: 8px; line-height: 1.4; color: var(--gray-900); }}
-        .card-price {{ margin-bottom: 10px; }}
-        .price-eur {{ font-size: 1.35rem; font-weight: 700; color: var(--blue-dark); }}
-        .price-cad {{ font-size: 0.85rem; color: var(--gray-500); margin-left: 8px; }}
-        .card-stats {{
-            display: flex;
-            gap: 14px;
-            margin-bottom: 10px;
-            color: var(--gray-500);
-            font-size: 0.85rem;
-        }}
-        .stat {{ display: flex; align-items: center; gap: 4px; }}
-        .price-sqm {{ margin-left: auto; font-weight: 600; color: var(--gray-700); }}
-        .features {{ display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }}
-        .feature-tag {{
-            background: var(--gray-100);
-            color: var(--gray-700);
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }}
-        .card-link {{
-            display: block;
-            text-align: center;
-            padding: 10px;
-            background: var(--blue);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: background 0.2s;
-        }}
-        .card-link:hover {{ background: var(--blue-dark); }}
+/* ── Explainer ── */
+.explainer {{ max-width: 1100px; margin: 32px auto 0; padding: 0 20px; }}
+.explainer-card {{
+  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+  padding: 24px 28px; display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap;
+}}
+.explainer-card h3 {{ font-size: 0.88rem; font-weight: 800; margin-bottom: 6px; }}
+.explainer-card p {{ font-size: 0.78rem; color: var(--muted); line-height: 1.6; }}
+.explainer-item {{ flex: 1; min-width: 200px; }}
+.explainer-formula {{
+  background: var(--bg); border-radius: 10px; padding: 12px 16px;
+  font-size: 0.78rem; color: var(--dark); font-weight: 500; margin-top: 6px;
+  border: 1px solid var(--border); font-family: 'Inter', monospace;
+}}
+.explainer-formula span {{ font-weight: 800; }}
 
-        /* COMPARISON TABLE */
-        .comparison-table {{
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: var(--radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            margin-top: 20px;
-        }}
-        .comparison-table th {{
-            background: var(--gray-900);
-            color: white;
-            padding: 12px 16px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 0.85rem;
-            white-space: nowrap;
-        }}
-        .comparison-table td {{
-            padding: 10px 16px;
-            border-bottom: 1px solid var(--gray-200);
-            font-size: 0.85rem;
-        }}
-        .comparison-table tr:nth-child(even) {{ background: var(--gray-50); }}
-        .comparison-table tr:hover {{ background: var(--blue-light); }}
-        .comparison-table a {{ color: var(--blue); text-decoration: none; font-weight: 500; }}
-        .comparison-table a:hover {{ text-decoration: underline; }}
+/* ── Market cards ── */
+.market-row {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; max-width: 1100px; margin: 20px auto; padding: 0 20px; }}
+.m-card {{ background: var(--card); border-radius: 12px; padding: 14px 16px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }}
+.m-label {{ font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }}
+.m-value {{ font-size: 0.92rem; font-weight: 700; color: var(--dark); }}
 
-        /* LIVE SEARCH LINKS */
-        .search-links {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 16px;
-            margin-top: 20px;
-        }}
-        .search-link-card {{
-            background: white;
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--gray-200);
-        }}
-        .search-link-card h4 {{ margin-bottom: 10px; color: var(--gray-900); }}
-        .search-link-card a {{
-            display: block;
-            padding: 6px 0;
-            color: var(--blue);
-            text-decoration: none;
-            font-size: 0.9rem;
-        }}
-        .search-link-card a:hover {{ text-decoration: underline; }}
+/* ── Browse All Grid ── */
+.browse-section {{ max-width: 1100px; margin: 40px auto 0; padding: 0 20px; }}
+.browse-header {{ display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }}
+.browse-title {{ font-size: 1.3rem; font-weight: 800; letter-spacing: -0.3px; }}
+.browse-sub {{ font-size: 0.82rem; color: var(--muted); margin-top: 2px; }}
+.browse-count {{ font-weight: 700; color: var(--ocean); }}
+.filters {{ display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }}
+.filter-select, .filter-input {{
+  font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 500;
+  padding: 7px 12px; border: 1px solid var(--border); border-radius: 10px;
+  background: var(--card); color: var(--dark); cursor: pointer; transition: border-color 0.2s;
+}}
+.filter-select:focus, .filter-input:focus {{ outline: none; border-color: var(--ocean); }}
+.filter-input {{ width: 90px; }}
+.filter-label {{ font-size: 0.72rem; color: var(--muted); font-weight: 600; }}
+.filter-clear {{
+  font-size: 0.72rem; color: var(--ocean); cursor: pointer; border: none;
+  background: none; font-family: inherit; font-weight: 600; padding: 4px 8px;
+  border-radius: 6px; transition: background 0.2s;
+}}
+.filter-clear:hover {{ background: #e0f2fe; }}
+.browse-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }}
+.browse-grid .card {{ flex: none; }}
 
-        /* FOOTER */
-        footer {{
-            background: var(--gray-900);
-            color: var(--gray-300);
-            padding: 40px 20px;
-            text-align: center;
-            font-size: 0.85rem;
-        }}
-        footer a {{ color: var(--blue); }}
-        .disclaimer {{ max-width: 700px; margin: 16px auto 0; font-size: 0.8rem; color: var(--gray-500); }}
+/* ── Airbnb comparison ── */
+.airbnb-section {{ max-width: 1100px; margin: 40px auto 0; padding: 0 20px; }}
+.airbnb-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin-top: 16px; }}
+.airbnb-card {{
+  background: var(--card); border-radius: 16px; overflow: hidden;
+  border: 1px solid var(--border); transition: all 0.25s; cursor: pointer;
+}}
+.airbnb-card:hover {{ box-shadow: 0 10px 35px rgba(0,0,0,0.1); transform: translateY(-2px); }}
+.airbnb-card-body {{ padding: 16px; }}
+.airbnb-card-name {{ font-size: 0.92rem; font-weight: 700; margin-bottom: 4px; }}
+.airbnb-card-region {{ font-size: 0.72rem; color: var(--muted); margin-bottom: 10px; }}
+.airbnb-row {{ display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 10px; }}
+.airbnb-stat {{ background: var(--bg); border-radius: 8px; padding: 8px; text-align: center; }}
+.airbnb-stat .v {{ font-size: 0.95rem; font-weight: 800; }}
+.airbnb-stat .v.green {{ color: var(--palm); }}
+.airbnb-stat .v.gold {{ color: var(--gold); }}
+.airbnb-stat .v.blue {{ color: var(--ocean); }}
+.airbnb-stat .l {{ font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 2px; }}
+.airbnb-bar {{ display: flex; align-items: center; gap: 8px; }}
+.airbnb-bar-label {{ font-size: 0.68rem; font-weight: 600; color: var(--muted); min-width: 80px; }}
+.airbnb-bar-track {{ flex: 1; height: 8px; border-radius: 4px; background: #f0ece7; overflow: hidden; }}
+.airbnb-bar-fill {{ height: 100%; border-radius: 4px; transition: width 0.4s; }}
+.airbnb-bar-fill.roi {{ background: linear-gradient(90deg, #dcfce7, var(--palm)); }}
+.airbnb-bar-fill.occ {{ background: linear-gradient(90deg, #dbeafe, var(--ocean)); }}
+.airbnb-bar-num {{ font-size: 0.72rem; font-weight: 800; min-width: 36px; }}
 
-        .count-display {{
-            font-size: 0.9rem;
-            color: var(--gray-500);
-            margin-bottom: 16px;
-        }}
+/* ── Detail Modal ── */
+.modal-overlay {{
+  position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 900;
+  display: none; align-items: center; justify-content: center;
+  backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+}}
+.modal-overlay.visible {{ display: flex; }}
+.modal {{
+  background: var(--card); border-radius: 20px; width: 92%; max-width: 500px;
+  max-height: 90vh; overflow-y: auto; position: relative;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.3); animation: modalIn 0.25s ease;
+}}
+@keyframes modalIn {{ from {{ opacity: 0; transform: scale(0.95) translateY(10px); }} to {{ opacity: 1; transform: scale(1) translateY(0); }} }}
+.m-close {{
+  position: absolute; top: 14px; right: 14px; z-index: 10;
+  background: rgba(0,0,0,0.45); border: none; color: white;
+  width: 34px; height: 34px; border-radius: 50%; font-size: 20px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: background 0.2s;
+}}
+.m-close:hover {{ background: rgba(0,0,0,0.7); }}
+.m-img {{ width: 100%; height: 200px; object-fit: cover; display: block; }}
+.m-body {{ padding: 16px 22px 20px; }}
+.m-name {{ font-size: 1.05rem; font-weight: 800; margin-bottom: 2px; line-height: 1.25; }}
+.m-area {{ font-size: 0.78rem; color: var(--muted); margin-bottom: 10px; }}
+.m-score-wrap {{
+  background: linear-gradient(135deg, #fff8f0, #fff5eb);
+  border: 1px solid #fed7aa; border-radius: 12px; padding: 10px 14px; margin-bottom: 10px;
+}}
+.m-score-top {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }}
+.m-score-label {{ font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #92400e; }}
+.m-score-num {{ font-size: 1.3rem; font-weight: 900; color: var(--ocean-dark); }}
+.m-score-bar {{ height: 8px; border-radius: 4px; background: #f5e6d3; overflow: hidden; }}
+.m-score-fill {{ height: 100%; border-radius: 4px; background: linear-gradient(90deg, #f0c27f, #e87d3e, #d4363b); transition: width 0.4s; }}
+.m-breakdown {{
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 10px;
+  font-size: 0.62rem; color: var(--muted); text-align: center;
+}}
+.m-breakdown .v {{ font-weight: 700; color: var(--dark); font-size: 0.78rem; }}
+.m-grid {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; }}
+.m-stat {{ background: var(--bg); border-radius: 10px; padding: 10px 8px; text-align: center; }}
+.m-stat .v {{ font-size: 0.95rem; font-weight: 800; color: var(--ocean-dark); }}
+.m-stat .v.price-c {{ color: var(--palm); }}
+.m-stat .l {{ font-size: 0.58rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }}
+.m-badges {{ display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }}
+.m-badge {{ font-size: 0.7rem; font-weight: 600; padding: 4px 10px; border-radius: 7px; }}
+.m-badge.fire {{ background: #ffedd5; color: #9a3412; }}
+.m-badge.gold {{ background: #fef3c7; color: #92400e; }}
+.m-badge.green {{ background: #dcfce7; color: var(--palm); }}
+.m-badge.blue {{ background: #dbeafe; color: var(--ocean-dark); }}
+.m-badge.red {{ background: #fee2e2; color: #991b1b; }}
+.m-airbnb {{
+  background: var(--bg); border-radius: 10px; padding: 12px; margin-bottom: 12px;
+  border: 1px solid var(--border);
+}}
+.m-airbnb-title {{ font-size: 0.72rem; font-weight: 700; margin-bottom: 8px; color: var(--dark); }}
+.m-airbnb-grid {{ display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }}
+.m-book {{
+  display: block; width: 100%; padding: 12px; text-align: center;
+  background: linear-gradient(135deg, var(--ocean), var(--ocean-dark));
+  color: white; text-decoration: none; border-radius: 12px; font-size: 0.88rem;
+  font-weight: 700; font-family: inherit; transition: all 0.2s;
+}}
+.m-book:hover {{ filter: brightness(1.1); transform: translateY(-1px); }}
 
-        /* Tabs */
-        .tabs {{ display: flex; gap: 4px; margin-bottom: 24px; background: var(--gray-100); padding: 4px; border-radius: 10px; width: fit-content; }}
-        .tab-btn {{
-            padding: 10px 20px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            border-radius: 8px;
-            transition: all 0.2s;
-            color: var(--gray-500);
-        }}
-        .tab-btn.active {{ background: white; color: var(--gray-900); box-shadow: var(--shadow); }}
-        .tab-content {{ display: none; }}
-        .tab-content.active {{ display: block; }}
+/* ── Info sections ── */
+.info-section {{ max-width: 1100px; margin: 30px auto; padding: 0 20px; }}
+.info-card {{
+  background: var(--card); border-radius: 16px; padding: 24px;
+  border: 1px solid var(--border); box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+}}
+.info-card h3 {{ font-size: 1rem; font-weight: 800; margin-bottom: 10px; }}
+.info-card p {{ font-size: 0.82rem; color: var(--muted); line-height: 1.7; }}
+.info-card strong {{ color: var(--dark); }}
 
-        .no-results {{
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--gray-500);
-            font-size: 1.1rem;
-        }}
+/* ── Search links ── */
+.search-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-top: 16px; }}
+.search-card {{
+  background: var(--card); border-radius: 12px; padding: 16px;
+  border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}}
+.search-card h4 {{ font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; }}
+.search-card a {{ display: block; padding: 4px 0; color: var(--ocean); text-decoration: none; font-size: 0.78rem; }}
+.search-card a:hover {{ text-decoration: underline; }}
 
-        @media (max-width: 768px) {{
-            .hero h1 {{ font-size: 1.75rem; }}
-            .property-grid {{ grid-template-columns: 1fr; }}
-            .region-grid {{ grid-template-columns: 1fr; }}
-            .market-grid {{ grid-template-columns: repeat(2, 1fr); }}
-            .filters {{ flex-direction: column; }}
-            .filter-sort {{ margin-left: 0; }}
-            .region-stats {{ grid-template-columns: repeat(2, 1fr); }}
-            .comparison-table {{ font-size: 0.75rem; }}
-            .comparison-table td, .comparison-table th {{ padding: 6px 8px; }}
-            .tabs {{ width: 100%; overflow-x: auto; }}
-        }}
-    </style>
+.footer {{
+  text-align: center; padding: 32px 20px 40px; color: var(--muted); font-size: 0.72rem;
+  margin-top: 40px;
+}}
+.footer a {{ color: var(--ocean); text-decoration: none; }}
+
+@media (max-width: 700px) {{
+  .pick-hero-card {{ grid-template-columns: 1fr; }}
+  .pick-hero-img {{ height: 220px; }}
+  .pick-hero-body {{ padding: 20px; }}
+  .card {{ flex: 0 0 260px; }}
+  .sliders {{ grid-template-columns: 1fr 1fr; gap: 12px; }}
+  .explainer-card {{ flex-direction: column; gap: 16px; }}
+  .m-grid {{ grid-template-columns: repeat(2, 1fr); }}
+  .airbnb-row {{ grid-template-columns: 1fr 1fr; }}
+}}
+@media (max-width: 480px) {{
+  .sliders {{ grid-template-columns: 1fr; }}
+}}
+</style>
 </head>
 <body>
 
-<!-- HERO -->
-<div class="hero">
-    <h1>🏖️ Greek Property Finder</h1>
-    <p class="subtitle">
-        Budget investment properties under 100,000 CAD (≈€65,000) near beaches & cities in Greece.
-        Curated for a Canadian/Estonian EU citizen exploring affordable Greek real estate.
+<div class="page-hero">
+  <h1>🏖️ Greek Property Finder</h1>
+  <p>Budget investment properties under 100,000 CAD ranked by your priorities — adjust the
+  sliders to weight airport proximity, price, beach distance, size &amp; rental yield.</p>
+  <div class="hero-badges">
+    <span class="hero-badge">🇬🇷 {len(properties)} Properties</span>
+    <span class="hero-badge">✈️ Airport Distance</span>
+    <span class="hero-badge">🏖️ Beach Proximity</span>
+    <span class="hero-badge">📈 Airbnb Yields</span>
+    <span class="hero-badge">🇪🇺 EU Access</span>
+  </div>
+  <div class="page-hero-nav">
+    <a href="#weights">⚙️ Adjust Weights</a>
+    <a href="#browse">🔍 Browse All</a>
+    <a href="#airbnb">🏠 Airbnb Income</a>
+    <a href="#search">🔗 Search Live</a>
+  </div>
+</div>
+
+<!-- EU NOTICE -->
+<div class="eu-bar">
+  <strong>🇪🇺 Estonian passport = EU citizen.</strong>
+  Buy property in Greece with <strong>zero restrictions</strong>. No Golden Visa needed. Live, work &amp; rent freely.
+</div>
+
+<!-- WEIGHT SLIDERS -->
+<div class="weights-panel" id="weights">
+  <div class="weights-card">
+    <div class="weights-header">
+      <span class="weights-title">⚙️ Adjust What Matters to You</span>
+      <button class="weights-reset" onclick="resetWeights()">Reset</button>
+    </div>
+    <div class="sliders">
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-name s-price">💰 Lower Price</span>
+          <span class="slider-val" id="vPrice">25%</span>
+        </div>
+        <input type="range" id="sPrice" min="0" max="100" value="25">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-name s-airport">✈️ Airport Closeness</span>
+          <span class="slider-val" id="vAirport">20%</span>
+        </div>
+        <input type="range" id="sAirport" min="0" max="100" value="20">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-name s-beach">🏖️ Beach Closeness</span>
+          <span class="slider-val" id="vBeach">20%</span>
+        </div>
+        <input type="range" id="sBeach" min="0" max="100" value="20">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-name s-size">📐 Larger Size</span>
+          <span class="slider-val" id="vSize">15%</span>
+        </div>
+        <input type="range" id="sSize" min="0" max="100" value="15">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-name s-yield">📈 Higher Yield</span>
+          <span class="slider-val" id="vYield">15%</span>
+        </div>
+        <input type="range" id="sYield" min="0" max="100" value="15">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-name s-reno">🔧 Move-In Ready</span>
+          <span class="slider-val" id="vReno">5%</span>
+        </div>
+        <input type="range" id="sReno" min="0" max="100" value="5">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- #1 PICK -->
+<div class="pick-hero">
+  <div class="pick-hero-card" id="heroCard">
+    <img class="pick-hero-img" src="" alt="" id="heroImg">
+    <div class="pick-hero-body">
+      <div class="pick-hero-badge">👑 #1 BEST MATCH</div>
+      <div class="pick-hero-name" id="heroName"></div>
+      <div class="pick-hero-area" id="heroArea"></div>
+      <div class="pick-hero-stats">
+        <div class="pick-hero-stat"><div class="val price-c" id="heroPrice"></div><div class="lbl">Price</div></div>
+        <div class="pick-hero-stat"><div class="val airport-c" id="heroAirport"></div><div class="lbl">To Airport</div></div>
+        <div class="pick-hero-stat"><div class="val beach-c" id="heroBeach"></div><div class="lbl">To Beach</div></div>
+        <div class="pick-hero-stat"><div class="val yield-c" id="heroYield"></div><div class="lbl">Gross Yield</div></div>
+      </div>
+      <div class="pick-hero-score">
+        <div class="score-ring">
+          <svg viewBox="0 0 48 48">
+            <circle class="bg" cx="24" cy="24" r="20"/>
+            <circle class="fg" id="heroRing" cx="24" cy="24" r="20"
+              stroke-dasharray="125.6" stroke-dashoffset="125.6"/>
+          </svg>
+          <div class="num" id="heroScoreNum"></div>
+        </div>
+        <div class="score-info">
+          <div class="title">Investment Score</div>
+          <div class="desc" id="heroScoreDesc">Best match based on your weights</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CURATED SECTIONS -->
+<div id="sections"></div>
+
+<!-- EXPLAINER -->
+<div class="explainer">
+  <div class="explainer-card">
+    <div class="explainer-item">
+      <h3>🧪 How scoring works</h3>
+      <p>Each property gets a score (0-100) from six normalized dimensions. Adjust sliders above to change weights:</p>
+      <div class="explainer-formula" id="formulaDisplay">
+        Score = <span>25%</span> Price + <span>20%</span> Airport + <span>20%</span> Beach + <span>15%</span> Size + <span>15%</span> Yield + <span>5%</span> Ready
+      </div>
+    </div>
+    <div class="explainer-item">
+      <h3>📊 What we analyzed</h3>
+      <p>{len(properties)} curated properties from Rightmove Overseas, all under €75,000 (CA$100k).
+      Airport distances verified via Google Maps. Airbnb rental estimates based on regional comps.
+      Data collected {scraped_date}.</p>
+    </div>
+  </div>
+</div>
+
+<!-- MARKET SNAPSHOT -->
+<div style="max-width:1100px;margin:24px auto 0;padding:0 20px;">
+  <h3 style="font-size:1rem;font-weight:800;margin-bottom:4px;">📊 Greek Market Snapshot</h3>
+  <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">Prices up ~42% in 3 years but moderating. Strong rental demand from tourists &amp; digital nomads.</p>
+</div>
+<div class="market-row">{market_cards}</div>
+
+<!-- EU/CANADIAN ADVANTAGE -->
+<div class="info-section">
+  <div class="info-card">
+    <h3>🍁 Your Advantage: Canadian + Estonian (EU) Citizenship</h3>
+    <p>
+      <strong>Estonian passport:</strong> Full EU rights — buy property anywhere in Greece, no restrictions.
+      No Golden Visa needed (that requires €250k+ minimum). Rent out on Airbnb or long-term freely.<br><br>
+      <strong>Canadian passport:</strong> Banking flexibility + Canada-Greece tax treaty avoids double taxation.<br><br>
+      <strong>Key costs:</strong> Transfer tax ~3.09%, notary ~0.65-1%, lawyer ~1-2%. Total ~8-10% on top.
+      Rental income: 15% on first €12k/yr. ENFIA property tax: €2-13/m²/yr.
     </p>
-    <div class="hero-badges">
-        <span class="hero-badge">🇬🇷 {len(properties)} Properties</span>
-        <span class="hero-badge">🏖️ Beach Proximity</span>
-        <span class="hero-badge">🏙️ Near Cities</span>
-        <span class="hero-badge">📈 Investment Focus</span>
-        <span class="hero-badge">🇪🇺 EU Citizen Rights</span>
-    </div>
+  </div>
 </div>
 
-<!-- EU CITIZEN NOTICE -->
-<div class="notice-bar">
-    <strong>🇪🇺 Estonian passport = EU citizen.</strong>
-    You can buy property in Greece with <strong>zero restrictions</strong>, identical rights to Greek citizens.
-    No Golden Visa needed. You can live, work, and rent out property freely.
+<!-- BROWSE ALL -->
+<div class="browse-section" id="browse">
+  <div class="browse-header">
+    <div>
+      <div class="browse-title">🔍 Browse All Properties</div>
+      <div class="browse-sub">Showing <span class="browse-count" id="browseCount">0</span> properties, ranked by your weights</div>
+    </div>
+    <div class="filters">
+      <select class="filter-select" id="fRegion"><option value="">All Regions</option></select>
+      <span class="filter-label">€ max</span>
+      <input class="filter-input" id="fPriceMax" type="number" placeholder="Max €" step="1000">
+      <span class="filter-label">✈️ max min</span>
+      <input class="filter-input" id="fAirportMax" type="number" placeholder="Max" step="10">
+      <button class="filter-clear" onclick="clearFilters()">Clear</button>
+    </div>
+  </div>
+  <div class="browse-grid" id="browseGrid"></div>
 </div>
 
-<div class="container">
-
-<!-- YOUR SITUATION -->
-<div class="section">
-    <div class="eu-notice">
-        <h3>🍁 Your Advantage: Canadian + Estonian (EU) Dual Citizenship</h3>
-        <p>
-            <strong>Estonian passport:</strong> Full EU citizen rights - buy property anywhere in Greece without restrictions.
-            No need for Golden Visa program (which requires €250,000+ minimum). You can buy at any price point.
-            You can rent out your property (long-term or Airbnb) and even live in Greece permanently.<br><br>
-            <strong>Canadian passport:</strong> Additional travel flexibility and banking options. Canada-Greece tax treaty
-            helps avoid double taxation on rental income.<br><br>
-            <strong>Key costs:</strong> Transfer tax ~3.09%, notary ~0.65-1%, lawyer ~1-2%. Total ~8-10% on top of purchase price.
-            Rental income taxed at 15% on first €12,000/year. Annual property tax (ENFIA) is €2-13/m² depending on location.
-        </p>
-    </div>
+<!-- AIRBNB RENTAL INCOME COMPARISON -->
+<div class="airbnb-section" id="airbnb">
+  <h2 style="font-size:1.3rem;font-weight:800;letter-spacing:-0.3px;">🏠 Airbnb Rental Income Comparison</h2>
+  <p style="font-size:0.82rem;color:var(--muted);margin-top:4px;">
+    Estimated rental income if you Airbnb each property. Based on regional nightly rates &amp; occupancy data.
+    Ranked by gross yield (annual income / purchase price).
+  </p>
+  <div class="airbnb-grid" id="airbnbGrid"></div>
 </div>
 
-<!-- MARKET CONTEXT -->
-<div class="section">
-    <h2 class="section-title">📊 Greek Market Snapshot (2025-2026)</h2>
-    <p class="section-subtitle">Prices have risen ~42% in 3 years but growth is moderating. Strong rental demand from tourists and digital nomads.</p>
-    <div class="market-grid">
-        <div class="market-card">
-            <div class="label">Annual Appreciation</div>
-            <div class="value">{market['avg_annual_appreciation']}</div>
-        </div>
-        <div class="market-card">
-            <div class="label">Mortgage Rate</div>
-            <div class="value">{market['mortgage_rate']}</div>
-        </div>
-        <div class="market-card">
-            <div class="label">Transfer Tax</div>
-            <div class="value">{market['transfer_tax']}</div>
-        </div>
-        <div class="market-card">
-            <div class="label">Total Buying Costs</div>
-            <div class="value">{market['total_buying_costs']}</div>
-        </div>
-        <div class="market-card">
-            <div class="label">Rental Income Tax</div>
-            <div class="value">15% (first €12k)</div>
-        </div>
-        <div class="market-card">
-            <div class="label">Annual Property Tax</div>
-            <div class="value">€2-13/m² (ENFIA)</div>
-        </div>
+<!-- SEARCH LIVE LINKS -->
+<div class="info-section" id="search">
+  <h2 style="font-size:1.3rem;font-weight:800;margin-bottom:4px;">🔗 Search Live Listings</h2>
+  <p style="font-size:0.82rem;color:var(--muted);margin-bottom:12px;">Direct links to portals — prices change daily.</p>
+  <div class="search-grid">
+    <div class="search-card">
+      <h4>🇬🇧 Rightmove Overseas</h4>
+      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece.html?maxPrice=55000&amp;sortByPriceDescending=false" target="_blank">All Greece under £55k</a>
+      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Corfu.html?maxPrice=55000" target="_blank">Corfu</a>
+      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Crete.html?maxPrice=55000" target="_blank">Crete</a>
+      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Cephalonia.html?maxPrice=55000" target="_blank">Cephalonia</a>
     </div>
+    <div class="search-card">
+      <h4>🏠 Spitogatos.gr</h4>
+      <a href="https://en.spitogatos.gr/search/results/residential/buy" target="_blank">All Greece</a>
+      <a href="https://en.spitogatos.gr/search/results/residential/buy?geo_place_ids[]=ChIJ8UNwBh-9oRQR3Y1mdkU1Nic" target="_blank">Northern Greece</a>
+      <a href="https://en.spitogatos.gr/search/results/residential/buy?geo_place_ids[]=ChIJZ07eRWGEhBQRIL8BPxhkSaQ" target="_blank">Chania, Crete</a>
+    </div>
+    <div class="search-card">
+      <h4>✈️ Flights</h4>
+      <a href="https://www.google.com/flights?q=flights+to+corfu" target="_blank">→ Corfu (CFU)</a>
+      <a href="https://www.google.com/flights?q=flights+to+chania" target="_blank">→ Chania (CHQ)</a>
+      <a href="https://www.google.com/flights?q=flights+to+thessaloniki" target="_blank">→ Thessaloniki (SKG)</a>
+      <a href="https://www.google.com/flights?q=flights+to+athens" target="_blank">→ Athens (ATH)</a>
+    </div>
+    <div class="search-card">
+      <h4>📊 Research</h4>
+      <a href="https://www.globalpropertyguide.com/europe/greece/price-history" target="_blank">Global Property Guide</a>
+      <a href="https://tranio.com/greece/buying/" target="_blank">Buying Guide for Foreigners</a>
+      <a href="https://tranio.com/greece/taxes/" target="_blank">Tax Guide</a>
+    </div>
+  </div>
 </div>
 
-<!-- TABS -->
-<div class="section">
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('regions')">📍 By Region</button>
-        <button class="tab-btn" onclick="switchTab('properties')">🏠 All Properties</button>
-        <button class="tab-btn" onclick="switchTab('comparison')">📋 Comparison Table</button>
-        <button class="tab-btn" onclick="switchTab('links')">🔗 Live Search Links</button>
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="m-close" onclick="closeModal()">&times;</button>
+    <img class="m-img" id="mImg" src="" alt="">
+    <div class="m-body">
+      <div class="m-name" id="mName"></div>
+      <div class="m-area" id="mArea"></div>
+      <div class="m-score-wrap">
+        <div class="m-score-top">
+          <span class="m-score-label">Investment Score</span>
+          <span class="m-score-num" id="mScore"></span>
+        </div>
+        <div class="m-score-bar"><div class="m-score-fill" id="mScoreFill"></div></div>
+        <div class="m-breakdown" id="mBreakdown"></div>
+      </div>
+      <div class="m-grid" id="mStats"></div>
+      <div class="m-airbnb" id="mAirbnb">
+        <div class="m-airbnb-title">🏠 Airbnb Rental Estimate</div>
+        <div class="m-airbnb-grid" id="mAirbnbGrid"></div>
+      </div>
+      <div class="m-badges" id="mBadges"></div>
+      <a class="m-book" id="mLink" href="#" target="_blank">View on Rightmove →</a>
     </div>
-
-    <!-- REGIONS TAB -->
-    <div id="tab-regions" class="tab-content active">
-        <h2 class="section-title">Investment Regions</h2>
-        <p class="section-subtitle">Click a region to see its properties. All regions have beaches + city amenities.</p>
-        <div class="region-grid">
-            {all_regions}
-        </div>
-    </div>
-
-    <!-- PROPERTIES TAB -->
-    <div id="tab-properties" class="tab-content">
-        <h2 class="section-title">All Properties</h2>
-        <p class="section-subtitle">Filter and sort to find your ideal investment + vacation property.</p>
-
-        <div class="filters">
-            <label>Region:</label>
-            {region_filters}
-        </div>
-        <div class="filters">
-            <label>Sort:</label>
-            <div class="filter-sort">
-                <select id="sort-select" onchange="sortProperties()">
-                    <option value="price-asc">Price: Low to High</option>
-                    <option value="price-desc">Price: High to Low</option>
-                    <option value="area-desc">Size: Largest First</option>
-                    <option value="psqm-asc">€/m²: Low to High</option>
-                </select>
-            </div>
-            <label style="margin-left: 16px;">Max price:</label>
-            <div class="filter-range">
-                <input type="number" id="max-price" placeholder="€ max" onchange="applyFilters()" value="">
-            </div>
-        </div>
-
-        <div class="count-display" id="count-display">Showing {len(properties)} properties</div>
-        <div class="property-grid" id="property-grid">
-            {all_cards}
-        </div>
-        <div class="no-results" id="no-results" style="display:none">
-            No properties match your filters. Try adjusting your criteria.
-        </div>
-    </div>
-
-    <!-- COMPARISON TAB -->
-    <div id="tab-comparison" class="tab-content">
-        <h2 class="section-title">Side-by-Side Comparison</h2>
-        <p class="section-subtitle">All properties in a sortable table format. Click column headers to sort.</p>
-        <div style="overflow-x: auto;">
-        <table class="comparison-table" id="comparison-table">
-            <thead>
-                <tr>
-                    <th onclick="sortTable(0)" style="cursor:pointer">Region ↕</th>
-                    <th onclick="sortTable(1)" style="cursor:pointer">Property ↕</th>
-                    <th onclick="sortTable(2)" style="cursor:pointer">Price (€) ↕</th>
-                    <th onclick="sortTable(3)" style="cursor:pointer">Price (CA$) ↕</th>
-                    <th onclick="sortTable(4)" style="cursor:pointer">Area (m²) ↕</th>
-                    <th onclick="sortTable(5)" style="cursor:pointer">€/m² ↕</th>
-                    <th onclick="sortTable(6)" style="cursor:pointer">Beds ↕</th>
-                    <th>ROI</th>
-                    <th>Type</th>
-                    <th>Link</th>
-                </tr>
-            </thead>
-            <tbody>
-                {comparison_rows}
-            </tbody>
-        </table>
-        </div>
-    </div>
-
-    <!-- LIVE SEARCH LINKS TAB -->
-    <div id="tab-links" class="tab-content">
-        <h2 class="section-title">🔗 Search Live Listings Yourself</h2>
-        <p class="section-subtitle">Direct links to search on major Greek real estate portals. Prices and availability change daily.</p>
-        <div class="search-links">
-            <div class="search-link-card">
-                <h4>�🇧 Rightmove Overseas (Budget under £55k / €65k)</h4>
-                <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece.html?maxPrice=55000&sortByPriceDescending=false" target="_blank">All Greece under £55k</a>
-                <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Corfu.html?maxPrice=55000" target="_blank">Corfu listings</a>
-                <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Crete.html?maxPrice=55000" target="_blank">Crete listings</a>
-                <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Cephalonia.html?maxPrice=55000" target="_blank">Cephalonia listings</a>
-            </div>
-            <div class="search-link-card">
-                <h4>🏠 Spitogatos.gr (Largest Greek portal)</h4>
-                <a href="https://en.spitogatos.gr/search/results/residential/buy" target="_blank">Browse all Greece</a>
-                <a href="https://en.spitogatos.gr/search/results/residential/buy?geo_place_ids[]=ChIJ8UNwBh-9oRQR3Y1mdkU1Nic" target="_blank">Northern Greece</a>
-                <a href="https://en.spitogatos.gr/search/results/residential/buy?geo_place_ids[]=ChIJZ07eRWGEhBQRIL8BPxhkSaQ" target="_blank">Chania, Crete</a>
-                <a href="https://en.spitogatos.gr/search/results/residential/buy?geo_place_ids[]=ChIJoQLn3YvhgxQRp9lfWq2IJis" target="_blank">Ionian Islands</a>
-            </div>
-            <div class="search-link-card">
-                <h4>🔍 Properstar.com</h4>
-                <a href="https://www.properstar.com/greece/buy" target="_blank">All Greece</a>
-                <a href="https://www.properstar.com/greece/crete-region/buy" target="_blank">Crete region</a>
-                <a href="https://www.properstar.com/greece/macedonia-and-thrace/buy" target="_blank">Macedonia & Thrace</a>
-                <a href="https://www.properstar.com/greece/peloponnese-western-greece-ionian/buy" target="_blank">Peloponnese & Ionian</a>
-            </div>
-            <div class="search-link-card">
-                <h4>📊 Market Research</h4>
-                <a href="https://www.globalpropertyguide.com/europe/greece/price-history" target="_blank">Global Property Guide - Greece</a>
-                <a href="https://en.spitogatos.gr/blog/real-estate-market-greece-q3-2025" target="_blank">Spitogatos Market Report Q3 2025</a>
-                <a href="https://tranio.com/greece/buying/" target="_blank">Buying Guide for Foreigners</a>
-                <a href="https://tranio.com/greece/taxes/" target="_blank">Property Tax Guide</a>
-            </div>
-            <div class="search-link-card">
-                <h4>✈️ Flight Connections</h4>
-                <a href="https://www.google.com/flights?q=flights+to+corfu" target="_blank">Flights to Corfu (CFU)</a>
-                <a href="https://www.google.com/flights?q=flights+to+chania" target="_blank">Flights to Chania (CHQ)</a>
-                <a href="https://www.google.com/flights?q=flights+to+thessaloniki" target="_blank">Flights to Thessaloniki (SKG)</a>
-                <a href="https://www.google.com/flights?q=flights+to+volos" target="_blank">Flights to Volos (VOL)</a>
-                <a href="https://www.google.com/flights?q=flights+to+athens" target="_blank">Flights to Athens (ATH)</a>
-            </div>
-        </div>
-    </div>
+  </div>
 </div>
 
-</div><!-- container -->
-
-<!-- FOOTER -->
-<footer>
-    <p>Greek Property Finder &middot; Data scraped on {scraped_date} &middot;
-    Built for a 🍁 Canadian / 🇪🇪 Estonian exploring Greek investment opportunities</p>
-    <p class="disclaimer">
-        ⚠️ <strong>Disclaimer:</strong> This site is for informational purposes only. Property data is aggregated from
-        public real estate portals and may not reflect current prices or availability. Always verify listings directly
-        with agents and conduct proper due diligence before purchasing. Exchange rate used: €1 ≈ CA$1.48.
-        Consult a Greek lawyer and tax advisor before any purchase.
-    </p>
-</footer>
+<div class="footer">
+  {len(properties)} curated properties from Rightmove Overseas · Data scraped {scraped_date} · Prices in EUR (CA$1 ≈ €0.68)<br>
+  Built for a 🍁 Canadian / 🇪🇪 Estonian exploring Greek investment · ⚠️ Verify all listings before purchasing
+</div>
 
 <script>
-// Tab switching
-function switchTab(tab) {{
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-    document.getElementById('tab-' + tab).classList.add('active');
-    event.target.classList.add('active');
+{js_data}
+{js_region_data}
+
+// ── Compute normalized values (0–1) ──
+const prices = DATA.map(d => d.price);
+const areas = DATA.map(d => d.area);
+const airports = DATA.map(d => d.airport);
+const beaches = DATA.map(d => d.beach);
+const yields = DATA.map(d => d.grossYield);
+
+const minPrice = Math.min(...prices), maxPrice = Math.max(...prices);
+const minArea = Math.min(...areas), maxArea = Math.max(...areas);
+const minAirport = Math.min(...airports), maxAirport = Math.max(...airports);
+const minBeach = Math.min(...beaches), maxBeach = Math.max(...beaches);
+const minYield = Math.min(...yields), maxYield = Math.max(...yields);
+
+DATA.forEach(d => {{
+  d.nPrice = maxPrice === minPrice ? 0.5 : (maxPrice - d.price) / (maxPrice - minPrice);
+  d.nArea = maxArea === minArea ? 0.5 : (d.area - minArea) / (maxArea - minArea);
+  d.nAirport = maxAirport === minAirport ? 0.5 : (maxAirport - d.airport) / (maxAirport - minAirport);
+  d.nBeach = maxBeach === minBeach ? 0.5 : (maxBeach - d.beach) / (maxBeach - minBeach);
+  d.nYield = maxYield === minYield ? 0.5 : (d.grossYield - minYield) / (maxYield - minYield);
+  d.nReno = d.reno === 0 ? 1 : 0;
+}});
+
+// Populate region filter
+const fRegionEl = document.getElementById('fRegion');
+const regionNames = [...new Set(DATA.map(d => d.region))];
+regionNames.forEach(r => {{
+  const o = document.createElement('option');
+  o.value = r;
+  o.textContent = REGIONS[r] ? REGIONS[r].name : r;
+  fRegionEl.appendChild(o);
+}});
+
+// ── Weight state ──
+let wPrice = 25, wAirport = 20, wBeach = 20, wSize = 15, wYield = 15, wReno = 5;
+
+function score(d) {{
+  const total = wPrice + wAirport + wBeach + wSize + wYield + wReno || 1;
+  return (d.nPrice * wPrice + d.nAirport * wAirport + d.nBeach * wBeach +
+          d.nArea * wSize + d.nYield * wYield + d.nReno * wReno) / total * 100;
 }}
 
-// Region filter
-let currentRegion = 'all';
-function filterByRegion(region) {{
-    currentRegion = region;
-    // Switch to properties tab
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-    document.getElementById('tab-properties').classList.add('active');
-    document.querySelectorAll('.tab-btn')[1].classList.add('active');
+function scoreTier(s) {{ return s >= 65 ? 'high' : s >= 40 ? 'mid' : 'low'; }}
+function scoreColor(s) {{ return s >= 65 ? '#d4363b' : s >= 40 ? '#e6a756' : '#b8c9d6'; }}
 
-    // Update filter buttons
-    document.querySelectorAll('.filter-btn').forEach(btn => {{
-        btn.classList.remove('active');
-        if (btn.textContent.toLowerCase().includes(region) || (region === 'all' && btn.textContent.includes('All'))) {{
-            btn.classList.add('active');
-        }}
-    }});
-
-    applyFilters();
+function makeCard(d, rank) {{
+  const s = score(d);
+  const t = scoreTier(s);
+  return `
+    <div class="card" onclick="openModal(${{d.id}})">
+      <div class="card-img-wrap">
+        <img class="card-img" src="${{d.img}}" alt="${{d.title}}" loading="lazy"
+             onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
+        <div class="card-overlay"></div>
+        <div class="card-rank ${{t}}">${{rank !== null ? '#'+rank : Math.round(s)}}</div>
+        <div class="card-price-tag">\u20ac${{d.price.toLocaleString()}}</div>
+        <div class="card-airport-tag">✈️ ${{d.airport}} min</div>
+      </div>
+      <div class="card-body">
+        <div class="card-name">${{d.title}}</div>
+        <div class="card-area">📍 ${{d.regionName}}</div>
+        <div class="card-row"><span class="hl">${{d.area}}m²</span> · ${{d.beds}} bed · 🏖️ ${{d.beach}} min · Yield ${{d.grossYield}}%</div>
+        <div class="card-score-bar">
+          <div class="bar-track"><div class="bar-fill ${{t}}" style="width:${{s.toFixed(0)}}%"></div></div>
+          <span class="bar-num">${{Math.round(s)}}</span>
+        </div>
+      </div>
+    </div>`;
 }}
 
-function applyFilters() {{
-    const maxPrice = parseInt(document.getElementById('max-price').value) || Infinity;
-    const cards = document.querySelectorAll('.property-card');
-    let visible = 0;
-
-    cards.forEach(card => {{
-        const cardRegion = card.dataset.region;
-        const cardPrice = parseInt(card.dataset.price) || 0;
-        const regionMatch = currentRegion === 'all' || cardRegion === currentRegion;
-        const priceMatch = cardPrice <= maxPrice;
-
-        if (regionMatch && priceMatch) {{
-            card.style.display = '';
-            visible++;
-        }} else {{
-            card.style.display = 'none';
-        }}
-    }});
-
-    document.getElementById('count-display').textContent = `Showing ${{visible}} properties`;
-    document.getElementById('no-results').style.display = visible === 0 ? '' : 'none';
+function makeAirbnbCard(d) {{
+  return `
+    <div class="airbnb-card" onclick="openModal(${{d.id}})">
+      <div class="airbnb-card-body">
+        <div class="airbnb-card-name">${{d.title}}</div>
+        <div class="airbnb-card-region">📍 ${{d.regionName}} · \u20ac${{d.price.toLocaleString()}} · ${{d.area}}m²</div>
+        <div class="airbnb-row">
+          <div class="airbnb-stat"><div class="v green">\u20ac${{d.airbnbRate}}</div><div class="l">Per Night</div></div>
+          <div class="airbnb-stat"><div class="v gold">\u20ac${{d.annualIncome.toLocaleString()}}</div><div class="l">Annual</div></div>
+          <div class="airbnb-stat"><div class="v blue">${{d.grossYield}}%</div><div class="l">Gross Yield</div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <div class="airbnb-bar">
+            <div class="airbnb-bar-label">Occupancy</div>
+            <div class="airbnb-bar-track"><div class="airbnb-bar-fill occ" style="width:${{d.airbnbOcc}}%"></div></div>
+            <div class="airbnb-bar-num">${{d.airbnbOcc}}%</div>
+          </div>
+          <div class="airbnb-bar">
+            <div class="airbnb-bar-label">Yield</div>
+            <div class="airbnb-bar-track"><div class="airbnb-bar-fill roi" style="width:${{Math.min(d.grossYield/15*100,100).toFixed(0)}}%"></div></div>
+            <div class="airbnb-bar-num">${{d.grossYield}}%</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
 }}
 
-// Sort properties
-function sortProperties() {{
-    const grid = document.getElementById('property-grid');
-    const cards = Array.from(grid.querySelectorAll('.property-card'));
-    const sortBy = document.getElementById('sort-select').value;
+function rebuild() {{
+  const ranked = DATA.map(d => ({{...d, sc: score(d)}})).sort((a,b) => b.sc - a.sc);
+  const used = new Set();
 
-    cards.sort((a, b) => {{
-        switch(sortBy) {{
-            case 'price-asc': return (parseInt(a.dataset.price)||0) - (parseInt(b.dataset.price)||0);
-            case 'price-desc': return (parseInt(b.dataset.price)||0) - (parseInt(a.dataset.price)||0);
-            case 'area-desc': return (parseInt(b.dataset.area)||0) - (parseInt(a.dataset.area)||0);
-            case 'psqm-asc':
-                const aP = (parseInt(a.dataset.price)||0) / (parseInt(a.dataset.area)||1);
-                const bP = (parseInt(b.dataset.price)||0) / (parseInt(b.dataset.area)||1);
-                return aP - bP;
-        }}
-        return 0;
-    }});
+  function pick(pool, n) {{
+    const result = [];
+    for (const d of pool) {{
+      if (used.has(d.id)) continue;
+      result.push(d);
+      used.add(d.id);
+      if (result.length >= n) break;
+    }}
+    return result;
+  }}
 
-    cards.forEach(card => grid.appendChild(card));
+  // Hero = #1
+  const hero = ranked[0];
+  used.add(hero.id);
+  const hs = hero.sc;
+
+  document.getElementById('heroImg').src = hero.img;
+  document.getElementById('heroImg').onerror = function(){{ this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'; }};
+  document.getElementById('heroName').textContent = hero.title;
+  document.getElementById('heroArea').textContent = '📍 ' + hero.regionName + ' · ' + hero.area + 'm² · ' + hero.beds + ' bed';
+  document.getElementById('heroPrice').textContent = '\u20ac' + hero.price.toLocaleString();
+  document.getElementById('heroAirport').textContent = hero.airport + ' min';
+  document.getElementById('heroBeach').textContent = hero.beach + ' min';
+  document.getElementById('heroYield').textContent = hero.grossYield + '%';
+  document.getElementById('heroScoreNum').textContent = Math.round(hs);
+  document.getElementById('heroCard').onclick = () => openModal(hero.id);
+  const ring = document.getElementById('heroRing');
+  ring.style.stroke = scoreColor(hs);
+  ring.style.strokeDashoffset = 125.6 * (1 - hs / 100);
+
+  // ── Curated sections ──
+  const bestValue = pick(ranked, 5);
+
+  const closestAirport = [...ranked].sort((a,b) => a.airport - b.airport);
+  const airportPicks = pick(closestAirport, 4);
+
+  const closestBeach = [...ranked].sort((a,b) => a.beach - b.beach);
+  const beachPicks = pick(closestBeach, 4);
+
+  const highYieldPool = [...ranked].sort((a,b) => b.grossYield - a.grossYield);
+  const yieldPicks = pick(highYieldPool, 4);
+
+  const biggestPool = [...ranked].sort((a,b) => b.area - a.area);
+  const bigPicks = pick(biggestPool, 4);
+
+  const sections = [
+    {{ emoji: '🎯', title: 'Best Overall Match', sub: 'Highest score based on your current weights', cards: bestValue, ranked: true }},
+    {{ emoji: '✈️', title: 'Closest to Airport', sub: 'Shortest drive to nearest international airport', cards: airportPicks }},
+    {{ emoji: '🏖️', title: 'Closest to Beach', sub: 'Walk or quick drive to the sea', cards: beachPicks }},
+    {{ emoji: '📈', title: 'Highest Rental Yield', sub: 'Best Airbnb income relative to purchase price', cards: yieldPicks }},
+    {{ emoji: '📐', title: 'Most Space for Money', sub: 'Largest properties in the budget', cards: bigPicks }},
+  ].filter(s => s.cards.length > 0);
+
+  let globalRank = 2;
+  const html = sections.map(sec => `
+    <div class="section">
+      <div class="section-header">
+        <span class="section-emoji">${{sec.emoji}}</span>
+        <div class="section-title">${{sec.title}}</div>
+        <div class="section-sub">${{sec.sub}}</div>
+        <div class="section-divider"></div>
+      </div>
+      <div class="scroll-row">
+        ${{sec.cards.map(d => {{
+          const rank = sec.ranked ? globalRank++ : null;
+          return makeCard(d, rank);
+        }}).join('')}}
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('sections').innerHTML = html;
+
+  // Update formula display
+  const total = wPrice + wAirport + wBeach + wSize + wYield + wReno || 1;
+  const pcts = [wPrice, wAirport, wBeach, wSize, wYield, wReno].map(w => Math.round(w / total * 100));
+  const diff = 100 - pcts.reduce((a,b)=>a+b,0);
+  pcts[0] += diff;
+  document.getElementById('formulaDisplay').innerHTML =
+    `Score = <span>${{pcts[0]}}%</span> Price + <span>${{pcts[1]}}%</span> Airport + <span>${{pcts[2]}}%</span> Beach + <span>${{pcts[3]}}%</span> Size + <span>${{pcts[4]}}%</span> Yield + <span>${{pcts[5]}}%</span> Ready`;
+
+  rebuildBrowse();
+  rebuildAirbnb();
 }}
 
-// Sort comparison table
-let sortAsc = {{}};
-function sortTable(n) {{
-    const table = document.getElementById('comparison-table');
-    const tbody = table.querySelector('tbody');
-    const rows = Array.from(tbody.querySelectorAll('tr'));
-    sortAsc[n] = !sortAsc[n];
-
-    rows.sort((a, b) => {{
-        let aVal = a.cells[n].dataset.sort || a.cells[n].textContent.trim();
-        let bVal = b.cells[n].dataset.sort || b.cells[n].textContent.trim();
-
-        const aNum = parseFloat(aVal.replace(/[^0-9.-]/g, ''));
-        const bNum = parseFloat(bVal.replace(/[^0-9.-]/g, ''));
-
-        if (!isNaN(aNum) && !isNaN(bNum)) {{
-            return sortAsc[n] ? aNum - bNum : bNum - aNum;
-        }}
-        return sortAsc[n] ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-    }});
-
-    rows.forEach(row => tbody.appendChild(row));
+// ── Browse All Logic ──
+function getFilters() {{
+  return {{
+    region: document.getElementById('fRegion').value,
+    priceMax: parseFloat(document.getElementById('fPriceMax').value) || Infinity,
+    airportMax: parseFloat(document.getElementById('fAirportMax').value) || Infinity,
+  }};
 }}
+
+function rebuildBrowse() {{
+  const f = getFilters();
+  const filtered = DATA
+    .map(d => ({{...d, sc: score(d)}}))
+    .filter(d => {{
+      if (f.region && d.region !== f.region) return false;
+      if (d.price > f.priceMax) return false;
+      if (d.airport > f.airportMax) return false;
+      return true;
+    }})
+    .sort((a, b) => b.sc - a.sc);
+
+  document.getElementById('browseCount').textContent = filtered.length;
+  document.getElementById('browseGrid').innerHTML = filtered.map(d => makeCard(d, null)).join('');
+}}
+
+function rebuildAirbnb() {{
+  const sorted = [...DATA].sort((a,b) => b.grossYield - a.grossYield);
+  document.getElementById('airbnbGrid').innerHTML = sorted.map(d => makeAirbnbCard(d)).join('');
+}}
+
+function clearFilters() {{
+  document.getElementById('fRegion').value = '';
+  document.getElementById('fPriceMax').value = '';
+  document.getElementById('fAirportMax').value = '';
+  rebuildBrowse();
+}}
+
+// Filter change listeners
+['fRegion', 'fPriceMax', 'fAirportMax'].forEach(id => {{
+  const el = document.getElementById(id);
+  el.addEventListener('change', rebuildBrowse);
+  el.addEventListener('input', () => {{ clearTimeout(el._t); el._t = setTimeout(rebuildBrowse, 400); }});
+}});
+
+// ── Slider events ──
+const sliderIds = ['sPrice', 'sAirport', 'sBeach', 'sSize', 'sYield', 'sReno'];
+const valIds = ['vPrice', 'vAirport', 'vBeach', 'vSize', 'vYield', 'vReno'];
+
+function updateFromSliders() {{
+  wPrice = +document.getElementById('sPrice').value;
+  wAirport = +document.getElementById('sAirport').value;
+  wBeach = +document.getElementById('sBeach').value;
+  wSize = +document.getElementById('sSize').value;
+  wYield = +document.getElementById('sYield').value;
+  wReno = +document.getElementById('sReno').value;
+  const total = wPrice + wAirport + wBeach + wSize + wYield + wReno || 1;
+  const weights = [wPrice, wAirport, wBeach, wSize, wYield, wReno];
+  weights.forEach((w, i) => {{
+    document.getElementById(valIds[i]).textContent = Math.round(w / total * 100) + '%';
+  }});
+  rebuild();
+}}
+
+sliderIds.forEach(id => {{
+  document.getElementById(id).addEventListener('input', updateFromSliders);
+}});
+
+function resetWeights() {{
+  const defaults = [25, 20, 20, 15, 15, 5];
+  sliderIds.forEach((id, i) => {{ document.getElementById(id).value = defaults[i]; }});
+  updateFromSliders();
+}}
+
+// ── Modal ──
+function openModal(id) {{
+  const d = DATA.find(x => x.id === id);
+  if (!d) return;
+  const s = score(d);
+  document.getElementById('mImg').src = d.img;
+  document.getElementById('mImg').onerror = function(){{ this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'; }};
+  document.getElementById('mName').textContent = d.title;
+  document.getElementById('mArea').textContent = '📍 ' + d.regionName;
+  document.getElementById('mScore').textContent = Math.round(s) + '/100';
+  document.getElementById('mScoreFill').style.width = s.toFixed(0) + '%';
+
+  document.getElementById('mBreakdown').innerHTML = `
+    <div><div class="v">\u20ac${{d.price.toLocaleString()}}</div>Price</div>
+    <div><div class="v">${{d.airport}} min</div>Airport</div>
+    <div><div class="v">${{d.beach}} min</div>Beach</div>
+  `;
+
+  document.getElementById('mStats').innerHTML = `
+    <div class="m-stat"><div class="v price-c">\u20ac${{d.price.toLocaleString()}}</div><div class="l">Price</div></div>
+    <div class="m-stat"><div class="v">CA$${{d.cad.toLocaleString()}}</div><div class="l">CAD</div></div>
+    <div class="m-stat"><div class="v">${{d.area}}m\u00b2</div><div class="l">Size</div></div>
+    <div class="m-stat"><div class="v">${{d.beds}}</div><div class="l">Beds</div></div>
+    <div class="m-stat"><div class="v">${{d.airport}} min</div><div class="l">✈️ Airport</div></div>
+    <div class="m-stat"><div class="v">${{d.beach}} min</div><div class="l">🏖️ Beach</div></div>
+  `;
+
+  document.getElementById('mAirbnbGrid').innerHTML = `
+    <div class="m-stat"><div class="v" style="color:var(--palm)">\u20ac${{d.airbnbRate}}/n</div><div class="l">Nightly</div></div>
+    <div class="m-stat"><div class="v" style="color:var(--gold)">\u20ac${{d.annualIncome.toLocaleString()}}/yr</div><div class="l">Annual</div></div>
+    <div class="m-stat"><div class="v" style="color:var(--ocean)">${{d.grossYield}}%</div><div class="l">Gross Yield</div></div>
+  `;
+
+  let b = '';
+  if (s >= 65) b += '<span class="m-badge fire">🔥 Top Match</span>';
+  if (d.airport <= 30) b += '<span class="m-badge red">✈️ Close Airport</span>';
+  if (d.beach <= 10) b += '<span class="m-badge blue">🏖️ Beach Nearby</span>';
+  if (d.grossYield >= 6) b += '<span class="m-badge green">📈 High Yield</span>';
+  if (d.reno === 0) b += '<span class="m-badge gold">✅ Move-in Ready</span>';
+  if (d.area >= 100) b += '<span class="m-badge blue">📐 Large Property</span>';
+  document.getElementById('mBadges').innerHTML = b;
+
+  document.getElementById('mLink').href = d.url;
+  document.getElementById('mLink').textContent = 'View on ' + d.source + ' \u2192';
+  document.getElementById('modalOverlay').classList.add('visible');
+}}
+
+function closeModal() {{
+  document.getElementById('modalOverlay').classList.remove('visible');
+}}
+document.addEventListener('keydown', e => {{ if (e.key === 'Escape') closeModal(); }});
+
+// ── Smooth scroll for nav links ──
+document.querySelectorAll('.page-hero-nav a[href^="#"]').forEach(a => {{
+  a.addEventListener('click', e => {{
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) target.scrollIntoView({{ behavior: 'smooth', block: 'start' }});
+  }});
+}});
+
+// ── Initial render ──
+rebuild();
 </script>
 </body>
 </html>'''

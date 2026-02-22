@@ -1,1601 +1,989 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Greek Property Finder - Investment Properties Near Beach & City</title>
-    <meta name="description" content="Find investment properties in Greece near beaches and cities. Curated listings for Canadian/EU investors.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --blue: #0066cc;
-            --blue-dark: #004d99;
-            --blue-light: #e6f0ff;
-            --green: #059669;
-            --green-light: #d1fae5;
-            --orange: #ea580c;
-            --orange-light: #fff7ed;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-500: #6b7280;
-            --gray-700: #374151;
-            --gray-900: #111827;
-            --shadow: 0 1px 3px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
-            --radius: 12px;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--gray-50);
-            color: var(--gray-900);
-            line-height: 1.6;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greek Property Finder — Investment Properties Ranked</title>
+<meta name="description" content="Budget Greek investment properties ranked by your priorities. Weighted scoring for airport proximity, price, size, beach distance, rental yield.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+:root {
+  --ocean: #0077b6; --ocean-dark: #023e8a;
+  --sunset: #ff6b35; --coral: #e63946;
+  --palm: #2d6a4f; --dark: #1a1a2e; --gray: #6b7280;
+  --gold: #f59e0b; --bg: #faf8f5; --border: #e8e4df;
+  --card: #ffffff; --muted: #7a7a7a; --accent: #c2956a;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--dark); line-height: 1.6; -webkit-font-smoothing: antialiased; }
 
-        /* HERO */
-        .hero {
-            background: linear-gradient(135deg, #1e3a5f 0%, #0e76a8 50%, #1a9bc7 100%);
-            color: white;
-            padding: 60px 20px 40px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: url('https://images.unsplash.com/photo-1555993539-1732b0258235?w=1600') center/cover;
-            opacity: 0.15;
-        }
-        .hero > * { position: relative; z-index: 1; }
-        .hero h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 12px; }
-        .hero .subtitle { font-size: 1.15rem; opacity: 0.9; max-width: 700px; margin: 0 auto 20px; }
-        .hero-badges { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
-        .hero-badge {
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
+/* ── Hero ── */
+.page-hero {
+  background: linear-gradient(135deg, #1e3a5f 0%, #0e76a8 50%, #1a9bc7 100%);
+  color: white; padding: 44px 24px 32px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.page-hero::before {
+  content: ''; position: absolute; inset: 0;
+  background: url('https://images.unsplash.com/photo-1555993539-1732b0258235?w=1600') center/cover;
+  opacity: 0.12;
+}
+.page-hero > * { position: relative; z-index: 1; }
+.page-hero h1 { font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 900; margin-bottom: 6px; letter-spacing: -0.5px; }
+.page-hero p { font-size: 0.88rem; opacity: 0.8; margin-bottom: 16px; max-width: 620px; margin-left: auto; margin-right: auto; }
+.hero-badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.hero-badge {
+  background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2); padding: 5px 14px;
+  border-radius: 20px; font-size: 0.78rem; font-weight: 500;
+}
+.page-hero-nav { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+.page-hero-nav a {
+  color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.78rem;
+  padding: 6px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2);
+  transition: all 0.2s;
+}
+.page-hero-nav a:hover { background: rgba(255,255,255,0.12); color: white; }
 
-        /* NOTICE BAR */
-        .notice-bar {
-            background: var(--green-light);
-            border-bottom: 1px solid #a7f3d0;
-            padding: 14px 20px;
-            text-align: center;
-            font-size: 0.9rem;
-            color: #065f46;
-        }
-        .notice-bar strong { color: #047857; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
 
-        /* CONTAINER */
-        .container { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+/* ── EU Notice ── */
+.eu-bar {
+  background: linear-gradient(90deg, #d1fae5, #e0f2fe);
+  border-bottom: 1px solid #a7f3d0; padding: 12px 20px;
+  text-align: center; font-size: 0.82rem; color: #065f46;
+}
+.eu-bar strong { color: #047857; }
 
-        /* SECTION */
-        .section { padding: 40px 0; }
-        .section-title {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: var(--gray-900);
-        }
-        .section-subtitle {
-            color: var(--gray-500);
-            margin-bottom: 24px;
-            font-size: 1rem;
-        }
+/* ── Weight Sliders Panel ── */
+.weights-panel { margin: -20px auto 0; max-width: 1100px; padding: 0 20px; position: relative; z-index: 20; }
+.weights-card {
+  background: var(--card); border-radius: 16px; padding: 20px 24px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08); border: 1px solid var(--border);
+}
+.weights-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.weights-title { font-size: 0.85rem; font-weight: 700; color: var(--dark); }
+.weights-reset {
+  font-size: 0.72rem; color: var(--ocean); cursor: pointer; border: none;
+  background: none; font-family: inherit; font-weight: 600; padding: 4px 8px;
+  border-radius: 6px; transition: background 0.2s;
+}
+.weights-reset:hover { background: #e0f2fe; }
+.sliders { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 24px; }
+.slider-group { }
+.slider-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.slider-name { font-size: 0.72rem; font-weight: 700; }
+.slider-name.s-price { color: var(--palm); }
+.slider-name.s-airport { color: var(--coral); }
+.slider-name.s-beach { color: var(--ocean); }
+.slider-name.s-size { color: #7c3aed; }
+.slider-name.s-yield { color: var(--gold); }
+.slider-name.s-reno { color: var(--accent); }
+.slider-val { font-size: 0.72rem; font-weight: 800; color: var(--dark); }
+input[type="range"] {
+  width: 100%; height: 6px; -webkit-appearance: none; appearance: none;
+  border-radius: 3px; outline: none; cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.2); cursor: pointer;
+}
+#sPrice { background: linear-gradient(90deg, #dcfce7, var(--palm)); }
+#sPrice::-webkit-slider-thumb { background: var(--palm); }
+#sAirport { background: linear-gradient(90deg, #fee2e2, var(--coral)); }
+#sAirport::-webkit-slider-thumb { background: var(--coral); }
+#sBeach { background: linear-gradient(90deg, #dbeafe, var(--ocean)); }
+#sBeach::-webkit-slider-thumb { background: var(--ocean); }
+#sSize { background: linear-gradient(90deg, #ede9fe, #7c3aed); }
+#sSize::-webkit-slider-thumb { background: #7c3aed; }
+#sYield { background: linear-gradient(90deg, #fef3c7, var(--gold)); }
+#sYield::-webkit-slider-thumb { background: var(--gold); }
+#sReno { background: linear-gradient(90deg, #fde8d8, var(--accent)); }
+#sReno::-webkit-slider-thumb { background: var(--accent); }
 
-        /* MARKET CONTEXT */
-        .market-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-            margin-bottom: 30px;
-        }
-        .market-card {
-            background: white;
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--gray-200);
-        }
-        .market-card .label { font-size: 0.8rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .market-card .value { font-size: 1.1rem; font-weight: 600; color: var(--gray-900); }
+/* ── #1 Pick Hero Card ── */
+.pick-hero { margin: 20px auto 0; max-width: 1100px; padding: 0 20px; }
+.pick-hero-card {
+  display: grid; grid-template-columns: 1fr 1fr; border-radius: 20px; overflow: hidden;
+  background: var(--card); box-shadow: 0 16px 60px rgba(0,0,0,0.12);
+  border: 1px solid var(--border); cursor: pointer; transition: all 0.3s;
+}
+.pick-hero-card:hover { box-shadow: 0 20px 70px rgba(0,0,0,0.18); transform: translateY(-2px); }
+.pick-hero-img { width: 100%; height: 340px; object-fit: cover; display: block; }
+.pick-hero-body { padding: 32px 36px; display: flex; flex-direction: column; justify-content: center; }
+.pick-hero-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: linear-gradient(135deg, #e87d3e, #d4363b);
+  color: white; font-size: 0.72rem; font-weight: 800; padding: 5px 14px;
+  border-radius: 20px; width: fit-content; margin-bottom: 14px; letter-spacing: 0.3px;
+}
+.pick-hero-name { font-size: 1.4rem; font-weight: 800; margin-bottom: 4px; line-height: 1.3; }
+.pick-hero-area { font-size: 0.82rem; color: var(--muted); margin-bottom: 18px; }
+.pick-hero-stats { display: flex; gap: 20px; margin-bottom: 18px; flex-wrap: wrap; }
+.pick-hero-stat { text-align: center; }
+.pick-hero-stat .val { font-size: 1.2rem; font-weight: 800; }
+.pick-hero-stat .val.price-c { color: var(--palm); }
+.pick-hero-stat .val.airport-c { color: var(--coral); }
+.pick-hero-stat .val.beach-c { color: var(--ocean); }
+.pick-hero-stat .val.yield-c { color: var(--gold); }
+.pick-hero-stat .lbl { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.pick-hero-score {
+  display: flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, #fff8f0, #fff5eb);
+  border: 1px solid #fed7aa; border-radius: 12px; padding: 12px 16px;
+}
+.score-ring { width: 48px; height: 48px; position: relative; }
+.score-ring svg { width: 48px; height: 48px; transform: rotate(-90deg); }
+.score-ring .bg { fill: none; stroke: #f5e6d3; stroke-width: 4; }
+.score-ring .fg { fill: none; stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
+.score-ring .num {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 0.82rem; font-weight: 900; color: var(--ocean-dark);
+}
+.score-info { flex: 1; }
+.score-info .title { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #92400e; }
+.score-info .desc { font-size: 0.72rem; color: var(--muted); line-height: 1.4; }
 
-        /* EU NOTICE */
-        .eu-notice {
-            background: var(--blue-light);
-            border: 1px solid #bfdbfe;
-            border-radius: var(--radius);
-            padding: 24px;
-            margin-bottom: 30px;
-        }
-        .eu-notice h3 { color: var(--blue-dark); margin-bottom: 8px; font-size: 1.1rem; }
-        .eu-notice p { color: #1e40af; font-size: 0.95rem; }
+/* ── Sections ── */
+.section { padding: 40px 0 16px; }
+.section-header { margin-bottom: 18px; padding: 0 20px; max-width: 1100px; margin-left: auto; margin-right: auto; }
+.section-emoji { font-size: 1.5rem; margin-bottom: 4px; display: block; }
+.section-title { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.3px; }
+.section-sub { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
+.section-divider { width: 40px; height: 3px; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--sunset)); margin-top: 10px; }
 
-        /* REGION CARDS */
-        .region-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .region-card {
-            background: white;
-            border-radius: var(--radius);
-            padding: 24px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--gray-200);
-            transition: box-shadow 0.2s;
-        }
-        .region-card:hover { box-shadow: var(--shadow-lg); }
-        .region-card h3 { font-size: 1.25rem; margin-bottom: 12px; color: var(--blue-dark); }
-        .region-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        .region-stat { text-align: center; }
-        .stat-label { display: block; font-size: 0.7rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-value { display: block; font-size: 0.85rem; font-weight: 600; }
-        .region-desc { font-size: 0.9rem; color: var(--gray-700); margin-bottom: 8px; }
-        .region-why { font-size: 0.85rem; color: var(--green); margin-bottom: 10px; }
-        .region-price-range { font-size: 0.9rem; margin-bottom: 12px; color: var(--gray-700); }
-        .btn-filter-region {
-            width: 100%;
-            padding: 10px;
-            background: var(--blue);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.2s;
-        }
-        .btn-filter-region:hover { background: var(--blue-dark); }
+/* ── Horizontal scroll row ── */
+.scroll-row {
+  display: flex; gap: 16px; overflow-x: auto; padding: 0 20px 16px;
+  max-width: 1100px; margin: 0 auto;
+  scroll-snap-type: x mandatory; -ms-overflow-style: none; scrollbar-width: none;
+}
+.scroll-row::-webkit-scrollbar { display: none; }
 
-        /* FILTERS */
-        .filters {
-            background: white;
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--gray-200);
-            margin-bottom: 24px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-        }
-        .filters label { font-weight: 600; font-size: 0.85rem; color: var(--gray-700); }
-        .filter-btn {
-            padding: 8px 16px;
-            border: 1px solid var(--gray-300);
-            border-radius: 20px;
-            background: white;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-        .filter-btn:hover { border-color: var(--blue); color: var(--blue); }
-        .filter-btn.active { background: var(--blue); color: white; border-color: var(--blue); }
-        .filter-sort {
-            margin-left: auto;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        .filter-sort select {
-            padding: 8px 12px;
-            border: 1px solid var(--gray-300);
-            border-radius: 8px;
-            font-size: 0.85rem;
-            background: white;
-        }
-        .filter-range {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        .filter-range input {
-            width: 100px;
-            padding: 8px;
-            border: 1px solid var(--gray-300);
-            border-radius: 8px;
-            font-size: 0.85rem;
-        }
+/* ── Card ── */
+.card {
+  flex: 0 0 280px; scroll-snap-align: start;
+  background: var(--card); border-radius: 16px; overflow: hidden;
+  border: 1px solid var(--border); transition: all 0.25s; cursor: pointer;
+}
+.card:hover { box-shadow: 0 10px 35px rgba(0,0,0,0.1); transform: translateY(-3px); }
+.card-img-wrap { position: relative; overflow: hidden; }
+.card-img { width: 100%; height: 175px; object-fit: cover; display: block; transition: transform 0.4s; }
+.card:hover .card-img { transform: scale(1.04); }
+.card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 50%); }
+.card-rank {
+  position: absolute; top: 10px; left: 10px;
+  min-width: 26px; height: 26px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; padding: 0 8px;
+  font-size: 0.68rem; font-weight: 800; color: white;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.card-rank.high { background: rgba(212,54,59,0.85); }
+.card-rank.mid { background: rgba(230,167,86,0.85); }
+.card-rank.low { background: rgba(160,174,192,0.85); }
+.card-price-tag {
+  position: absolute; bottom: 10px; left: 10px;
+  background: rgba(0,0,0,0.55); color: white; font-size: 0.82rem;
+  padding: 4px 10px; border-radius: 8px; font-weight: 700;
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+}
+.card-airport-tag {
+  position: absolute; bottom: 10px; right: 10px;
+  background: rgba(230,57,70,0.75); color: white; font-size: 0.68rem;
+  padding: 3px 8px; border-radius: 6px; font-weight: 600;
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+}
+.card-body { padding: 14px 16px 16px; }
+.card-name { font-size: 0.88rem; font-weight: 700; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-area { font-size: 0.72rem; color: var(--muted); margin-bottom: 10px; }
+.card-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 0.72rem; color: var(--muted); }
+.card-row .hl { font-weight: 700; color: var(--dark); }
+.card-score-bar { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+.bar-track { flex: 1; height: 5px; border-radius: 3px; background: #f0ece7; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+.bar-fill.high { background: linear-gradient(90deg, #e87d3e, #d4363b); }
+.bar-fill.mid { background: linear-gradient(90deg, #f0c27f, #e6a756); }
+.bar-fill.low { background: #b8c9d6; }
+.bar-num { font-size: 0.7rem; font-weight: 800; color: var(--ocean-dark); min-width: 20px; transition: all 0.3s; }
 
-        /* PROPERTY GRID */
-        .property-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
-        }
-        .property-card {
-            background: white;
-            border-radius: var(--radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--gray-200);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .property-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
-        .card-image {
-            position: relative;
-            height: 200px;
-            overflow: hidden;
-        }
-        .card-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .card-region {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        .card-type {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: var(--blue);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        .roi-badge {
-            position: absolute;
-            bottom: 12px;
-            right: 12px;
-            background: var(--green);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
-        .card-body { padding: 16px; }
-        .card-title { font-size: 1rem; font-weight: 600; margin-bottom: 8px; line-height: 1.4; color: var(--gray-900); }
-        .card-price { margin-bottom: 10px; }
-        .price-eur { font-size: 1.35rem; font-weight: 700; color: var(--blue-dark); }
-        .price-cad { font-size: 0.85rem; color: var(--gray-500); margin-left: 8px; }
-        .card-stats {
-            display: flex;
-            gap: 14px;
-            margin-bottom: 10px;
-            color: var(--gray-500);
-            font-size: 0.85rem;
-        }
-        .stat { display: flex; align-items: center; gap: 4px; }
-        .price-sqm { margin-left: auto; font-weight: 600; color: var(--gray-700); }
-        .features { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-        .feature-tag {
-            background: var(--gray-100);
-            color: var(--gray-700);
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-        .card-link {
-            display: block;
-            text-align: center;
-            padding: 10px;
-            background: var(--blue);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: background 0.2s;
-        }
-        .card-link:hover { background: var(--blue-dark); }
+/* ── Explainer ── */
+.explainer { max-width: 1100px; margin: 32px auto 0; padding: 0 20px; }
+.explainer-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+  padding: 24px 28px; display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap;
+}
+.explainer-card h3 { font-size: 0.88rem; font-weight: 800; margin-bottom: 6px; }
+.explainer-card p { font-size: 0.78rem; color: var(--muted); line-height: 1.6; }
+.explainer-item { flex: 1; min-width: 200px; }
+.explainer-formula {
+  background: var(--bg); border-radius: 10px; padding: 12px 16px;
+  font-size: 0.78rem; color: var(--dark); font-weight: 500; margin-top: 6px;
+  border: 1px solid var(--border); font-family: 'Inter', monospace;
+}
+.explainer-formula span { font-weight: 800; }
 
-        /* COMPARISON TABLE */
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: var(--radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            margin-top: 20px;
-        }
-        .comparison-table th {
-            background: var(--gray-900);
-            color: white;
-            padding: 12px 16px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 0.85rem;
-            white-space: nowrap;
-        }
-        .comparison-table td {
-            padding: 10px 16px;
-            border-bottom: 1px solid var(--gray-200);
-            font-size: 0.85rem;
-        }
-        .comparison-table tr:nth-child(even) { background: var(--gray-50); }
-        .comparison-table tr:hover { background: var(--blue-light); }
-        .comparison-table a { color: var(--blue); text-decoration: none; font-weight: 500; }
-        .comparison-table a:hover { text-decoration: underline; }
+/* ── Market cards ── */
+.market-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; max-width: 1100px; margin: 20px auto; padding: 0 20px; }
+.m-card { background: var(--card); border-radius: 12px; padding: 14px 16px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.m-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.m-value { font-size: 0.92rem; font-weight: 700; color: var(--dark); }
 
-        /* LIVE SEARCH LINKS */
-        .search-links {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 16px;
-            margin-top: 20px;
-        }
-        .search-link-card {
-            background: white;
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--gray-200);
-        }
-        .search-link-card h4 { margin-bottom: 10px; color: var(--gray-900); }
-        .search-link-card a {
-            display: block;
-            padding: 6px 0;
-            color: var(--blue);
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-        .search-link-card a:hover { text-decoration: underline; }
+/* ── Browse All Grid ── */
+.browse-section { max-width: 1100px; margin: 40px auto 0; padding: 0 20px; }
+.browse-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+.browse-title { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.3px; }
+.browse-sub { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
+.browse-count { font-weight: 700; color: var(--ocean); }
+.filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.filter-select, .filter-input {
+  font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 500;
+  padding: 7px 12px; border: 1px solid var(--border); border-radius: 10px;
+  background: var(--card); color: var(--dark); cursor: pointer; transition: border-color 0.2s;
+}
+.filter-select:focus, .filter-input:focus { outline: none; border-color: var(--ocean); }
+.filter-input { width: 90px; }
+.filter-label { font-size: 0.72rem; color: var(--muted); font-weight: 600; }
+.filter-clear {
+  font-size: 0.72rem; color: var(--ocean); cursor: pointer; border: none;
+  background: none; font-family: inherit; font-weight: 600; padding: 4px 8px;
+  border-radius: 6px; transition: background 0.2s;
+}
+.filter-clear:hover { background: #e0f2fe; }
+.browse-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.browse-grid .card { flex: none; }
 
-        /* FOOTER */
-        footer {
-            background: var(--gray-900);
-            color: var(--gray-300);
-            padding: 40px 20px;
-            text-align: center;
-            font-size: 0.85rem;
-        }
-        footer a { color: var(--blue); }
-        .disclaimer { max-width: 700px; margin: 16px auto 0; font-size: 0.8rem; color: var(--gray-500); }
+/* ── Airbnb comparison ── */
+.airbnb-section { max-width: 1100px; margin: 40px auto 0; padding: 0 20px; }
+.airbnb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin-top: 16px; }
+.airbnb-card {
+  background: var(--card); border-radius: 16px; overflow: hidden;
+  border: 1px solid var(--border); transition: all 0.25s; cursor: pointer;
+}
+.airbnb-card:hover { box-shadow: 0 10px 35px rgba(0,0,0,0.1); transform: translateY(-2px); }
+.airbnb-card-body { padding: 16px; }
+.airbnb-card-name { font-size: 0.92rem; font-weight: 700; margin-bottom: 4px; }
+.airbnb-card-region { font-size: 0.72rem; color: var(--muted); margin-bottom: 10px; }
+.airbnb-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+.airbnb-stat { background: var(--bg); border-radius: 8px; padding: 8px; text-align: center; }
+.airbnb-stat .v { font-size: 0.95rem; font-weight: 800; }
+.airbnb-stat .v.green { color: var(--palm); }
+.airbnb-stat .v.gold { color: var(--gold); }
+.airbnb-stat .v.blue { color: var(--ocean); }
+.airbnb-stat .l { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 2px; }
+.airbnb-bar { display: flex; align-items: center; gap: 8px; }
+.airbnb-bar-label { font-size: 0.68rem; font-weight: 600; color: var(--muted); min-width: 80px; }
+.airbnb-bar-track { flex: 1; height: 8px; border-radius: 4px; background: #f0ece7; overflow: hidden; }
+.airbnb-bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s; }
+.airbnb-bar-fill.roi { background: linear-gradient(90deg, #dcfce7, var(--palm)); }
+.airbnb-bar-fill.occ { background: linear-gradient(90deg, #dbeafe, var(--ocean)); }
+.airbnb-bar-num { font-size: 0.72rem; font-weight: 800; min-width: 36px; }
 
-        .count-display {
-            font-size: 0.9rem;
-            color: var(--gray-500);
-            margin-bottom: 16px;
-        }
+/* ── Detail Modal ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 900;
+  display: none; align-items: center; justify-content: center;
+  backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+}
+.modal-overlay.visible { display: flex; }
+.modal {
+  background: var(--card); border-radius: 20px; width: 92%; max-width: 500px;
+  max-height: 90vh; overflow-y: auto; position: relative;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.3); animation: modalIn 0.25s ease;
+}
+@keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.m-close {
+  position: absolute; top: 14px; right: 14px; z-index: 10;
+  background: rgba(0,0,0,0.45); border: none; color: white;
+  width: 34px; height: 34px; border-radius: 50%; font-size: 20px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: background 0.2s;
+}
+.m-close:hover { background: rgba(0,0,0,0.7); }
+.m-img { width: 100%; height: 200px; object-fit: cover; display: block; }
+.m-body { padding: 16px 22px 20px; }
+.m-name { font-size: 1.05rem; font-weight: 800; margin-bottom: 2px; line-height: 1.25; }
+.m-area { font-size: 0.78rem; color: var(--muted); margin-bottom: 10px; }
+.m-score-wrap {
+  background: linear-gradient(135deg, #fff8f0, #fff5eb);
+  border: 1px solid #fed7aa; border-radius: 12px; padding: 10px 14px; margin-bottom: 10px;
+}
+.m-score-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.m-score-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #92400e; }
+.m-score-num { font-size: 1.3rem; font-weight: 900; color: var(--ocean-dark); }
+.m-score-bar { height: 8px; border-radius: 4px; background: #f5e6d3; overflow: hidden; }
+.m-score-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #f0c27f, #e87d3e, #d4363b); transition: width 0.4s; }
+.m-breakdown {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 10px;
+  font-size: 0.62rem; color: var(--muted); text-align: center;
+}
+.m-breakdown .v { font-weight: 700; color: var(--dark); font-size: 0.78rem; }
+.m-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; }
+.m-stat { background: var(--bg); border-radius: 10px; padding: 10px 8px; text-align: center; }
+.m-stat .v { font-size: 0.95rem; font-weight: 800; color: var(--ocean-dark); }
+.m-stat .v.price-c { color: var(--palm); }
+.m-stat .l { font-size: 0.58rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+.m-badges { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+.m-badge { font-size: 0.7rem; font-weight: 600; padding: 4px 10px; border-radius: 7px; }
+.m-badge.fire { background: #ffedd5; color: #9a3412; }
+.m-badge.gold { background: #fef3c7; color: #92400e; }
+.m-badge.green { background: #dcfce7; color: var(--palm); }
+.m-badge.blue { background: #dbeafe; color: var(--ocean-dark); }
+.m-badge.red { background: #fee2e2; color: #991b1b; }
+.m-airbnb {
+  background: var(--bg); border-radius: 10px; padding: 12px; margin-bottom: 12px;
+  border: 1px solid var(--border);
+}
+.m-airbnb-title { font-size: 0.72rem; font-weight: 700; margin-bottom: 8px; color: var(--dark); }
+.m-airbnb-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.m-book {
+  display: block; width: 100%; padding: 12px; text-align: center;
+  background: linear-gradient(135deg, var(--ocean), var(--ocean-dark));
+  color: white; text-decoration: none; border-radius: 12px; font-size: 0.88rem;
+  font-weight: 700; font-family: inherit; transition: all 0.2s;
+}
+.m-book:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
-        /* Tabs */
-        .tabs { display: flex; gap: 4px; margin-bottom: 24px; background: var(--gray-100); padding: 4px; border-radius: 10px; width: fit-content; }
-        .tab-btn {
-            padding: 10px 20px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            border-radius: 8px;
-            transition: all 0.2s;
-            color: var(--gray-500);
-        }
-        .tab-btn.active { background: white; color: var(--gray-900); box-shadow: var(--shadow); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+/* ── Info sections ── */
+.info-section { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
+.info-card {
+  background: var(--card); border-radius: 16px; padding: 24px;
+  border: 1px solid var(--border); box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+}
+.info-card h3 { font-size: 1rem; font-weight: 800; margin-bottom: 10px; }
+.info-card p { font-size: 0.82rem; color: var(--muted); line-height: 1.7; }
+.info-card strong { color: var(--dark); }
 
-        .no-results {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--gray-500);
-            font-size: 1.1rem;
-        }
+/* ── Search links ── */
+.search-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-top: 16px; }
+.search-card {
+  background: var(--card); border-radius: 12px; padding: 16px;
+  border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.search-card h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; }
+.search-card a { display: block; padding: 4px 0; color: var(--ocean); text-decoration: none; font-size: 0.78rem; }
+.search-card a:hover { text-decoration: underline; }
 
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 1.75rem; }
-            .property-grid { grid-template-columns: 1fr; }
-            .region-grid { grid-template-columns: 1fr; }
-            .market-grid { grid-template-columns: repeat(2, 1fr); }
-            .filters { flex-direction: column; }
-            .filter-sort { margin-left: 0; }
-            .region-stats { grid-template-columns: repeat(2, 1fr); }
-            .comparison-table { font-size: 0.75rem; }
-            .comparison-table td, .comparison-table th { padding: 6px 8px; }
-            .tabs { width: 100%; overflow-x: auto; }
-        }
-    </style>
+.footer {
+  text-align: center; padding: 32px 20px 40px; color: var(--muted); font-size: 0.72rem;
+  margin-top: 40px;
+}
+.footer a { color: var(--ocean); text-decoration: none; }
+
+@media (max-width: 700px) {
+  .pick-hero-card { grid-template-columns: 1fr; }
+  .pick-hero-img { height: 220px; }
+  .pick-hero-body { padding: 20px; }
+  .card { flex: 0 0 260px; }
+  .sliders { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .explainer-card { flex-direction: column; gap: 16px; }
+  .m-grid { grid-template-columns: repeat(2, 1fr); }
+  .airbnb-row { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px) {
+  .sliders { grid-template-columns: 1fr; }
+}
+</style>
 </head>
 <body>
 
-<!-- HERO -->
-<div class="hero">
-    <h1>🏖️ Greek Property Finder</h1>
-    <p class="subtitle">
-        Budget investment properties under 100,000 CAD (≈€65,000) near beaches & cities in Greece.
-        Curated for a Canadian/Estonian EU citizen exploring affordable Greek real estate.
+<div class="page-hero">
+  <h1>🏖️ Greek Property Finder</h1>
+  <p>Budget investment properties under 100,000 CAD ranked by your priorities — adjust the
+  sliders to weight airport proximity, price, beach distance, size &amp; rental yield.</p>
+  <div class="hero-badges">
+    <span class="hero-badge">🇬🇷 18 Properties</span>
+    <span class="hero-badge">✈️ Airport Distance</span>
+    <span class="hero-badge">🏖️ Beach Proximity</span>
+    <span class="hero-badge">📈 Airbnb Yields</span>
+    <span class="hero-badge">🇪🇺 EU Access</span>
+  </div>
+  <div class="page-hero-nav">
+    <a href="#weights">⚙️ Adjust Weights</a>
+    <a href="#browse">🔍 Browse All</a>
+    <a href="#airbnb">🏠 Airbnb Income</a>
+    <a href="#search">🔗 Search Live</a>
+  </div>
+</div>
+
+<!-- EU NOTICE -->
+<div class="eu-bar">
+  <strong>🇪🇺 Estonian passport = EU citizen.</strong>
+  Buy property in Greece with <strong>zero restrictions</strong>. No Golden Visa needed. Live, work &amp; rent freely.
+</div>
+
+<!-- WEIGHT SLIDERS -->
+<div class="weights-panel" id="weights">
+  <div class="weights-card">
+    <div class="weights-header">
+      <span class="weights-title">⚙️ Adjust What Matters to You</span>
+      <button class="weights-reset" onclick="resetWeights()">Reset</button>
+    </div>
+    <div class="sliders">
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-name s-price">💰 Lower Price</span>
+          <span class="slider-val" id="vPrice">25%</span>
+        </div>
+        <input type="range" id="sPrice" min="0" max="100" value="25">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-name s-airport">✈️ Airport Closeness</span>
+          <span class="slider-val" id="vAirport">20%</span>
+        </div>
+        <input type="range" id="sAirport" min="0" max="100" value="20">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-name s-beach">🏖️ Beach Closeness</span>
+          <span class="slider-val" id="vBeach">20%</span>
+        </div>
+        <input type="range" id="sBeach" min="0" max="100" value="20">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-name s-size">📐 Larger Size</span>
+          <span class="slider-val" id="vSize">15%</span>
+        </div>
+        <input type="range" id="sSize" min="0" max="100" value="15">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-name s-yield">📈 Higher Yield</span>
+          <span class="slider-val" id="vYield">15%</span>
+        </div>
+        <input type="range" id="sYield" min="0" max="100" value="15">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-name s-reno">🔧 Move-In Ready</span>
+          <span class="slider-val" id="vReno">5%</span>
+        </div>
+        <input type="range" id="sReno" min="0" max="100" value="5">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- #1 PICK -->
+<div class="pick-hero">
+  <div class="pick-hero-card" id="heroCard">
+    <img class="pick-hero-img" src="" alt="" id="heroImg">
+    <div class="pick-hero-body">
+      <div class="pick-hero-badge">👑 #1 BEST MATCH</div>
+      <div class="pick-hero-name" id="heroName"></div>
+      <div class="pick-hero-area" id="heroArea"></div>
+      <div class="pick-hero-stats">
+        <div class="pick-hero-stat"><div class="val price-c" id="heroPrice"></div><div class="lbl">Price</div></div>
+        <div class="pick-hero-stat"><div class="val airport-c" id="heroAirport"></div><div class="lbl">To Airport</div></div>
+        <div class="pick-hero-stat"><div class="val beach-c" id="heroBeach"></div><div class="lbl">To Beach</div></div>
+        <div class="pick-hero-stat"><div class="val yield-c" id="heroYield"></div><div class="lbl">Gross Yield</div></div>
+      </div>
+      <div class="pick-hero-score">
+        <div class="score-ring">
+          <svg viewBox="0 0 48 48">
+            <circle class="bg" cx="24" cy="24" r="20"/>
+            <circle class="fg" id="heroRing" cx="24" cy="24" r="20"
+              stroke-dasharray="125.6" stroke-dashoffset="125.6"/>
+          </svg>
+          <div class="num" id="heroScoreNum"></div>
+        </div>
+        <div class="score-info">
+          <div class="title">Investment Score</div>
+          <div class="desc" id="heroScoreDesc">Best match based on your weights</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CURATED SECTIONS -->
+<div id="sections"></div>
+
+<!-- EXPLAINER -->
+<div class="explainer">
+  <div class="explainer-card">
+    <div class="explainer-item">
+      <h3>🧪 How scoring works</h3>
+      <p>Each property gets a score (0-100) from six normalized dimensions. Adjust sliders above to change weights:</p>
+      <div class="explainer-formula" id="formulaDisplay">
+        Score = <span>25%</span> Price + <span>20%</span> Airport + <span>20%</span> Beach + <span>15%</span> Size + <span>15%</span> Yield + <span>5%</span> Ready
+      </div>
+    </div>
+    <div class="explainer-item">
+      <h3>📊 What we analyzed</h3>
+      <p>18 curated properties from Rightmove Overseas, all under €75,000 (CA$100k).
+      Airport distances verified via Google Maps. Airbnb rental estimates based on regional comps.
+      Data collected 2026-02-22.</p>
+    </div>
+  </div>
+</div>
+
+<!-- MARKET SNAPSHOT -->
+<div style="max-width:1100px;margin:24px auto 0;padding:0 20px;">
+  <h3 style="font-size:1rem;font-weight:800;margin-bottom:4px;">📊 Greek Market Snapshot</h3>
+  <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">Prices up ~42% in 3 years but moderating. Strong rental demand from tourists &amp; digital nomads.</p>
+</div>
+<div class="market-row"><div class="m-card"><div class="m-label">Budget</div><div class="m-value">100,000 CAD / ~€65,000</div></div>
+<div class="m-card"><div class="m-label">Appreciation</div><div class="m-value">7-9% (2024-2025)</div></div>
+<div class="m-card"><div class="m-label">Transfer Tax</div><div class="m-value">3.09% of property value</div></div>
+<div class="m-card"><div class="m-label">Total Buy Costs</div><div class="m-value">~8-10% on top of purchase price</div></div>
+<div class="m-card"><div class="m-label">Rental Tax</div><div class="m-value">15% (first €12k)</div></div>
+<div class="m-card"><div class="m-label">ENFIA Tax</div><div class="m-value">€2-13/m²/yr</div></div>
+</div>
+
+<!-- EU/CANADIAN ADVANTAGE -->
+<div class="info-section">
+  <div class="info-card">
+    <h3>🍁 Your Advantage: Canadian + Estonian (EU) Citizenship</h3>
+    <p>
+      <strong>Estonian passport:</strong> Full EU rights — buy property anywhere in Greece, no restrictions.
+      No Golden Visa needed (that requires €250k+ minimum). Rent out on Airbnb or long-term freely.<br><br>
+      <strong>Canadian passport:</strong> Banking flexibility + Canada-Greece tax treaty avoids double taxation.<br><br>
+      <strong>Key costs:</strong> Transfer tax ~3.09%, notary ~0.65-1%, lawyer ~1-2%. Total ~8-10% on top.
+      Rental income: 15% on first €12k/yr. ENFIA property tax: €2-13/m²/yr.
     </p>
-    <div class="hero-badges">
-        <span class="hero-badge">🇬🇷 18 Properties</span>
-        <span class="hero-badge">🏖️ Beach Proximity</span>
-        <span class="hero-badge">🏙️ Near Cities</span>
-        <span class="hero-badge">📈 Investment Focus</span>
-        <span class="hero-badge">🇪🇺 EU Citizen Rights</span>
-    </div>
+  </div>
 </div>
 
-<!-- EU CITIZEN NOTICE -->
-<div class="notice-bar">
-    <strong>🇪🇺 Estonian passport = EU citizen.</strong>
-    You can buy property in Greece with <strong>zero restrictions</strong>, identical rights to Greek citizens.
-    No Golden Visa needed. You can live, work, and rent out property freely.
+<!-- BROWSE ALL -->
+<div class="browse-section" id="browse">
+  <div class="browse-header">
+    <div>
+      <div class="browse-title">🔍 Browse All Properties</div>
+      <div class="browse-sub">Showing <span class="browse-count" id="browseCount">0</span> properties, ranked by your weights</div>
+    </div>
+    <div class="filters">
+      <select class="filter-select" id="fRegion"><option value="">All Regions</option></select>
+      <span class="filter-label">€ max</span>
+      <input class="filter-input" id="fPriceMax" type="number" placeholder="Max €" step="1000">
+      <span class="filter-label">✈️ max min</span>
+      <input class="filter-input" id="fAirportMax" type="number" placeholder="Max" step="10">
+      <button class="filter-clear" onclick="clearFilters()">Clear</button>
+    </div>
+  </div>
+  <div class="browse-grid" id="browseGrid"></div>
 </div>
 
-<div class="container">
-
-<!-- YOUR SITUATION -->
-<div class="section">
-    <div class="eu-notice">
-        <h3>🍁 Your Advantage: Canadian + Estonian (EU) Dual Citizenship</h3>
-        <p>
-            <strong>Estonian passport:</strong> Full EU citizen rights - buy property anywhere in Greece without restrictions.
-            No need for Golden Visa program (which requires €250,000+ minimum). You can buy at any price point.
-            You can rent out your property (long-term or Airbnb) and even live in Greece permanently.<br><br>
-            <strong>Canadian passport:</strong> Additional travel flexibility and banking options. Canada-Greece tax treaty
-            helps avoid double taxation on rental income.<br><br>
-            <strong>Key costs:</strong> Transfer tax ~3.09%, notary ~0.65-1%, lawyer ~1-2%. Total ~8-10% on top of purchase price.
-            Rental income taxed at 15% on first €12,000/year. Annual property tax (ENFIA) is €2-13/m² depending on location.
-        </p>
-    </div>
+<!-- AIRBNB RENTAL INCOME COMPARISON -->
+<div class="airbnb-section" id="airbnb">
+  <h2 style="font-size:1.3rem;font-weight:800;letter-spacing:-0.3px;">🏠 Airbnb Rental Income Comparison</h2>
+  <p style="font-size:0.82rem;color:var(--muted);margin-top:4px;">
+    Estimated rental income if you Airbnb each property. Based on regional nightly rates &amp; occupancy data.
+    Ranked by gross yield (annual income / purchase price).
+  </p>
+  <div class="airbnb-grid" id="airbnbGrid"></div>
 </div>
 
-<!-- MARKET CONTEXT -->
-<div class="section">
-    <h2 class="section-title">📊 Greek Market Snapshot (2025-2026)</h2>
-    <p class="section-subtitle">Prices have risen ~42% in 3 years but growth is moderating. Strong rental demand from tourists and digital nomads.</p>
-    <div class="market-grid">
-        <div class="market-card">
-            <div class="label">Annual Appreciation</div>
-            <div class="value">7-9% (2024-2025)</div>
-        </div>
-        <div class="market-card">
-            <div class="label">Mortgage Rate</div>
-            <div class="value">3.5% (variable, as of Oct 2025)</div>
-        </div>
-        <div class="market-card">
-            <div class="label">Transfer Tax</div>
-            <div class="value">3.09% of property value</div>
-        </div>
-        <div class="market-card">
-            <div class="label">Total Buying Costs</div>
-            <div class="value">~8-10% on top of purchase price</div>
-        </div>
-        <div class="market-card">
-            <div class="label">Rental Income Tax</div>
-            <div class="value">15% (first €12k)</div>
-        </div>
-        <div class="market-card">
-            <div class="label">Annual Property Tax</div>
-            <div class="value">€2-13/m² (ENFIA)</div>
-        </div>
+<!-- SEARCH LIVE LINKS -->
+<div class="info-section" id="search">
+  <h2 style="font-size:1.3rem;font-weight:800;margin-bottom:4px;">🔗 Search Live Listings</h2>
+  <p style="font-size:0.82rem;color:var(--muted);margin-bottom:12px;">Direct links to portals — prices change daily.</p>
+  <div class="search-grid">
+    <div class="search-card">
+      <h4>🇬🇧 Rightmove Overseas</h4>
+      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece.html?maxPrice=55000&amp;sortByPriceDescending=false" target="_blank">All Greece under £55k</a>
+      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Corfu.html?maxPrice=55000" target="_blank">Corfu</a>
+      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Crete.html?maxPrice=55000" target="_blank">Crete</a>
+      <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Cephalonia.html?maxPrice=55000" target="_blank">Cephalonia</a>
     </div>
+    <div class="search-card">
+      <h4>🏠 Spitogatos.gr</h4>
+      <a href="https://en.spitogatos.gr/search/results/residential/buy" target="_blank">All Greece</a>
+      <a href="https://en.spitogatos.gr/search/results/residential/buy?geo_place_ids[]=ChIJ8UNwBh-9oRQR3Y1mdkU1Nic" target="_blank">Northern Greece</a>
+      <a href="https://en.spitogatos.gr/search/results/residential/buy?geo_place_ids[]=ChIJZ07eRWGEhBQRIL8BPxhkSaQ" target="_blank">Chania, Crete</a>
+    </div>
+    <div class="search-card">
+      <h4>✈️ Flights</h4>
+      <a href="https://www.google.com/flights?q=flights+to+corfu" target="_blank">→ Corfu (CFU)</a>
+      <a href="https://www.google.com/flights?q=flights+to+chania" target="_blank">→ Chania (CHQ)</a>
+      <a href="https://www.google.com/flights?q=flights+to+thessaloniki" target="_blank">→ Thessaloniki (SKG)</a>
+      <a href="https://www.google.com/flights?q=flights+to+athens" target="_blank">→ Athens (ATH)</a>
+    </div>
+    <div class="search-card">
+      <h4>📊 Research</h4>
+      <a href="https://www.globalpropertyguide.com/europe/greece/price-history" target="_blank">Global Property Guide</a>
+      <a href="https://tranio.com/greece/buying/" target="_blank">Buying Guide for Foreigners</a>
+      <a href="https://tranio.com/greece/taxes/" target="_blank">Tax Guide</a>
+    </div>
+  </div>
 </div>
 
-<!-- TABS -->
-<div class="section">
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('regions')">📍 By Region</button>
-        <button class="tab-btn" onclick="switchTab('properties')">🏠 All Properties</button>
-        <button class="tab-btn" onclick="switchTab('comparison')">📋 Comparison Table</button>
-        <button class="tab-btn" onclick="switchTab('links')">🔗 Live Search Links</button>
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="m-close" onclick="closeModal()">&times;</button>
+    <img class="m-img" id="mImg" src="" alt="">
+    <div class="m-body">
+      <div class="m-name" id="mName"></div>
+      <div class="m-area" id="mArea"></div>
+      <div class="m-score-wrap">
+        <div class="m-score-top">
+          <span class="m-score-label">Investment Score</span>
+          <span class="m-score-num" id="mScore"></span>
+        </div>
+        <div class="m-score-bar"><div class="m-score-fill" id="mScoreFill"></div></div>
+        <div class="m-breakdown" id="mBreakdown"></div>
+      </div>
+      <div class="m-grid" id="mStats"></div>
+      <div class="m-airbnb" id="mAirbnb">
+        <div class="m-airbnb-title">🏠 Airbnb Rental Estimate</div>
+        <div class="m-airbnb-grid" id="mAirbnbGrid"></div>
+      </div>
+      <div class="m-badges" id="mBadges"></div>
+      <a class="m-book" id="mLink" href="#" target="_blank">View on Rightmove →</a>
     </div>
-
-    <!-- REGIONS TAB -->
-    <div id="tab-regions" class="tab-content active">
-        <h2 class="section-title">Investment Regions</h2>
-        <p class="section-subtitle">Click a region to see its properties. All regions have beaches + city amenities.</p>
-        <div class="region-grid">
-            
-        <div class="region-card" data-region-key="northern_greece">
-            <h3>Drama & Serres, Northern Greece</h3>
-            <div class="region-stats">
-                <div class="region-stat">
-                    <span class="stat-label">Population</span>
-                    <span class="stat-value">Drama ~60,000; Serres ~76,000</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Airport</span>
-                    <span class="stat-value">SKG - Thessaloniki International (1-2 hr drive)</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Beach</span>
-                    <span class="stat-value">1-2 hours to Kavala coast & Thassos island beaches</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Avg Price/m²</span>
-                    <span class="stat-value">€500</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Rental Yield</span>
-                    <span class="stat-value">5-7%</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Listings</span>
-                    <span class="stat-value">7 properties</span>
-                </div>
-            </div>
-            <p class="region-desc">Affordable cities in Northern Greece with very low cost of living. Drama is known for wine country and scenic mountains, Serres for its cultural heritage. Cheapest property market in Greece.</p>
-            <p class="region-why"><strong>Why invest:</strong> Cheapest property prices in Greece, high rental yields relative to price, growing domestic tourism, university rental demand, large houses for the price of a studio elsewhere, cross-border visitors from Bulgaria.</p>
-            <div class="region-price-range">
-                Price range: <strong>€56,000 - €70,000</strong>
-                (CA$82,880 - CA$103,600)
-            </div>
-            <button class="btn-filter-region" onclick="filterByRegion('northern_greece')">
-                Show 7 Properties &darr;
-            </button>
-        </div>
-
-        <div class="region-card" data-region-key="pelion_sporades">
-            <h3>Pelion & Alonnisos, Thessaly</h3>
-            <div class="region-stats">
-                <div class="region-stat">
-                    <span class="stat-label">Population</span>
-                    <span class="stat-value">Volos ~145,000 (nearby hub)</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Airport</span>
-                    <span class="stat-value">VOL - Volos Nea Anchialos (seasonal); SKG 2.5hr</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Beach</span>
-                    <span class="stat-value">Pelion has beaches on both sides; Alonnisos is entirely coastal</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Avg Price/m²</span>
-                    <span class="stat-value">€800</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Rental Yield</span>
-                    <span class="stat-value">4-5% (seasonal)</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Listings</span>
-                    <span class="stat-value">2 properties</span>
-                </div>
-            </div>
-            <p class="region-desc">Pelion peninsula combines mountain villages with beautiful beaches. Alonnisos is a pristine Sporades island with Greece's first marine park. Both are off the mass-tourism radar, offering authentic Greek experiences.</p>
-            <p class="region-why"><strong>Why invest:</strong> Hidden gem destinations, growing ecotourism, affordable prices, Pelion ski + beach combo, Alonnisos marine park, less competition from mass tourism, authentic character properties.</p>
-            <div class="region-price-range">
-                Price range: <strong>€60,000 - €70,000</strong>
-                (CA$88,800 - CA$103,600)
-            </div>
-            <button class="btn-filter-region" onclick="filterByRegion('pelion_sporades')">
-                Show 2 Properties &darr;
-            </button>
-        </div>
-
-        <div class="region-card" data-region-key="ionian_islands">
-            <h3>Corfu & Cephalonia, Ionian Islands</h3>
-            <div class="region-stats">
-                <div class="region-stat">
-                    <span class="stat-label">Population</span>
-                    <span class="stat-value">Corfu Town ~40,000; Argostoli ~14,000</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Airport</span>
-                    <span class="stat-value">CFU (Corfu), EFL (Cephalonia) - seasonal EU flights</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Beach</span>
-                    <span class="stat-value">Islands are entirely coastal - beaches everywhere</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Avg Price/m²</span>
-                    <span class="stat-value">€900</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Rental Yield</span>
-                    <span class="stat-value">4-6% (Airbnb seasonal)</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Listings</span>
-                    <span class="stat-value">7 properties</span>
-                </div>
-            </div>
-            <p class="region-desc">The Ionian Islands on Greece's west coast have lush green landscapes, crystal-clear turquoise waters, and Venetian architecture. Corfu and Cephalonia offer some of Greece's most affordable island properties.</p>
-            <p class="region-why"><strong>Why invest:</strong> Affordable island properties, strong summer Airbnb demand, Venetian charm, international airport access, EU ferry routes, authentic character homes, renovation potential with high upside.</p>
-            <div class="region-price-range">
-                Price range: <strong>€58,000 - €70,000</strong>
-                (CA$85,840 - CA$103,600)
-            </div>
-            <button class="btn-filter-region" onclick="filterByRegion('ionian_islands')">
-                Show 7 Properties &darr;
-            </button>
-        </div>
-
-        <div class="region-card" data-region-key="crete">
-            <h3>Chania, Western Crete</h3>
-            <div class="region-stats">
-                <div class="region-stat">
-                    <span class="stat-label">Population</span>
-                    <span class="stat-value">~110,000</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Airport</span>
-                    <span class="stat-value">CHQ - Chania International</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Beach</span>
-                    <span class="stat-value">City is on the coast - beaches within walking distance</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Avg Price/m²</span>
-                    <span class="stat-value">€1,400</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Rental Yield</span>
-                    <span class="stat-value">4-5%</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Listings</span>
-                    <span class="stat-value">1 properties</span>
-                </div>
-            </div>
-            <p class="region-desc">One of the most beautiful cities in Crete with a stunning Venetian harbor. World-famous beaches like Elafonissi and Balos nearby. Budget properties available in mountain villages with easy beach access.</p>
-            <p class="region-why"><strong>Why invest:</strong> Tourism hotspot with year-round appeal, Venetian old town charm, top beaches in Europe, strong Airbnb demand. Mountain village renovations offer great value within budget.</p>
-            <div class="region-price-range">
-                Price range: <strong>€60,000 - €60,000</strong>
-                (CA$88,800 - CA$88,800)
-            </div>
-            <button class="btn-filter-region" onclick="filterByRegion('crete')">
-                Show 1 Properties &darr;
-            </button>
-        </div>
-
-        <div class="region-card" data-region-key="attica">
-            <h3>Athens / Attica</h3>
-            <div class="region-stats">
-                <div class="region-stat">
-                    <span class="stat-label">Population</span>
-                    <span class="stat-value">~3.7M (Athens metro)</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Airport</span>
-                    <span class="stat-value">ATH - Athens International (major hub)</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Beach</span>
-                    <span class="stat-value">Athens Riviera beaches 20-30 min from center</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Avg Price/m²</span>
-                    <span class="stat-value">€1,800</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Rental Yield</span>
-                    <span class="stat-value">5-6%</span>
-                </div>
-                <div class="region-stat">
-                    <span class="stat-label">Listings</span>
-                    <span class="stat-value">1 properties</span>
-                </div>
-            </div>
-            <p class="region-desc">Greece's capital region. Student areas like Zografos near universities offer affordable apartments with strong year-round rental demand. Best city for non-seasonal rental income.</p>
-            <p class="region-why"><strong>Why invest:</strong> Capital city with highest rental demand, major international airport hub, year-round rentals (not seasonal), university district properties have consistent tenant demand, metro connectivity.</p>
-            <div class="region-price-range">
-                Price range: <strong>€73,000 - €73,000</strong>
-                (CA$108,040 - CA$108,040)
-            </div>
-            <button class="btn-filter-region" onclick="filterByRegion('attica')">
-                Show 1 Properties &darr;
-            </button>
-        </div>
-        </div>
-    </div>
-
-    <!-- PROPERTIES TAB -->
-    <div id="tab-properties" class="tab-content">
-        <h2 class="section-title">All Properties</h2>
-        <p class="section-subtitle">Filter and sort to find your ideal investment + vacation property.</p>
-
-        <div class="filters">
-            <label>Region:</label>
-            <button class="filter-btn active" onclick="filterByRegion('all')">All Regions</button>
-<button class="filter-btn" onclick="filterByRegion('attica')">Athens / Attica (1)</button>
-<button class="filter-btn" onclick="filterByRegion('crete')">Chania, Western Crete (1)</button>
-<button class="filter-btn" onclick="filterByRegion('ionian_islands')">Corfu & Cephalonia, Ionian Islands (7)</button>
-<button class="filter-btn" onclick="filterByRegion('northern_greece')">Drama & Serres, Northern Greece (7)</button>
-<button class="filter-btn" onclick="filterByRegion('pelion_sporades')">Pelion & Alonnisos, Thessaly (2)</button>
-
-        </div>
-        <div class="filters">
-            <label>Sort:</label>
-            <div class="filter-sort">
-                <select id="sort-select" onchange="sortProperties()">
-                    <option value="price-asc">Price: Low to High</option>
-                    <option value="price-desc">Price: High to Low</option>
-                    <option value="area-desc">Size: Largest First</option>
-                    <option value="psqm-asc">€/m²: Low to High</option>
-                </select>
-            </div>
-            <label style="margin-left: 16px;">Max price:</label>
-            <div class="filter-range">
-                <input type="number" id="max-price" placeholder="€ max" onchange="applyFilters()" value="">
-            </div>
-        </div>
-
-        <div class="count-display" id="count-display">Showing 18 properties</div>
-        <div class="property-grid" id="property-grid">
-            
-        <div class="property-card" data-region="northern_greece" data-price="56000" data-beds="-1" data-area="40">
-            <div class="card-image">
-                <img src="https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/793fe631c/162955775/793fe631cab7895c47f2ceebada11d35_max_476x317.jpeg" alt="Studio Flat - Drama City Centre" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
-                <span class="card-region">Drama & Serres, Northern Greece</span>
-                <span class="card-type">Studio flat</span>
-                <span class="roi-badge">ROI 5-7%</span>
-            </div>
-            <div class="card-body">
-                <h3 class="card-title">Studio Flat - Drama City Centre</h3>
-                <div class="card-price">
-                    <span class="price-eur">€56,000</span>
-                    <span class="price-cad">CA$82,880</span>
-                </div>
-                <div class="card-stats">
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor" stroke="none">m²</text></svg> 40 m²</span>
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V7"/><path d="M3 7l9-4 9 4"/></svg> Studio</span>
-                    <span class="stat price-sqm">€1,400/m²</span>
-                </div>
-                <div class="features"><span class="feature-tag">City centre</span><span class="feature-tag">Studio</span><span class="feature-tag">Ready to rent</span><span class="feature-tag">Lowest entry price</span></div>
-                <a href="https://www.rightmove.co.uk/properties/162955775#/?channel=OVERSEAS" target="_blank" rel="noopener" class="card-link">
-                    View on Rightmove &rarr;
-                </a>
-            </div>
-        </div>
-
-        <div class="property-card" data-region="northern_greece" data-price="57000" data-beds="2" data-area="85">
-            <div class="card-image">
-                <img src="https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/88e10b9f3/166495556/88e10b9f3311b29c12fc0c634fbe0f1b_max_476x317.jpeg" alt="2-Bed Detached House - Efkarpia, Serres" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
-                <span class="card-region">Drama & Serres, Northern Greece</span>
-                <span class="card-type">Detached house</span>
-                <span class="roi-badge">ROI 5-6%</span>
-            </div>
-            <div class="card-body">
-                <h3 class="card-title">2-Bed Detached House - Efkarpia, Serres</h3>
-                <div class="card-price">
-                    <span class="price-eur">€57,000</span>
-                    <span class="price-cad">CA$84,360</span>
-                </div>
-                <div class="card-stats">
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor" stroke="none">m²</text></svg> 85 m²</span>
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V7"/><path d="M3 7l9-4 9 4"/></svg> 2 bed</span>
-                    <span class="stat price-sqm">€670/m²</span>
-                </div>
-                <div class="features"><span class="feature-tag">2 bedrooms</span><span class="feature-tag">Detached</span><span class="feature-tag">85m²</span><span class="feature-tag">Serres area</span></div>
-                <a href="https://www.rightmove.co.uk/properties/166495556#/?channel=OVERSEAS" target="_blank" rel="noopener" class="card-link">
-                    View on Rightmove &rarr;
-                </a>
-            </div>
-        </div>
-
-        <div class="property-card" data-region="northern_greece" data-price="57000" data-beds="5" data-area="120">
-            <div class="card-image">
-                <img src="https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/4c5da3c84/169430747/4c5da3c841ead16360bc9541203fad0b_max_476x317.jpeg" alt="5-Bed Detached House - Chryso, Serres" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
-                <span class="card-region">Drama & Serres, Northern Greece</span>
-                <span class="card-type">Detached house</span>
-                <span class="roi-badge">ROI 5-7%</span>
-            </div>
-            <div class="card-body">
-                <h3 class="card-title">5-Bed Detached House - Chryso, Serres</h3>
-                <div class="card-price">
-                    <span class="price-eur">€57,000</span>
-                    <span class="price-cad">CA$84,360</span>
-                </div>
-                <div class="card-stats">
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor" stroke="none">m²</text></svg> 120 m²</span>
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V7"/><path d="M3 7l9-4 9 4"/></svg> 5 bed</span>
-                    <span class="stat price-sqm">€475/m²</span>
-                </div>
-                <div class="features"><span class="feature-tag">5 bedrooms</span><span class="feature-tag">120m²</span><span class="feature-tag">Large family home</span><span class="feature-tag">Incredible value</span></div>
-                <a href="https://www.rightmove.co.uk/properties/169430747#/?channel=OVERSEAS" target="_blank" rel="noopener" class="card-link">
-                    View on Rightmove &rarr;
-                </a>
-            </div>
-        </div>
-
-        <div class="property-card" data-region="ionian_islands" data-price="58000" data-beds="1" data-area="55">
-            <div class="card-image">
-                <img src="https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/f501791a2/169757939/f501791a2928226c700059ba540bd212_max_476x317.jpeg" alt="1-Bed Stone House - Corfu Island" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
-                <span class="card-region">Corfu & Cephalonia, Ionian Islands</span>
-                <span class="card-type">House</span>
-                <span class="roi-badge">ROI 4-6% (Airbnb)</span>
-            </div>
-            <div class="card-body">
-                <h3 class="card-title">1-Bed Stone House - Corfu Island</h3>
-                <div class="card-price">
-                    <span class="price-eur">€58,000</span>
-                    <span class="price-cad">CA$85,840</span>
-                </div>
-                <div class="card-stats">
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor" stroke="none">m²</text></svg> 55 m²</span>
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V7"/><path d="M3 7l9-4 9 4"/></svg> 1 bed</span>
-                    <span class="stat price-sqm">€1,054/m²</span>
-                </div>
-                <div class="features"><span class="feature-tag">Stone house</span><span class="feature-tag">Renovation potential</span><span class="feature-tag">Corfu island</span></div>
-                <a href="https://www.rightmove.co.uk/properties/169757939#/?channel=OVERSEAS" target="_blank" rel="noopener" class="card-link">
-                    View on Rightmove &rarr;
-                </a>
-            </div>
-        </div>
-
-        <div class="property-card" data-region="ionian_islands" data-price="58000" data-beds="2" data-area="70">
-            <div class="card-image">
-                <img src="https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/ccbf671f7/164335409/ccbf671f791c9dd8962d06901e2cd4c7_max_476x317.jpeg" alt="2-Bed House - Agia Irini, Cephalonia" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
-                <span class="card-region">Corfu & Cephalonia, Ionian Islands</span>
-                <span class="card-type">House</span>
-                <span class="roi-badge">ROI 4-5%</span>
-            </div>
-            <div class="card-body">
-                <h3 class="card-title">2-Bed House - Agia Irini, Cephalonia</h3>
-                <div class="card-price">
-                    <span class="price-eur">€58,000</span>
-                    <span class="price-cad">CA$85,840</span>
-                </div>
-                <div class="card-stats">
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor" stroke="none">m²</text></svg> 70 m²</span>
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V7"/><path d="M3 7l9-4 9 4"/></svg> 2 bed</span>
-                    <span class="stat price-sqm">€828/m²</span>
-                </div>
-                <div class="features"><span class="feature-tag">2 bedrooms</span><span class="feature-tag">Cephalonia island</span><span class="feature-tag">Reduced price</span></div>
-                <a href="https://www.rightmove.co.uk/properties/164335409#/?channel=OVERSEAS" target="_blank" rel="noopener" class="card-link">
-                    View on Rightmove &rarr;
-                </a>
-            </div>
-        </div>
-
-        <div class="property-card" data-region="northern_greece" data-price="58000" data-beds="-1" data-area="38">
-            <div class="card-image">
-                <img src="https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/705ae7346/170088143/705ae7346705e8d66d72ed72f1d04ed9_max_476x317.jpeg" alt="Studio Flat - Serres City" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
-                <span class="card-region">Drama & Serres, Northern Greece</span>
-                <span class="card-type">Studio flat</span>
-                <span class="roi-badge">ROI 5-7%</span>
-            </div>
-            <div class="card-body">
-                <h3 class="card-title">Studio Flat - Serres City</h3>
-                <div class="card-price">
-                    <span class="price-eur">€58,000</span>
-                    <span class="price-cad">CA$85,840</span>
-                </div>
-                <div class="card-stats">
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor" stroke="none">m²</text></svg> 38 m²</span>
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V7"/><path d="M3 7l9-4 9 4"/></svg> Studio</span>
-                    <span class="stat price-sqm">€1,526/m²</span>
-                </div>
-                <div class="features"><span class="feature-tag">City location</span><span class="feature-tag">Studio flat</span><span class="feature-tag">Rental ready</span></div>
-                <a href="https://www.rightmove.co.uk/properties/170088143#/?channel=OVERSEAS" target="_blank" rel="noopener" class="card-link">
-                    View on Rightmove &rarr;
-                </a>
-            </div>
-        </div>
-
-        <div class="property-card" data-region="ionian_islands" data-price="60000" data-beds="2" data-area="65">
-            <div class="card-image">
-                <img src="https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/52bf02e40/147192746/52bf02e402b24e10d1554e133d5e1f20_max_476x317.jpeg" alt="2-Bed Property - Episkepsi, Corfu" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
-                <span class="card-region">Corfu & Cephalonia, Ionian Islands</span>
-                <span class="card-type">Property</span>
-                <span class="roi-badge">ROI 4-5%</span>
-            </div>
-            <div class="card-body">
-                <h3 class="card-title">2-Bed Property - Episkepsi, Corfu</h3>
-                <div class="card-price">
-                    <span class="price-eur">€60,000</span>
-                    <span class="price-cad">CA$88,800</span>
-                </div>
-                <div class="card-stats">
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor" stroke="none">m²</text></svg> 65 m²</span>
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V7"/><path d="M3 7l9-4 9 4"/></svg> 2 bed</span>
-                    <span class="stat price-sqm">€923/m²</span>
-                </div>
-                <div class="features"><span class="feature-tag">2 bedrooms</span><span class="feature-tag">North Corfu village</span><span class="feature-tag">Character property</span></div>
-                <a href="https://www.rightmove.co.uk/properties/147192746#/?channel=OVERSEAS" target="_blank" rel="noopener" class="card-link">
-                    View on Rightmove &rarr;
-                </a>
-            </div>
-        </div>
-
-        <div class="property-card" data-region="ionian_islands" data-price="60000" data-beds="1" data-area="50">
-            <div class="card-image">
-                <img src="https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/f02587829/169522346/f025878293b87c713ee22cc648c961cd_max_476x317.jpeg" alt="1-Bed Detached House - Kaminarata, Cephalonia" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
-                <span class="card-region">Corfu & Cephalonia, Ionian Islands</span>
-                <span class="card-type">Detached house</span>
-                <span class="roi-badge">ROI 4-5%</span>
-            </div>
-            <div class="card-body">
-                <h3 class="card-title">1-Bed Detached House - Kaminarata, Cephalonia</h3>
-                <div class="card-price">
-                    <span class="price-eur">€60,000</span>
-                    <span class="price-cad">CA$88,800</span>
-                </div>
-                <div class="card-stats">
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor" stroke="none">m²</text></svg> 50 m²</span>
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V7"/><path d="M3 7l9-4 9 4"/></svg> 1 bed</span>
-                    <span class="stat price-sqm">€1,200/m²</span>
-                </div>
-                <div class="features"><span class="feature-tag">Detached house</span><span class="feature-tag">Cephalonia village</span><span class="feature-tag">Close to beaches</span></div>
-                <a href="https://www.rightmove.co.uk/properties/169522346#/?channel=OVERSEAS" target="_blank" rel="noopener" class="card-link">
-                    View on Rightmove &rarr;
-                </a>
-            </div>
-        </div>
-
-        <div class="property-card" data-region="crete" data-price="60000" data-beds="2" data-area="70">
-            <div class="card-image">
-                <img src="https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/a2b84270d/159737804/a2b84270d253ce62ea8aecae2c83f063_max_476x317.jpeg" alt="2-Bed Detached House - Topolia, Chania, Crete" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
-                <span class="card-region">Chania, Western Crete</span>
-                <span class="card-type">Detached house</span>
-                <span class="roi-badge">ROI 3-5%</span>
-            </div>
-            <div class="card-body">
-                <h3 class="card-title">2-Bed Detached House - Topolia, Chania, Crete</h3>
-                <div class="card-price">
-                    <span class="price-eur">€60,000</span>
-                    <span class="price-cad">CA$88,800</span>
-                </div>
-                <div class="card-stats">
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor" stroke="none">m²</text></svg> 70 m²</span>
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V7"/><path d="M3 7l9-4 9 4"/></svg> 2 bed</span>
-                    <span class="stat price-sqm">€857/m²</span>
-                </div>
-                <div class="features"><span class="feature-tag">2 bedrooms</span><span class="feature-tag">Chania area</span><span class="feature-tag">Mountain village</span><span class="feature-tag">Character property</span></div>
-                <a href="https://www.rightmove.co.uk/properties/159737804#/?channel=OVERSEAS" target="_blank" rel="noopener" class="card-link">
-                    View on Rightmove &rarr;
-                </a>
-            </div>
-        </div>
-
-        <div class="property-card" data-region="pelion_sporades" data-price="60000" data-beds="2" data-area="55">
-            <div class="card-image">
-                <img src="https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/ada9f3d64/169527362/ada9f3d641dc27ff3d07974a56d7e5d3_max_476x317.jpeg" alt="2-Bed Property - Alonnisos Island" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
-                <span class="card-region">Pelion & Alonnisos, Thessaly</span>
-                <span class="card-type">Property</span>
-                <span class="roi-badge">ROI 4-5% (seasonal)</span>
-            </div>
-            <div class="card-body">
-                <h3 class="card-title">2-Bed Property - Alonnisos Island</h3>
-                <div class="card-price">
-                    <span class="price-eur">€60,000</span>
-                    <span class="price-cad">CA$88,800</span>
-                </div>
-                <div class="card-stats">
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor" stroke="none">m²</text></svg> 55 m²</span>
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V7"/><path d="M3 7l9-4 9 4"/></svg> 2 bed</span>
-                    <span class="stat price-sqm">€1,090/m²</span>
-                </div>
-                <div class="features"><span class="feature-tag">Island living</span><span class="feature-tag">2 bedrooms</span><span class="feature-tag">Marine park island</span><span class="feature-tag">Reduced price</span></div>
-                <a href="https://www.rightmove.co.uk/properties/169527362#/?channel=OVERSEAS" target="_blank" rel="noopener" class="card-link">
-                    View on Rightmove &rarr;
-                </a>
-            </div>
-        </div>
-
-        <div class="property-card" data-region="ionian_islands" data-price="69000" data-beds="2" data-area="70">
-            <div class="card-image">
-                <img src="https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/1b5a9b9fe/157731170/1b5a9b9fe22825c0dbe215304a13d6d3_max_476x317.jpeg" alt="2-Bed House - Karoussades, Corfu" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
-                <span class="card-region">Corfu & Cephalonia, Ionian Islands</span>
-                <span class="card-type">House</span>
-                <span class="roi-badge">ROI 4-5%</span>
-            </div>
-            <div class="card-body">
-                <h3 class="card-title">2-Bed House - Karoussades, Corfu</h3>
-                <div class="card-price">
-                    <span class="price-eur">€69,000</span>
-                    <span class="price-cad">CA$102,120</span>
-                </div>
-                <div class="card-stats">
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor" stroke="none">m²</text></svg> 70 m²</span>
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V7"/><path d="M3 7l9-4 9 4"/></svg> 2 bed</span>
-                    <span class="stat price-sqm">€985/m²</span>
-                </div>
-                <div class="features"><span class="feature-tag">2 bedrooms</span><span class="feature-tag">Near north coast beaches</span><span class="feature-tag">Village charm</span></div>
-                <a href="https://www.rightmove.co.uk/properties/157731170#/?channel=OVERSEAS" target="_blank" rel="noopener" class="card-link">
-                    View on Rightmove &rarr;
-                </a>
-            </div>
-        </div>
-
-        <div class="property-card" data-region="ionian_islands" data-price="69000" data-beds="-1" data-area="60">
-            <div class="card-image">
-                <img src="https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/9ee07dcfe/147192770/9ee07dcfe83bebe53a96d432940f7c3a_max_476x317.jpeg" alt="Property - Lakones, Corfu (Paleokastritsa area)" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
-                <span class="card-region">Corfu & Cephalonia, Ionian Islands</span>
-                <span class="card-type">Property</span>
-                <span class="roi-badge">ROI 4-6% (Airbnb)</span>
-            </div>
-            <div class="card-body">
-                <h3 class="card-title">Property - Lakones, Corfu (Paleokastritsa area)</h3>
-                <div class="card-price">
-                    <span class="price-eur">€69,000</span>
-                    <span class="price-cad">CA$102,120</span>
-                </div>
-                <div class="card-stats">
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor" stroke="none">m²</text></svg> 60 m²</span>
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V7"/><path d="M3 7l9-4 9 4"/></svg> N/A</span>
-                    <span class="stat price-sqm">€1,150/m²</span>
-                </div>
-                <div class="features"><span class="feature-tag">Near Paleokastritsa</span><span class="feature-tag">Corfu west coast</span><span class="feature-tag">Scenic location</span></div>
-                <a href="https://www.rightmove.co.uk/properties/147192770#/?channel=OVERSEAS" target="_blank" rel="noopener" class="card-link">
-                    View on Rightmove &rarr;
-                </a>
-            </div>
-        </div>
-
-        <div class="property-card" data-region="ionian_islands" data-price="70000" data-beds="3" data-area="85">
-            <div class="card-image">
-                <img src="https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/00fb7730c/147192809/00fb7730c403292ec505cb1ff08ed713_max_476x317.jpeg" alt="3-Bed Property - Karoussades, Corfu" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
-                <span class="card-region">Corfu & Cephalonia, Ionian Islands</span>
-                <span class="card-type">Property</span>
-                <span class="roi-badge">ROI 4-5%</span>
-            </div>
-            <div class="card-body">
-                <h3 class="card-title">3-Bed Property - Karoussades, Corfu</h3>
-                <div class="card-price">
-                    <span class="price-eur">€70,000</span>
-                    <span class="price-cad">CA$103,600</span>
-                </div>
-                <div class="card-stats">
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor" stroke="none">m²</text></svg> 85 m²</span>
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V7"/><path d="M3 7l9-4 9 4"/></svg> 3 bed</span>
-                    <span class="stat price-sqm">€823/m²</span>
-                </div>
-                <div class="features"><span class="feature-tag">3 bedrooms</span><span class="feature-tag">North Corfu</span><span class="feature-tag">Near beaches</span></div>
-                <a href="https://www.rightmove.co.uk/properties/147192809#/?channel=OVERSEAS" target="_blank" rel="noopener" class="card-link">
-                    View on Rightmove &rarr;
-                </a>
-            </div>
-        </div>
-
-        <div class="property-card" data-region="northern_greece" data-price="70000" data-beds="2" data-area="65">
-            <div class="card-image">
-                <img src="https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/b8e9e150e/169011563/b8e9e150e454d86cf1bab5110e7d7ae4_max_476x317.jpeg" alt="2-Bed Flat - Drama City" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
-                <span class="card-region">Drama & Serres, Northern Greece</span>
-                <span class="card-type">Flat</span>
-                <span class="roi-badge">ROI 5-6%</span>
-            </div>
-            <div class="card-body">
-                <h3 class="card-title">2-Bed Flat - Drama City</h3>
-                <div class="card-price">
-                    <span class="price-eur">€70,000</span>
-                    <span class="price-cad">CA$103,600</span>
-                </div>
-                <div class="card-stats">
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor" stroke="none">m²</text></svg> 65 m²</span>
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V7"/><path d="M3 7l9-4 9 4"/></svg> 2 bed</span>
-                    <span class="stat price-sqm">€1,076/m²</span>
-                </div>
-                <div class="features"><span class="feature-tag">2 bedrooms</span><span class="feature-tag">City apartment</span><span class="feature-tag">Ready to move in</span></div>
-                <a href="https://www.rightmove.co.uk/properties/169011563#/?channel=OVERSEAS" target="_blank" rel="noopener" class="card-link">
-                    View on Rightmove &rarr;
-                </a>
-            </div>
-        </div>
-
-        <div class="property-card" data-region="northern_greece" data-price="70000" data-beds="2" data-area="80">
-            <div class="card-image">
-                <img src="https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/443ad7c8a/159071498/443ad7c8a30b49564efaf26ffc4464c7_max_476x317.jpeg" alt="2-Bed Detached House - Adriani, Drama" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
-                <span class="card-region">Drama & Serres, Northern Greece</span>
-                <span class="card-type">Detached house</span>
-                <span class="roi-badge">ROI 5-6%</span>
-            </div>
-            <div class="card-body">
-                <h3 class="card-title">2-Bed Detached House - Adriani, Drama</h3>
-                <div class="card-price">
-                    <span class="price-eur">€70,000</span>
-                    <span class="price-cad">CA$103,600</span>
-                </div>
-                <div class="card-stats">
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor" stroke="none">m²</text></svg> 80 m²</span>
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V7"/><path d="M3 7l9-4 9 4"/></svg> 2 bed</span>
-                    <span class="stat price-sqm">€875/m²</span>
-                </div>
-                <div class="features"><span class="feature-tag">2 bedrooms</span><span class="feature-tag">Detached</span><span class="feature-tag">80m²</span><span class="feature-tag">Village setting</span></div>
-                <a href="https://www.rightmove.co.uk/properties/159071498#/?channel=OVERSEAS" target="_blank" rel="noopener" class="card-link">
-                    View on Rightmove &rarr;
-                </a>
-            </div>
-        </div>
-
-        <div class="property-card" data-region="northern_greece" data-price="70000" data-beds="4" data-area="130">
-            <div class="card-image">
-                <img src="https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/3633cb896/169742507/3633cb89629d936b52fb63a8b6e2b50e_max_476x317.jpeg" alt="4-Bed Detached House - Rodolivos, Serres" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
-                <span class="card-region">Drama & Serres, Northern Greece</span>
-                <span class="card-type">Detached house</span>
-                <span class="roi-badge">ROI 5-6%</span>
-            </div>
-            <div class="card-body">
-                <h3 class="card-title">4-Bed Detached House - Rodolivos, Serres</h3>
-                <div class="card-price">
-                    <span class="price-eur">€70,000</span>
-                    <span class="price-cad">CA$103,600</span>
-                </div>
-                <div class="card-stats">
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor" stroke="none">m²</text></svg> 130 m²</span>
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V7"/><path d="M3 7l9-4 9 4"/></svg> 4 bed</span>
-                    <span class="stat price-sqm">€538/m²</span>
-                </div>
-                <div class="features"><span class="feature-tag">4 bedrooms</span><span class="feature-tag">130m²</span><span class="feature-tag">Large family home</span></div>
-                <a href="https://www.rightmove.co.uk/properties/169742507#/?channel=OVERSEAS" target="_blank" rel="noopener" class="card-link">
-                    View on Rightmove &rarr;
-                </a>
-            </div>
-        </div>
-
-        <div class="property-card" data-region="pelion_sporades" data-price="70000" data-beds="-1" data-area="75">
-            <div class="card-image">
-                <img src="https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/6331d4b20/172463645/6331d4b209afdc646bc0370a530a2c1f_max_476x317.jpeg" alt="Detached House - Portaria, Pelion" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
-                <span class="card-region">Pelion & Alonnisos, Thessaly</span>
-                <span class="card-type">Detached house</span>
-                <span class="roi-badge">ROI 4-5%</span>
-            </div>
-            <div class="card-body">
-                <h3 class="card-title">Detached House - Portaria, Pelion</h3>
-                <div class="card-price">
-                    <span class="price-eur">€70,000</span>
-                    <span class="price-cad">CA$103,600</span>
-                </div>
-                <div class="card-stats">
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor" stroke="none">m²</text></svg> 75 m²</span>
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V7"/><path d="M3 7l9-4 9 4"/></svg> N/A</span>
-                    <span class="stat price-sqm">€933/m²</span>
-                </div>
-                <div class="features"><span class="feature-tag">Pelion mountain village</span><span class="feature-tag">Near beaches</span><span class="feature-tag">Character property</span></div>
-                <a href="https://www.rightmove.co.uk/properties/172463645#/?channel=OVERSEAS" target="_blank" rel="noopener" class="card-link">
-                    View on Rightmove &rarr;
-                </a>
-            </div>
-        </div>
-
-        <div class="property-card" data-region="attica" data-price="73000" data-beds="2" data-area="65">
-            <div class="card-image">
-                <img src="https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/db7d7fd42/172039565/db7d7fd420cb1ededdddb6734a54cc59_max_476x317.jpeg" alt="2-Bed Flat - Zografos, Athens (University area)" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
-                <span class="card-region">Athens / Attica</span>
-                <span class="card-type">Flat</span>
-                <span class="roi-badge">ROI 5-6%</span>
-            </div>
-            <div class="card-body">
-                <h3 class="card-title">2-Bed Flat - Zografos, Athens (University area)</h3>
-                <div class="card-price">
-                    <span class="price-eur">€73,000</span>
-                    <span class="price-cad">CA$108,040</span>
-                </div>
-                <div class="card-stats">
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor" stroke="none">m²</text></svg> 65 m²</span>
-                    <span class="stat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V7"/><path d="M3 7l9-4 9 4"/></svg> 2 bed</span>
-                    <span class="stat price-sqm">€1,123/m²</span>
-                </div>
-                <div class="features"><span class="feature-tag">Athens location</span><span class="feature-tag">2 bedrooms</span><span class="feature-tag">Near university</span><span class="feature-tag">Strong rental demand</span></div>
-                <a href="https://www.rightmove.co.uk/properties/172039565#/?channel=OVERSEAS" target="_blank" rel="noopener" class="card-link">
-                    View on Rightmove &rarr;
-                </a>
-            </div>
-        </div>
-        </div>
-        <div class="no-results" id="no-results" style="display:none">
-            No properties match your filters. Try adjusting your criteria.
-        </div>
-    </div>
-
-    <!-- COMPARISON TAB -->
-    <div id="tab-comparison" class="tab-content">
-        <h2 class="section-title">Side-by-Side Comparison</h2>
-        <p class="section-subtitle">All properties in a sortable table format. Click column headers to sort.</p>
-        <div style="overflow-x: auto;">
-        <table class="comparison-table" id="comparison-table">
-            <thead>
-                <tr>
-                    <th onclick="sortTable(0)" style="cursor:pointer">Region ↕</th>
-                    <th onclick="sortTable(1)" style="cursor:pointer">Property ↕</th>
-                    <th onclick="sortTable(2)" style="cursor:pointer">Price (€) ↕</th>
-                    <th onclick="sortTable(3)" style="cursor:pointer">Price (CA$) ↕</th>
-                    <th onclick="sortTable(4)" style="cursor:pointer">Area (m²) ↕</th>
-                    <th onclick="sortTable(5)" style="cursor:pointer">€/m² ↕</th>
-                    <th onclick="sortTable(6)" style="cursor:pointer">Beds ↕</th>
-                    <th>ROI</th>
-                    <th>Type</th>
-                    <th>Link</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-            <td>Drama & Serres, Northern Greece</td>
-            <td>Studio Flat - Drama City Centre</td>
-            <td data-sort="56000">€56,000</td>
-            <td data-sort="82880">CA$82,880</td>
-            <td data-sort="40">40 m²</td>
-            <td data-sort="1400">€1,400</td>
-            <td data-sort="0">0</td>
-            <td>5-7%</td>
-            <td>Studio flat</td>
-            <td><a href="https://www.rightmove.co.uk/properties/162955775#/?channel=OVERSEAS" target="_blank" rel="noopener">View &rarr;</a></td>
-        </tr>
-<tr>
-            <td>Drama & Serres, Northern Greece</td>
-            <td>2-Bed Detached House - Efkarpia, Serres</td>
-            <td data-sort="57000">€57,000</td>
-            <td data-sort="84360">CA$84,360</td>
-            <td data-sort="85">85 m²</td>
-            <td data-sort="670">€670</td>
-            <td data-sort="2">2</td>
-            <td>5-6%</td>
-            <td>Detached house</td>
-            <td><a href="https://www.rightmove.co.uk/properties/166495556#/?channel=OVERSEAS" target="_blank" rel="noopener">View &rarr;</a></td>
-        </tr>
-<tr>
-            <td>Drama & Serres, Northern Greece</td>
-            <td>5-Bed Detached House - Chryso, Serres</td>
-            <td data-sort="57000">€57,000</td>
-            <td data-sort="84360">CA$84,360</td>
-            <td data-sort="120">120 m²</td>
-            <td data-sort="475">€475</td>
-            <td data-sort="5">5</td>
-            <td>5-7%</td>
-            <td>Detached house</td>
-            <td><a href="https://www.rightmove.co.uk/properties/169430747#/?channel=OVERSEAS" target="_blank" rel="noopener">View &rarr;</a></td>
-        </tr>
-<tr>
-            <td>Corfu & Cephalonia, Ionian Islands</td>
-            <td>1-Bed Stone House - Corfu Island</td>
-            <td data-sort="58000">€58,000</td>
-            <td data-sort="85840">CA$85,840</td>
-            <td data-sort="55">55 m²</td>
-            <td data-sort="1054">€1,054</td>
-            <td data-sort="1">1</td>
-            <td>4-6% (Airbnb)</td>
-            <td>House</td>
-            <td><a href="https://www.rightmove.co.uk/properties/169757939#/?channel=OVERSEAS" target="_blank" rel="noopener">View &rarr;</a></td>
-        </tr>
-<tr>
-            <td>Corfu & Cephalonia, Ionian Islands</td>
-            <td>2-Bed House - Agia Irini, Cephalonia</td>
-            <td data-sort="58000">€58,000</td>
-            <td data-sort="85840">CA$85,840</td>
-            <td data-sort="70">70 m²</td>
-            <td data-sort="828">€828</td>
-            <td data-sort="2">2</td>
-            <td>4-5%</td>
-            <td>House</td>
-            <td><a href="https://www.rightmove.co.uk/properties/164335409#/?channel=OVERSEAS" target="_blank" rel="noopener">View &rarr;</a></td>
-        </tr>
-<tr>
-            <td>Drama & Serres, Northern Greece</td>
-            <td>Studio Flat - Serres City</td>
-            <td data-sort="58000">€58,000</td>
-            <td data-sort="85840">CA$85,840</td>
-            <td data-sort="38">38 m²</td>
-            <td data-sort="1526">€1,526</td>
-            <td data-sort="0">0</td>
-            <td>5-7%</td>
-            <td>Studio flat</td>
-            <td><a href="https://www.rightmove.co.uk/properties/170088143#/?channel=OVERSEAS" target="_blank" rel="noopener">View &rarr;</a></td>
-        </tr>
-<tr>
-            <td>Corfu & Cephalonia, Ionian Islands</td>
-            <td>2-Bed Property - Episkepsi, Corfu</td>
-            <td data-sort="60000">€60,000</td>
-            <td data-sort="88800">CA$88,800</td>
-            <td data-sort="65">65 m²</td>
-            <td data-sort="923">€923</td>
-            <td data-sort="2">2</td>
-            <td>4-5%</td>
-            <td>Property</td>
-            <td><a href="https://www.rightmove.co.uk/properties/147192746#/?channel=OVERSEAS" target="_blank" rel="noopener">View &rarr;</a></td>
-        </tr>
-<tr>
-            <td>Corfu & Cephalonia, Ionian Islands</td>
-            <td>1-Bed Detached House - Kaminarata, Cephalonia</td>
-            <td data-sort="60000">€60,000</td>
-            <td data-sort="88800">CA$88,800</td>
-            <td data-sort="50">50 m²</td>
-            <td data-sort="1200">€1,200</td>
-            <td data-sort="1">1</td>
-            <td>4-5%</td>
-            <td>Detached house</td>
-            <td><a href="https://www.rightmove.co.uk/properties/169522346#/?channel=OVERSEAS" target="_blank" rel="noopener">View &rarr;</a></td>
-        </tr>
-<tr>
-            <td>Chania, Western Crete</td>
-            <td>2-Bed Detached House - Topolia, Chania, Crete</td>
-            <td data-sort="60000">€60,000</td>
-            <td data-sort="88800">CA$88,800</td>
-            <td data-sort="70">70 m²</td>
-            <td data-sort="857">€857</td>
-            <td data-sort="2">2</td>
-            <td>3-5%</td>
-            <td>Detached house</td>
-            <td><a href="https://www.rightmove.co.uk/properties/159737804#/?channel=OVERSEAS" target="_blank" rel="noopener">View &rarr;</a></td>
-        </tr>
-<tr>
-            <td>Pelion & Alonnisos, Thessaly</td>
-            <td>2-Bed Property - Alonnisos Island</td>
-            <td data-sort="60000">€60,000</td>
-            <td data-sort="88800">CA$88,800</td>
-            <td data-sort="55">55 m²</td>
-            <td data-sort="1090">€1,090</td>
-            <td data-sort="2">2</td>
-            <td>4-5% (seasonal)</td>
-            <td>Property</td>
-            <td><a href="https://www.rightmove.co.uk/properties/169527362#/?channel=OVERSEAS" target="_blank" rel="noopener">View &rarr;</a></td>
-        </tr>
-<tr>
-            <td>Corfu & Cephalonia, Ionian Islands</td>
-            <td>2-Bed House - Karoussades, Corfu</td>
-            <td data-sort="69000">€69,000</td>
-            <td data-sort="102120">CA$102,120</td>
-            <td data-sort="70">70 m²</td>
-            <td data-sort="985">€985</td>
-            <td data-sort="2">2</td>
-            <td>4-5%</td>
-            <td>House</td>
-            <td><a href="https://www.rightmove.co.uk/properties/157731170#/?channel=OVERSEAS" target="_blank" rel="noopener">View &rarr;</a></td>
-        </tr>
-<tr>
-            <td>Corfu & Cephalonia, Ionian Islands</td>
-            <td>Property - Lakones, Corfu (Paleokastritsa area)</td>
-            <td data-sort="69000">€69,000</td>
-            <td data-sort="102120">CA$102,120</td>
-            <td data-sort="60">60 m²</td>
-            <td data-sort="1150">€1,150</td>
-            <td data-sort="-1">None</td>
-            <td>4-6% (Airbnb)</td>
-            <td>Property</td>
-            <td><a href="https://www.rightmove.co.uk/properties/147192770#/?channel=OVERSEAS" target="_blank" rel="noopener">View &rarr;</a></td>
-        </tr>
-<tr>
-            <td>Corfu & Cephalonia, Ionian Islands</td>
-            <td>3-Bed Property - Karoussades, Corfu</td>
-            <td data-sort="70000">€70,000</td>
-            <td data-sort="103600">CA$103,600</td>
-            <td data-sort="85">85 m²</td>
-            <td data-sort="823">€823</td>
-            <td data-sort="3">3</td>
-            <td>4-5%</td>
-            <td>Property</td>
-            <td><a href="https://www.rightmove.co.uk/properties/147192809#/?channel=OVERSEAS" target="_blank" rel="noopener">View &rarr;</a></td>
-        </tr>
-<tr>
-            <td>Drama & Serres, Northern Greece</td>
-            <td>2-Bed Flat - Drama City</td>
-            <td data-sort="70000">€70,000</td>
-            <td data-sort="103600">CA$103,600</td>
-            <td data-sort="65">65 m²</td>
-            <td data-sort="1076">€1,076</td>
-            <td data-sort="2">2</td>
-            <td>5-6%</td>
-            <td>Flat</td>
-            <td><a href="https://www.rightmove.co.uk/properties/169011563#/?channel=OVERSEAS" target="_blank" rel="noopener">View &rarr;</a></td>
-        </tr>
-<tr>
-            <td>Drama & Serres, Northern Greece</td>
-            <td>2-Bed Detached House - Adriani, Drama</td>
-            <td data-sort="70000">€70,000</td>
-            <td data-sort="103600">CA$103,600</td>
-            <td data-sort="80">80 m²</td>
-            <td data-sort="875">€875</td>
-            <td data-sort="2">2</td>
-            <td>5-6%</td>
-            <td>Detached house</td>
-            <td><a href="https://www.rightmove.co.uk/properties/159071498#/?channel=OVERSEAS" target="_blank" rel="noopener">View &rarr;</a></td>
-        </tr>
-<tr>
-            <td>Drama & Serres, Northern Greece</td>
-            <td>4-Bed Detached House - Rodolivos, Serres</td>
-            <td data-sort="70000">€70,000</td>
-            <td data-sort="103600">CA$103,600</td>
-            <td data-sort="130">130 m²</td>
-            <td data-sort="538">€538</td>
-            <td data-sort="4">4</td>
-            <td>5-6%</td>
-            <td>Detached house</td>
-            <td><a href="https://www.rightmove.co.uk/properties/169742507#/?channel=OVERSEAS" target="_blank" rel="noopener">View &rarr;</a></td>
-        </tr>
-<tr>
-            <td>Pelion & Alonnisos, Thessaly</td>
-            <td>Detached House - Portaria, Pelion</td>
-            <td data-sort="70000">€70,000</td>
-            <td data-sort="103600">CA$103,600</td>
-            <td data-sort="75">75 m²</td>
-            <td data-sort="933">€933</td>
-            <td data-sort="-1">None</td>
-            <td>4-5%</td>
-            <td>Detached house</td>
-            <td><a href="https://www.rightmove.co.uk/properties/172463645#/?channel=OVERSEAS" target="_blank" rel="noopener">View &rarr;</a></td>
-        </tr>
-<tr>
-            <td>Athens / Attica</td>
-            <td>2-Bed Flat - Zografos, Athens (University area)</td>
-            <td data-sort="73000">€73,000</td>
-            <td data-sort="108040">CA$108,040</td>
-            <td data-sort="65">65 m²</td>
-            <td data-sort="1123">€1,123</td>
-            <td data-sort="2">2</td>
-            <td>5-6%</td>
-            <td>Flat</td>
-            <td><a href="https://www.rightmove.co.uk/properties/172039565#/?channel=OVERSEAS" target="_blank" rel="noopener">View &rarr;</a></td>
-        </tr>
-
-            </tbody>
-        </table>
-        </div>
-    </div>
-
-    <!-- LIVE SEARCH LINKS TAB -->
-    <div id="tab-links" class="tab-content">
-        <h2 class="section-title">🔗 Search Live Listings Yourself</h2>
-        <p class="section-subtitle">Direct links to search on major Greek real estate portals. Prices and availability change daily.</p>
-        <div class="search-links">
-            <div class="search-link-card">
-                <h4>�🇧 Rightmove Overseas (Budget under £55k / €65k)</h4>
-                <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece.html?maxPrice=55000&sortByPriceDescending=false" target="_blank">All Greece under £55k</a>
-                <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Corfu.html?maxPrice=55000" target="_blank">Corfu listings</a>
-                <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Crete.html?maxPrice=55000" target="_blank">Crete listings</a>
-                <a href="https://www.rightmove.co.uk/overseas-property-for-sale/Greece/Cephalonia.html?maxPrice=55000" target="_blank">Cephalonia listings</a>
-            </div>
-            <div class="search-link-card">
-                <h4>🏠 Spitogatos.gr (Largest Greek portal)</h4>
-                <a href="https://en.spitogatos.gr/search/results/residential/buy" target="_blank">Browse all Greece</a>
-                <a href="https://en.spitogatos.gr/search/results/residential/buy?geo_place_ids[]=ChIJ8UNwBh-9oRQR3Y1mdkU1Nic" target="_blank">Northern Greece</a>
-                <a href="https://en.spitogatos.gr/search/results/residential/buy?geo_place_ids[]=ChIJZ07eRWGEhBQRIL8BPxhkSaQ" target="_blank">Chania, Crete</a>
-                <a href="https://en.spitogatos.gr/search/results/residential/buy?geo_place_ids[]=ChIJoQLn3YvhgxQRp9lfWq2IJis" target="_blank">Ionian Islands</a>
-            </div>
-            <div class="search-link-card">
-                <h4>🔍 Properstar.com</h4>
-                <a href="https://www.properstar.com/greece/buy" target="_blank">All Greece</a>
-                <a href="https://www.properstar.com/greece/crete-region/buy" target="_blank">Crete region</a>
-                <a href="https://www.properstar.com/greece/macedonia-and-thrace/buy" target="_blank">Macedonia & Thrace</a>
-                <a href="https://www.properstar.com/greece/peloponnese-western-greece-ionian/buy" target="_blank">Peloponnese & Ionian</a>
-            </div>
-            <div class="search-link-card">
-                <h4>📊 Market Research</h4>
-                <a href="https://www.globalpropertyguide.com/europe/greece/price-history" target="_blank">Global Property Guide - Greece</a>
-                <a href="https://en.spitogatos.gr/blog/real-estate-market-greece-q3-2025" target="_blank">Spitogatos Market Report Q3 2025</a>
-                <a href="https://tranio.com/greece/buying/" target="_blank">Buying Guide for Foreigners</a>
-                <a href="https://tranio.com/greece/taxes/" target="_blank">Property Tax Guide</a>
-            </div>
-            <div class="search-link-card">
-                <h4>✈️ Flight Connections</h4>
-                <a href="https://www.google.com/flights?q=flights+to+corfu" target="_blank">Flights to Corfu (CFU)</a>
-                <a href="https://www.google.com/flights?q=flights+to+chania" target="_blank">Flights to Chania (CHQ)</a>
-                <a href="https://www.google.com/flights?q=flights+to+thessaloniki" target="_blank">Flights to Thessaloniki (SKG)</a>
-                <a href="https://www.google.com/flights?q=flights+to+volos" target="_blank">Flights to Volos (VOL)</a>
-                <a href="https://www.google.com/flights?q=flights+to+athens" target="_blank">Flights to Athens (ATH)</a>
-            </div>
-        </div>
-    </div>
+  </div>
 </div>
 
-</div><!-- container -->
-
-<!-- FOOTER -->
-<footer>
-    <p>Greek Property Finder &middot; Data scraped on 2026-02-22 &middot;
-    Built for a 🍁 Canadian / 🇪🇪 Estonian exploring Greek investment opportunities</p>
-    <p class="disclaimer">
-        ⚠️ <strong>Disclaimer:</strong> This site is for informational purposes only. Property data is aggregated from
-        public real estate portals and may not reflect current prices or availability. Always verify listings directly
-        with agents and conduct proper due diligence before purchasing. Exchange rate used: €1 ≈ CA$1.48.
-        Consult a Greek lawyer and tax advisor before any purchase.
-    </p>
-</footer>
+<div class="footer">
+  18 curated properties from Rightmove Overseas · Data scraped 2026-02-22 · Prices in EUR (CA$1 ≈ €0.68)<br>
+  Built for a 🍁 Canadian / 🇪🇪 Estonian exploring Greek investment · ⚠️ Verify all listings before purchasing
+</div>
 
 <script>
-// Tab switching
-function switchTab(tab) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-    document.getElementById('tab-' + tab).classList.add('active');
-    event.target.classList.add('active');
+const DATA = [
+  {id:0,title:"1-Bed Stone House - Corfu Island",price:58000,cad:85840,area:55,psqm:1054,beds:"1",bedsN:1,roi:"4-6% (Airbnb)",ptype:"House",region:"ionian_islands",regionName:"Corfu & Cephalonia, Ionian Islands",airport:25,beach:10,reno:1,airbnbRate:65,airbnbOcc:55,annualIncome:13048,grossYield:22.5,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/f501791a2/169757939/f501791a2928226c700059ba540bd212_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/169757939#/?channel=OVERSEAS",source:"Rightmove",features:["Stone house", "Renovation potential", "Corfu island"]},
+  {id:1,title:"2-Bed Property - Episkepsi, Corfu",price:60000,cad:88800,area:65,psqm:923,beds:"2",bedsN:2,roi:"4-5%",ptype:"Property",region:"ionian_islands",regionName:"Corfu & Cephalonia, Ionian Islands",airport:30,beach:15,reno:1,airbnbRate:70,airbnbOcc:50,annualIncome:12775,grossYield:21.3,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/52bf02e40/147192746/52bf02e402b24e10d1554e133d5e1f20_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/147192746#/?channel=OVERSEAS",source:"Rightmove",features:["2 bedrooms", "North Corfu village", "Character property"]},
+  {id:2,title:"2-Bed House - Karoussades, Corfu",price:69000,cad:102120,area:70,psqm:985,beds:"2",bedsN:2,roi:"4-5%",ptype:"House",region:"ionian_islands",regionName:"Corfu & Cephalonia, Ionian Islands",airport:20,beach:8,reno:0,airbnbRate:75,airbnbOcc:55,annualIncome:15056,grossYield:21.8,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/1b5a9b9fe/157731170/1b5a9b9fe22825c0dbe215304a13d6d3_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/157731170#/?channel=OVERSEAS",source:"Rightmove",features:["2 bedrooms", "Near north coast beaches", "Village charm"]},
+  {id:3,title:"3-Bed Property - Karoussades, Corfu",price:70000,cad:103600,area:85,psqm:823,beds:"3",bedsN:3,roi:"4-5%",ptype:"Property",region:"ionian_islands",regionName:"Corfu & Cephalonia, Ionian Islands",airport:20,beach:8,reno:1,airbnbRate:80,airbnbOcc:52,annualIncome:15184,grossYield:21.7,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/00fb7730c/147192809/00fb7730c403292ec505cb1ff08ed713_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/147192809#/?channel=OVERSEAS",source:"Rightmove",features:["3 bedrooms", "North Corfu", "Near beaches"]},
+  {id:4,title:"Property - Lakones, Corfu (Paleokastritsa area)",price:69000,cad:102120,area:60,psqm:1150,beds:"N/A",bedsN:0,roi:"4-6% (Airbnb)",ptype:"Property",region:"ionian_islands",regionName:"Corfu & Cephalonia, Ionian Islands",airport:35,beach:5,reno:1,airbnbRate:85,airbnbOcc:60,annualIncome:18615,grossYield:27.0,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/9ee07dcfe/147192770/9ee07dcfe83bebe53a96d432940f7c3a_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/147192770#/?channel=OVERSEAS",source:"Rightmove",features:["Near Paleokastritsa", "Corfu west coast", "Scenic location"]},
+  {id:5,title:"2-Bed House - Agia Irini, Cephalonia",price:58000,cad:85840,area:70,psqm:828,beds:"2",bedsN:2,roi:"4-5%",ptype:"House",region:"ionian_islands",regionName:"Corfu & Cephalonia, Ionian Islands",airport:25,beach:12,reno:0,airbnbRate:70,airbnbOcc:48,annualIncome:12264,grossYield:21.1,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/ccbf671f7/164335409/ccbf671f791c9dd8962d06901e2cd4c7_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/164335409#/?channel=OVERSEAS",source:"Rightmove",features:["2 bedrooms", "Cephalonia island", "Reduced price"]},
+  {id:6,title:"1-Bed Detached House - Kaminarata, Cephalonia",price:60000,cad:88800,area:50,psqm:1200,beds:"1",bedsN:1,roi:"4-5%",ptype:"Detached house",region:"ionian_islands",regionName:"Corfu & Cephalonia, Ionian Islands",airport:30,beach:10,reno:0,airbnbRate:65,airbnbOcc:45,annualIncome:10676,grossYield:17.8,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/f02587829/169522346/f025878293b87c713ee22cc648c961cd_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/169522346#/?channel=OVERSEAS",source:"Rightmove",features:["Detached house", "Cephalonia village", "Close to beaches"]},
+  {id:7,title:"2-Bed Detached House - Topolia, Chania, Crete",price:60000,cad:88800,area:70,psqm:857,beds:"2",bedsN:2,roi:"3-5%",ptype:"Detached house",region:"crete",regionName:"Chania, Western Crete",airport:35,beach:20,reno:1,airbnbRate:90,airbnbOcc:58,annualIncome:19053,grossYield:31.8,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/a2b84270d/159737804/a2b84270d253ce62ea8aecae2c83f063_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/159737804#/?channel=OVERSEAS",source:"Rightmove",features:["2 bedrooms", "Chania area", "Mountain village", "Character property"]},
+  {id:8,title:"Studio Flat - Drama City Centre",price:56000,cad:82880,area:40,psqm:1400,beds:"Studio",bedsN:0,roi:"5-7%",ptype:"Studio flat",region:"northern_greece",regionName:"Drama & Serres, Northern Greece",airport:100,beach:90,reno:0,airbnbRate:35,airbnbOcc:40,annualIncome:5110,grossYield:9.1,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/793fe631c/162955775/793fe631cab7895c47f2ceebada11d35_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/162955775#/?channel=OVERSEAS",source:"Rightmove",features:["City centre", "Studio", "Ready to rent", "Lowest entry price"]},
+  {id:9,title:"2-Bed Detached House - Efkarpia, Serres",price:57000,cad:84360,area:85,psqm:670,beds:"2",bedsN:2,roi:"5-6%",ptype:"Detached house",region:"northern_greece",regionName:"Drama & Serres, Northern Greece",airport:80,beach:75,reno:0,airbnbRate:40,airbnbOcc:35,annualIncome:5110,grossYield:9.0,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/88e10b9f3/166495556/88e10b9f3311b29c12fc0c634fbe0f1b_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/166495556#/?channel=OVERSEAS",source:"Rightmove",features:["2 bedrooms", "Detached", "85m\u00b2", "Serres area"]},
+  {id:10,title:"5-Bed Detached House - Chryso, Serres",price:57000,cad:84360,area:120,psqm:475,beds:"5",bedsN:5,roi:"5-7%",ptype:"Detached house",region:"northern_greece",regionName:"Drama & Serres, Northern Greece",airport:95,beach:80,reno:1,airbnbRate:55,airbnbOcc:35,annualIncome:7026,grossYield:12.3,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/4c5da3c84/169430747/4c5da3c841ead16360bc9541203fad0b_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/169430747#/?channel=OVERSEAS",source:"Rightmove",features:["5 bedrooms", "120m\u00b2", "Large family home", "Incredible value"]},
+  {id:11,title:"Studio Flat - Serres City",price:58000,cad:85840,area:38,psqm:1526,beds:"Studio",bedsN:0,roi:"5-7%",ptype:"Studio flat",region:"northern_greece",regionName:"Drama & Serres, Northern Greece",airport:85,beach:80,reno:0,airbnbRate:35,airbnbOcc:38,annualIncome:4854,grossYield:8.4,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/705ae7346/170088143/705ae7346705e8d66d72ed72f1d04ed9_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/170088143#/?channel=OVERSEAS",source:"Rightmove",features:["City location", "Studio flat", "Rental ready"]},
+  {id:12,title:"2-Bed Flat - Drama City",price:70000,cad:103600,area:65,psqm:1076,beds:"2",bedsN:2,roi:"5-6%",ptype:"Flat",region:"northern_greece",regionName:"Drama & Serres, Northern Greece",airport:100,beach:85,reno:0,airbnbRate:40,airbnbOcc:42,annualIncome:6132,grossYield:8.8,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/b8e9e150e/169011563/b8e9e150e454d86cf1bab5110e7d7ae4_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/169011563#/?channel=OVERSEAS",source:"Rightmove",features:["2 bedrooms", "City apartment", "Ready to move in"]},
+  {id:13,title:"2-Bed Detached House - Adriani, Drama",price:70000,cad:103600,area:80,psqm:875,beds:"2",bedsN:2,roi:"5-6%",ptype:"Detached house",region:"northern_greece",regionName:"Drama & Serres, Northern Greece",airport:110,beach:90,reno:1,airbnbRate:45,airbnbOcc:35,annualIncome:5748,grossYield:8.2,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/443ad7c8a/159071498/443ad7c8a30b49564efaf26ffc4464c7_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/159071498#/?channel=OVERSEAS",source:"Rightmove",features:["2 bedrooms", "Detached", "80m\u00b2", "Village setting"]},
+  {id:14,title:"4-Bed Detached House - Rodolivos, Serres",price:70000,cad:103600,area:130,psqm:538,beds:"4",bedsN:4,roi:"5-6%",ptype:"Detached house",region:"northern_greece",regionName:"Drama & Serres, Northern Greece",airport:90,beach:80,reno:0,airbnbRate:55,airbnbOcc:38,annualIncome:7628,grossYield:10.9,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/3633cb896/169742507/3633cb89629d936b52fb63a8b6e2b50e_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/169742507#/?channel=OVERSEAS",source:"Rightmove",features:["4 bedrooms", "130m\u00b2", "Large family home"]},
+  {id:15,title:"2-Bed Property - Alonnisos Island",price:60000,cad:88800,area:55,psqm:1090,beds:"2",bedsN:2,roi:"4-5% (seasonal)",ptype:"Property",region:"pelion_sporades",regionName:"Pelion & Alonnisos, Thessaly",airport:60,beach:5,reno:1,airbnbRate:75,airbnbOcc:45,annualIncome:12318,grossYield:20.5,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/ada9f3d64/169527362/ada9f3d641dc27ff3d07974a56d7e5d3_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/169527362#/?channel=OVERSEAS",source:"Rightmove",features:["Island living", "2 bedrooms", "Marine park island", "Reduced price"]},
+  {id:16,title:"Detached House - Portaria, Pelion",price:70000,cad:103600,area:75,psqm:933,beds:"N/A",bedsN:0,roi:"4-5%",ptype:"Detached house",region:"pelion_sporades",regionName:"Pelion & Alonnisos, Thessaly",airport:40,beach:15,reno:1,airbnbRate:70,airbnbOcc:50,annualIncome:12775,grossYield:18.2,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/6331d4b20/172463645/6331d4b209afdc646bc0370a530a2c1f_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/172463645#/?channel=OVERSEAS",source:"Rightmove",features:["Pelion mountain village", "Near beaches", "Character property"]},
+  {id:17,title:"2-Bed Flat - Zografos, Athens (University area)",price:73000,cad:108040,area:65,psqm:1123,beds:"2",bedsN:2,roi:"5-6%",ptype:"Flat",region:"attica",regionName:"Athens / Attica",airport:45,beach:25,reno:0,airbnbRate:60,airbnbOcc:65,annualIncome:14235,grossYield:19.5,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/db7d7fd42/172039565/db7d7fd420cb1ededdddb6734a54cc59_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/172039565#/?channel=OVERSEAS",source:"Rightmove",features:["Athens location", "2 bedrooms", "Near university", "Strong rental demand"]}
+];
+const REGIONS = {"ionian_islands":{name:"Corfu & Cephalonia, Ionian Islands",airportCode:"CFU / EFL",airportMin:20,airportNote:"CFU 10-30 min from most Corfu properties; EFL 15-40 min on Cephalonia",beachMin:5,yieldMid:5.0,avgPsqm:900},"northern_greece":{name:"Drama & Serres, Northern Greece",airportCode:"SKG",airportMin:90,airportNote:"Thessaloniki International (SKG) is a 1-2 hour drive. Major hub with year-round flights",beachMin:75,yieldMid:6.0,avgPsqm:500},"crete":{name:"Chania, Western Crete",airportCode:"CHQ",airportMin:25,airportNote:"Chania International (CHQ) 15-40 min from most properties. Direct flights across Europe",beachMin:10,yieldMid:4.5,avgPsqm:1400},"pelion_sporades":{name:"Pelion & Alonnisos, Thessaly",airportCode:"VOL / SKG",airportMin:45,airportNote:"Volos Nea Anchialos (VOL) 30-60 min seasonal; Thessaloniki (SKG) 2.5 hr year-round",beachMin:10,yieldMid:4.5,avgPsqm:800},"attica":{name:"Athens / Attica",airportCode:"ATH",airportMin:40,airportNote:"Athens International (ATH) 30-60 min by metro/car. Greece's main hub, hundreds of routes",beachMin:20,yieldMid:5.5,avgPsqm:1800}};
+
+// ── Compute normalized values (0–1) ──
+const prices = DATA.map(d => d.price);
+const areas = DATA.map(d => d.area);
+const airports = DATA.map(d => d.airport);
+const beaches = DATA.map(d => d.beach);
+const yields = DATA.map(d => d.grossYield);
+
+const minPrice = Math.min(...prices), maxPrice = Math.max(...prices);
+const minArea = Math.min(...areas), maxArea = Math.max(...areas);
+const minAirport = Math.min(...airports), maxAirport = Math.max(...airports);
+const minBeach = Math.min(...beaches), maxBeach = Math.max(...beaches);
+const minYield = Math.min(...yields), maxYield = Math.max(...yields);
+
+DATA.forEach(d => {
+  d.nPrice = maxPrice === minPrice ? 0.5 : (maxPrice - d.price) / (maxPrice - minPrice);
+  d.nArea = maxArea === minArea ? 0.5 : (d.area - minArea) / (maxArea - minArea);
+  d.nAirport = maxAirport === minAirport ? 0.5 : (maxAirport - d.airport) / (maxAirport - minAirport);
+  d.nBeach = maxBeach === minBeach ? 0.5 : (maxBeach - d.beach) / (maxBeach - minBeach);
+  d.nYield = maxYield === minYield ? 0.5 : (d.grossYield - minYield) / (maxYield - minYield);
+  d.nReno = d.reno === 0 ? 1 : 0;
+});
+
+// Populate region filter
+const fRegionEl = document.getElementById('fRegion');
+const regionNames = [...new Set(DATA.map(d => d.region))];
+regionNames.forEach(r => {
+  const o = document.createElement('option');
+  o.value = r;
+  o.textContent = REGIONS[r] ? REGIONS[r].name : r;
+  fRegionEl.appendChild(o);
+});
+
+// ── Weight state ──
+let wPrice = 25, wAirport = 20, wBeach = 20, wSize = 15, wYield = 15, wReno = 5;
+
+function score(d) {
+  const total = wPrice + wAirport + wBeach + wSize + wYield + wReno || 1;
+  return (d.nPrice * wPrice + d.nAirport * wAirport + d.nBeach * wBeach +
+          d.nArea * wSize + d.nYield * wYield + d.nReno * wReno) / total * 100;
 }
 
-// Region filter
-let currentRegion = 'all';
-function filterByRegion(region) {
-    currentRegion = region;
-    // Switch to properties tab
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-    document.getElementById('tab-properties').classList.add('active');
-    document.querySelectorAll('.tab-btn')[1].classList.add('active');
+function scoreTier(s) { return s >= 65 ? 'high' : s >= 40 ? 'mid' : 'low'; }
+function scoreColor(s) { return s >= 65 ? '#d4363b' : s >= 40 ? '#e6a756' : '#b8c9d6'; }
 
-    // Update filter buttons
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.textContent.toLowerCase().includes(region) || (region === 'all' && btn.textContent.includes('All'))) {
-            btn.classList.add('active');
-        }
-    });
-
-    applyFilters();
+function makeCard(d, rank) {
+  const s = score(d);
+  const t = scoreTier(s);
+  return `
+    <div class="card" onclick="openModal(${d.id})">
+      <div class="card-img-wrap">
+        <img class="card-img" src="${d.img}" alt="${d.title}" loading="lazy"
+             onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
+        <div class="card-overlay"></div>
+        <div class="card-rank ${t}">${rank !== null ? '#'+rank : Math.round(s)}</div>
+        <div class="card-price-tag">€${d.price.toLocaleString()}</div>
+        <div class="card-airport-tag">✈️ ${d.airport} min</div>
+      </div>
+      <div class="card-body">
+        <div class="card-name">${d.title}</div>
+        <div class="card-area">📍 ${d.regionName}</div>
+        <div class="card-row"><span class="hl">${d.area}m²</span> · ${d.beds} bed · 🏖️ ${d.beach} min · Yield ${d.grossYield}%</div>
+        <div class="card-score-bar">
+          <div class="bar-track"><div class="bar-fill ${t}" style="width:${s.toFixed(0)}%"></div></div>
+          <span class="bar-num">${Math.round(s)}</span>
+        </div>
+      </div>
+    </div>`;
 }
 
-function applyFilters() {
-    const maxPrice = parseInt(document.getElementById('max-price').value) || Infinity;
-    const cards = document.querySelectorAll('.property-card');
-    let visible = 0;
-
-    cards.forEach(card => {
-        const cardRegion = card.dataset.region;
-        const cardPrice = parseInt(card.dataset.price) || 0;
-        const regionMatch = currentRegion === 'all' || cardRegion === currentRegion;
-        const priceMatch = cardPrice <= maxPrice;
-
-        if (regionMatch && priceMatch) {
-            card.style.display = '';
-            visible++;
-        } else {
-            card.style.display = 'none';
-        }
-    });
-
-    document.getElementById('count-display').textContent = `Showing ${visible} properties`;
-    document.getElementById('no-results').style.display = visible === 0 ? '' : 'none';
+function makeAirbnbCard(d) {
+  return `
+    <div class="airbnb-card" onclick="openModal(${d.id})">
+      <div class="airbnb-card-body">
+        <div class="airbnb-card-name">${d.title}</div>
+        <div class="airbnb-card-region">📍 ${d.regionName} · €${d.price.toLocaleString()} · ${d.area}m²</div>
+        <div class="airbnb-row">
+          <div class="airbnb-stat"><div class="v green">€${d.airbnbRate}</div><div class="l">Per Night</div></div>
+          <div class="airbnb-stat"><div class="v gold">€${d.annualIncome.toLocaleString()}</div><div class="l">Annual</div></div>
+          <div class="airbnb-stat"><div class="v blue">${d.grossYield}%</div><div class="l">Gross Yield</div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <div class="airbnb-bar">
+            <div class="airbnb-bar-label">Occupancy</div>
+            <div class="airbnb-bar-track"><div class="airbnb-bar-fill occ" style="width:${d.airbnbOcc}%"></div></div>
+            <div class="airbnb-bar-num">${d.airbnbOcc}%</div>
+          </div>
+          <div class="airbnb-bar">
+            <div class="airbnb-bar-label">Yield</div>
+            <div class="airbnb-bar-track"><div class="airbnb-bar-fill roi" style="width:${Math.min(d.grossYield/15*100,100).toFixed(0)}%"></div></div>
+            <div class="airbnb-bar-num">${d.grossYield}%</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
 }
 
-// Sort properties
-function sortProperties() {
-    const grid = document.getElementById('property-grid');
-    const cards = Array.from(grid.querySelectorAll('.property-card'));
-    const sortBy = document.getElementById('sort-select').value;
+function rebuild() {
+  const ranked = DATA.map(d => ({...d, sc: score(d)})).sort((a,b) => b.sc - a.sc);
+  const used = new Set();
 
-    cards.sort((a, b) => {
-        switch(sortBy) {
-            case 'price-asc': return (parseInt(a.dataset.price)||0) - (parseInt(b.dataset.price)||0);
-            case 'price-desc': return (parseInt(b.dataset.price)||0) - (parseInt(a.dataset.price)||0);
-            case 'area-desc': return (parseInt(b.dataset.area)||0) - (parseInt(a.dataset.area)||0);
-            case 'psqm-asc':
-                const aP = (parseInt(a.dataset.price)||0) / (parseInt(a.dataset.area)||1);
-                const bP = (parseInt(b.dataset.price)||0) / (parseInt(b.dataset.area)||1);
-                return aP - bP;
-        }
-        return 0;
-    });
+  function pick(pool, n) {
+    const result = [];
+    for (const d of pool) {
+      if (used.has(d.id)) continue;
+      result.push(d);
+      used.add(d.id);
+      if (result.length >= n) break;
+    }
+    return result;
+  }
 
-    cards.forEach(card => grid.appendChild(card));
+  // Hero = #1
+  const hero = ranked[0];
+  used.add(hero.id);
+  const hs = hero.sc;
+
+  document.getElementById('heroImg').src = hero.img;
+  document.getElementById('heroImg').onerror = function(){ this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'; };
+  document.getElementById('heroName').textContent = hero.title;
+  document.getElementById('heroArea').textContent = '📍 ' + hero.regionName + ' · ' + hero.area + 'm² · ' + hero.beds + ' bed';
+  document.getElementById('heroPrice').textContent = '€' + hero.price.toLocaleString();
+  document.getElementById('heroAirport').textContent = hero.airport + ' min';
+  document.getElementById('heroBeach').textContent = hero.beach + ' min';
+  document.getElementById('heroYield').textContent = hero.grossYield + '%';
+  document.getElementById('heroScoreNum').textContent = Math.round(hs);
+  document.getElementById('heroCard').onclick = () => openModal(hero.id);
+  const ring = document.getElementById('heroRing');
+  ring.style.stroke = scoreColor(hs);
+  ring.style.strokeDashoffset = 125.6 * (1 - hs / 100);
+
+  // ── Curated sections ──
+  const bestValue = pick(ranked, 5);
+
+  const closestAirport = [...ranked].sort((a,b) => a.airport - b.airport);
+  const airportPicks = pick(closestAirport, 4);
+
+  const closestBeach = [...ranked].sort((a,b) => a.beach - b.beach);
+  const beachPicks = pick(closestBeach, 4);
+
+  const highYieldPool = [...ranked].sort((a,b) => b.grossYield - a.grossYield);
+  const yieldPicks = pick(highYieldPool, 4);
+
+  const biggestPool = [...ranked].sort((a,b) => b.area - a.area);
+  const bigPicks = pick(biggestPool, 4);
+
+  const sections = [
+    { emoji: '🎯', title: 'Best Overall Match', sub: 'Highest score based on your current weights', cards: bestValue, ranked: true },
+    { emoji: '✈️', title: 'Closest to Airport', sub: 'Shortest drive to nearest international airport', cards: airportPicks },
+    { emoji: '🏖️', title: 'Closest to Beach', sub: 'Walk or quick drive to the sea', cards: beachPicks },
+    { emoji: '📈', title: 'Highest Rental Yield', sub: 'Best Airbnb income relative to purchase price', cards: yieldPicks },
+    { emoji: '📐', title: 'Most Space for Money', sub: 'Largest properties in the budget', cards: bigPicks },
+  ].filter(s => s.cards.length > 0);
+
+  let globalRank = 2;
+  const html = sections.map(sec => `
+    <div class="section">
+      <div class="section-header">
+        <span class="section-emoji">${sec.emoji}</span>
+        <div class="section-title">${sec.title}</div>
+        <div class="section-sub">${sec.sub}</div>
+        <div class="section-divider"></div>
+      </div>
+      <div class="scroll-row">
+        ${sec.cards.map(d => {
+          const rank = sec.ranked ? globalRank++ : null;
+          return makeCard(d, rank);
+        }).join('')}
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('sections').innerHTML = html;
+
+  // Update formula display
+  const total = wPrice + wAirport + wBeach + wSize + wYield + wReno || 1;
+  const pcts = [wPrice, wAirport, wBeach, wSize, wYield, wReno].map(w => Math.round(w / total * 100));
+  const diff = 100 - pcts.reduce((a,b)=>a+b,0);
+  pcts[0] += diff;
+  document.getElementById('formulaDisplay').innerHTML =
+    `Score = <span>${pcts[0]}%</span> Price + <span>${pcts[1]}%</span> Airport + <span>${pcts[2]}%</span> Beach + <span>${pcts[3]}%</span> Size + <span>${pcts[4]}%</span> Yield + <span>${pcts[5]}%</span> Ready`;
+
+  rebuildBrowse();
+  rebuildAirbnb();
 }
 
-// Sort comparison table
-let sortAsc = {};
-function sortTable(n) {
-    const table = document.getElementById('comparison-table');
-    const tbody = table.querySelector('tbody');
-    const rows = Array.from(tbody.querySelectorAll('tr'));
-    sortAsc[n] = !sortAsc[n];
-
-    rows.sort((a, b) => {
-        let aVal = a.cells[n].dataset.sort || a.cells[n].textContent.trim();
-        let bVal = b.cells[n].dataset.sort || b.cells[n].textContent.trim();
-
-        const aNum = parseFloat(aVal.replace(/[^0-9.-]/g, ''));
-        const bNum = parseFloat(bVal.replace(/[^0-9.-]/g, ''));
-
-        if (!isNaN(aNum) && !isNaN(bNum)) {
-            return sortAsc[n] ? aNum - bNum : bNum - aNum;
-        }
-        return sortAsc[n] ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-    });
-
-    rows.forEach(row => tbody.appendChild(row));
+// ── Browse All Logic ──
+function getFilters() {
+  return {
+    region: document.getElementById('fRegion').value,
+    priceMax: parseFloat(document.getElementById('fPriceMax').value) || Infinity,
+    airportMax: parseFloat(document.getElementById('fAirportMax').value) || Infinity,
+  };
 }
+
+function rebuildBrowse() {
+  const f = getFilters();
+  const filtered = DATA
+    .map(d => ({...d, sc: score(d)}))
+    .filter(d => {
+      if (f.region && d.region !== f.region) return false;
+      if (d.price > f.priceMax) return false;
+      if (d.airport > f.airportMax) return false;
+      return true;
+    })
+    .sort((a, b) => b.sc - a.sc);
+
+  document.getElementById('browseCount').textContent = filtered.length;
+  document.getElementById('browseGrid').innerHTML = filtered.map(d => makeCard(d, null)).join('');
+}
+
+function rebuildAirbnb() {
+  const sorted = [...DATA].sort((a,b) => b.grossYield - a.grossYield);
+  document.getElementById('airbnbGrid').innerHTML = sorted.map(d => makeAirbnbCard(d)).join('');
+}
+
+function clearFilters() {
+  document.getElementById('fRegion').value = '';
+  document.getElementById('fPriceMax').value = '';
+  document.getElementById('fAirportMax').value = '';
+  rebuildBrowse();
+}
+
+// Filter change listeners
+['fRegion', 'fPriceMax', 'fAirportMax'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('change', rebuildBrowse);
+  el.addEventListener('input', () => { clearTimeout(el._t); el._t = setTimeout(rebuildBrowse, 400); });
+});
+
+// ── Slider events ──
+const sliderIds = ['sPrice', 'sAirport', 'sBeach', 'sSize', 'sYield', 'sReno'];
+const valIds = ['vPrice', 'vAirport', 'vBeach', 'vSize', 'vYield', 'vReno'];
+
+function updateFromSliders() {
+  wPrice = +document.getElementById('sPrice').value;
+  wAirport = +document.getElementById('sAirport').value;
+  wBeach = +document.getElementById('sBeach').value;
+  wSize = +document.getElementById('sSize').value;
+  wYield = +document.getElementById('sYield').value;
+  wReno = +document.getElementById('sReno').value;
+  const total = wPrice + wAirport + wBeach + wSize + wYield + wReno || 1;
+  const weights = [wPrice, wAirport, wBeach, wSize, wYield, wReno];
+  weights.forEach((w, i) => {
+    document.getElementById(valIds[i]).textContent = Math.round(w / total * 100) + '%';
+  });
+  rebuild();
+}
+
+sliderIds.forEach(id => {
+  document.getElementById(id).addEventListener('input', updateFromSliders);
+});
+
+function resetWeights() {
+  const defaults = [25, 20, 20, 15, 15, 5];
+  sliderIds.forEach((id, i) => { document.getElementById(id).value = defaults[i]; });
+  updateFromSliders();
+}
+
+// ── Modal ──
+function openModal(id) {
+  const d = DATA.find(x => x.id === id);
+  if (!d) return;
+  const s = score(d);
+  document.getElementById('mImg').src = d.img;
+  document.getElementById('mImg').onerror = function(){ this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'; };
+  document.getElementById('mName').textContent = d.title;
+  document.getElementById('mArea').textContent = '📍 ' + d.regionName;
+  document.getElementById('mScore').textContent = Math.round(s) + '/100';
+  document.getElementById('mScoreFill').style.width = s.toFixed(0) + '%';
+
+  document.getElementById('mBreakdown').innerHTML = `
+    <div><div class="v">€${d.price.toLocaleString()}</div>Price</div>
+    <div><div class="v">${d.airport} min</div>Airport</div>
+    <div><div class="v">${d.beach} min</div>Beach</div>
+  `;
+
+  document.getElementById('mStats').innerHTML = `
+    <div class="m-stat"><div class="v price-c">€${d.price.toLocaleString()}</div><div class="l">Price</div></div>
+    <div class="m-stat"><div class="v">CA$${d.cad.toLocaleString()}</div><div class="l">CAD</div></div>
+    <div class="m-stat"><div class="v">${d.area}m²</div><div class="l">Size</div></div>
+    <div class="m-stat"><div class="v">${d.beds}</div><div class="l">Beds</div></div>
+    <div class="m-stat"><div class="v">${d.airport} min</div><div class="l">✈️ Airport</div></div>
+    <div class="m-stat"><div class="v">${d.beach} min</div><div class="l">🏖️ Beach</div></div>
+  `;
+
+  document.getElementById('mAirbnbGrid').innerHTML = `
+    <div class="m-stat"><div class="v" style="color:var(--palm)">€${d.airbnbRate}/n</div><div class="l">Nightly</div></div>
+    <div class="m-stat"><div class="v" style="color:var(--gold)">€${d.annualIncome.toLocaleString()}/yr</div><div class="l">Annual</div></div>
+    <div class="m-stat"><div class="v" style="color:var(--ocean)">${d.grossYield}%</div><div class="l">Gross Yield</div></div>
+  `;
+
+  let b = '';
+  if (s >= 65) b += '<span class="m-badge fire">🔥 Top Match</span>';
+  if (d.airport <= 30) b += '<span class="m-badge red">✈️ Close Airport</span>';
+  if (d.beach <= 10) b += '<span class="m-badge blue">🏖️ Beach Nearby</span>';
+  if (d.grossYield >= 6) b += '<span class="m-badge green">📈 High Yield</span>';
+  if (d.reno === 0) b += '<span class="m-badge gold">✅ Move-in Ready</span>';
+  if (d.area >= 100) b += '<span class="m-badge blue">📐 Large Property</span>';
+  document.getElementById('mBadges').innerHTML = b;
+
+  document.getElementById('mLink').href = d.url;
+  document.getElementById('mLink').textContent = 'View on ' + d.source + ' →';
+  document.getElementById('modalOverlay').classList.add('visible');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('visible');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ── Smooth scroll for nav links ──
+document.querySelectorAll('.page-hero-nav a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// ── Initial render ──
+rebuild();
 </script>
 </body>
 </html>

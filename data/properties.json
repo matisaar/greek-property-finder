@@ -1,55 +1,90 @@
 {
-  "scraped_date": "2026-02-22T08:48:08.882705",
+  "scraped_date": "2026-02-22T09:03:57.641540",
   "total_properties": 18,
   "regions": {
     "ionian_islands": {
       "name": "Corfu & Cephalonia, Ionian Islands",
       "city_pop": "Corfu Town ~40,000; Argostoli ~14,000",
       "airport": "CFU (Corfu), EFL (Cephalonia) - seasonal EU flights",
+      "airport_code": "CFU / EFL",
+      "airport_drive_min": 20,
+      "airport_note": "CFU 10-30 min from most Corfu properties; EFL 15-40 min on Cephalonia",
+      "airport_international": true,
+      "airport_seasonal": true,
       "beach_distance": "Islands are entirely coastal - beaches everywhere",
+      "beach_distance_min": 5,
       "description": "The Ionian Islands on Greece's west coast have lush green landscapes, crystal-clear turquoise waters, and Venetian architecture. Corfu and Cephalonia offer some of Greece's most affordable island properties.",
       "avg_price_sqm": 900,
       "rental_yield": "4-6% (Airbnb seasonal)",
+      "rental_yield_mid": 5.0,
       "why_invest": "Affordable island properties, strong summer Airbnb demand, Venetian charm, international airport access, EU ferry routes, authentic character homes, renovation potential with high upside."
     },
     "northern_greece": {
       "name": "Drama & Serres, Northern Greece",
       "city_pop": "Drama ~60,000; Serres ~76,000",
       "airport": "SKG - Thessaloniki International (1-2 hr drive)",
+      "airport_code": "SKG",
+      "airport_drive_min": 90,
+      "airport_note": "Thessaloniki International (SKG) is a 1-2 hour drive. Major hub with year-round flights",
+      "airport_international": true,
+      "airport_seasonal": false,
       "beach_distance": "1-2 hours to Kavala coast & Thassos island beaches",
+      "beach_distance_min": 75,
       "description": "Affordable cities in Northern Greece with very low cost of living. Drama is known for wine country and scenic mountains, Serres for its cultural heritage. Cheapest property market in Greece.",
       "avg_price_sqm": 500,
       "rental_yield": "5-7%",
+      "rental_yield_mid": 6.0,
       "why_invest": "Cheapest property prices in Greece, high rental yields relative to price, growing domestic tourism, university rental demand, large houses for the price of a studio elsewhere, cross-border visitors from Bulgaria."
     },
     "crete": {
       "name": "Chania, Western Crete",
       "city_pop": "~110,000",
       "airport": "CHQ - Chania International",
+      "airport_code": "CHQ",
+      "airport_drive_min": 25,
+      "airport_note": "Chania International (CHQ) 15-40 min from most properties. Direct flights across Europe",
+      "airport_international": true,
+      "airport_seasonal": true,
       "beach_distance": "City is on the coast - beaches within walking distance",
+      "beach_distance_min": 10,
       "description": "One of the most beautiful cities in Crete with a stunning Venetian harbor. World-famous beaches like Elafonissi and Balos nearby. Budget properties available in mountain villages with easy beach access.",
       "avg_price_sqm": 1400,
       "rental_yield": "4-5%",
+      "rental_yield_mid": 4.5,
       "why_invest": "Tourism hotspot with year-round appeal, Venetian old town charm, top beaches in Europe, strong Airbnb demand. Mountain village renovations offer great value within budget."
     },
     "pelion_sporades": {
       "name": "Pelion & Alonnisos, Thessaly",
       "city_pop": "Volos ~145,000 (nearby hub)",
       "airport": "VOL - Volos Nea Anchialos (seasonal); SKG 2.5hr",
+      "airport_code": "VOL / SKG",
+      "airport_drive_min": 45,
+      "airport_note": "Volos Nea Anchialos (VOL) 30-60 min seasonal; Thessaloniki (SKG) 2.5 hr year-round",
+      "airport_international": true,
+      "airport_seasonal": true,
       "beach_distance": "Pelion has beaches on both sides; Alonnisos is entirely coastal",
+      "beach_distance_min": 10,
       "description": "Pelion peninsula combines mountain villages with beautiful beaches. Alonnisos is a pristine Sporades island with Greece's first marine park. Both are off the mass-tourism radar, offering authentic Greek experiences.",
       "avg_price_sqm": 800,
       "rental_yield": "4-5% (seasonal)",
+      "rental_yield_mid": 4.5,
       "why_invest": "Hidden gem destinations, growing ecotourism, affordable prices, Pelion ski + beach combo, Alonnisos marine park, less competition from mass tourism, authentic character properties."
     },
     "attica": {
       "name": "Athens / Attica",
       "city_pop": "~3.7M (Athens metro)",
       "airport": "ATH - Athens International (major hub)",
+      "airport_code": "ATH",
+      "airport_drive_min": 40,
+      "airport_note": "Athens International (ATH) 30-60 min by metro/car. Greece's main hub, hundreds of routes",
+      "airport_international": true,
+      "airport_seasonal": false,
       "beach_distance": "Athens Riviera beaches 20-30 min from center",
+      "beach_distance_min": 20,
       "description": "Greece's capital region. Student areas like Zografos near universities offer affordable apartments with strong year-round rental demand. Best city for non-seasonal rental income.",
       "avg_price_sqm": 1800,
       "rental_yield": "5-6%",
+      "rental_yield_mid": 5.5,
       "why_invest": "Capital city with highest rental demand, major international airport hub, year-round rentals (not seasonal), university district properties have consistent tenant demand, metro connectivity."
     }
   },
@@ -69,7 +104,12 @@
         "Corfu island"
       ],
       "roi": "4-6% (Airbnb)",
-      "property_type": "House"
+      "property_type": "House",
+      "airport_drive_min": 25,
+      "beach_min": 10,
+      "needs_renovation": true,
+      "airbnb_night_rate": 65,
+      "airbnb_occupancy_pct": 55
     },
     {
       "title": "2-Bed Property - Episkepsi, Corfu",
@@ -86,7 +126,12 @@
         "Character property"
       ],
       "roi": "4-5%",
-      "property_type": "Property"
+      "property_type": "Property",
+      "airport_drive_min": 30,
+      "beach_min": 15,
+      "needs_renovation": true,
+      "airbnb_night_rate": 70,
+      "airbnb_occupancy_pct": 50
     },
     {
       "title": "2-Bed House - Karoussades, Corfu",
@@ -103,7 +148,12 @@
         "Village charm"
       ],
       "roi": "4-5%",
-      "property_type": "House"
+      "property_type": "House",
+      "airport_drive_min": 20,
+      "beach_min": 8,
+      "needs_renovation": false,
+      "airbnb_night_rate": 75,
+      "airbnb_occupancy_pct": 55
     },
     {
       "title": "3-Bed Property - Karoussades, Corfu",
@@ -120,7 +170,12 @@
         "Near beaches"
       ],
       "roi": "4-5%",
-      "property_type": "Property"
+      "property_type": "Property",
+      "airport_drive_min": 20,
+      "beach_min": 8,
+      "needs_renovation": true,
+      "airbnb_night_rate": 80,
+      "airbnb_occupancy_pct": 52
     },
     {
       "title": "Property - Lakones, Corfu (Paleokastritsa area)",
@@ -137,7 +192,12 @@
         "Scenic location"
       ],
       "roi": "4-6% (Airbnb)",
-      "property_type": "Property"
+      "property_type": "Property",
+      "airport_drive_min": 35,
+      "beach_min": 5,
+      "needs_renovation": true,
+      "airbnb_night_rate": 85,
+      "airbnb_occupancy_pct": 60
     },
     {
       "title": "2-Bed House - Agia Irini, Cephalonia",
@@ -154,7 +214,12 @@
         "Reduced price"
       ],
       "roi": "4-5%",
-      "property_type": "House"
+      "property_type": "House",
+      "airport_drive_min": 25,
+      "beach_min": 12,
+      "needs_renovation": false,
+      "airbnb_night_rate": 70,
+      "airbnb_occupancy_pct": 48
     },
     {
       "title": "1-Bed Detached House - Kaminarata, Cephalonia",
@@ -171,7 +236,12 @@
         "Close to beaches"
       ],
       "roi": "4-5%",
-      "property_type": "Detached house"
+      "property_type": "Detached house",
+      "airport_drive_min": 30,
+      "beach_min": 10,
+      "needs_renovation": false,
+      "airbnb_night_rate": 65,
+      "airbnb_occupancy_pct": 45
     },
     {
       "title": "2-Bed Detached House - Topolia, Chania, Crete",
@@ -189,7 +259,12 @@
         "Character property"
       ],
       "roi": "3-5%",
-      "property_type": "Detached house"
+      "property_type": "Detached house",
+      "airport_drive_min": 35,
+      "beach_min": 20,
+      "needs_renovation": true,
+      "airbnb_night_rate": 90,
+      "airbnb_occupancy_pct": 58
     },
     {
       "title": "Studio Flat - Drama City Centre",
@@ -207,7 +282,12 @@
         "Lowest entry price"
       ],
       "roi": "5-7%",
-      "property_type": "Studio flat"
+      "property_type": "Studio flat",
+      "airport_drive_min": 100,
+      "beach_min": 90,
+      "needs_renovation": false,
+      "airbnb_night_rate": 35,
+      "airbnb_occupancy_pct": 40
     },
     {
       "title": "2-Bed Detached House - Efkarpia, Serres",
@@ -225,7 +305,12 @@
         "Serres area"
       ],
       "roi": "5-6%",
-      "property_type": "Detached house"
+      "property_type": "Detached house",
+      "airport_drive_min": 80,
+      "beach_min": 75,
+      "needs_renovation": false,
+      "airbnb_night_rate": 40,
+      "airbnb_occupancy_pct": 35
     },
     {
       "title": "5-Bed Detached House - Chryso, Serres",
@@ -243,7 +328,12 @@
         "Incredible value"
       ],
       "roi": "5-7%",
-      "property_type": "Detached house"
+      "property_type": "Detached house",
+      "airport_drive_min": 95,
+      "beach_min": 80,
+      "needs_renovation": true,
+      "airbnb_night_rate": 55,
+      "airbnb_occupancy_pct": 35
     },
     {
       "title": "Studio Flat - Serres City",
@@ -260,7 +350,12 @@
         "Rental ready"
       ],
       "roi": "5-7%",
-      "property_type": "Studio flat"
+      "property_type": "Studio flat",
+      "airport_drive_min": 85,
+      "beach_min": 80,
+      "needs_renovation": false,
+      "airbnb_night_rate": 35,
+      "airbnb_occupancy_pct": 38
     },
     {
       "title": "2-Bed Flat - Drama City",
@@ -277,7 +372,12 @@
         "Ready to move in"
       ],
       "roi": "5-6%",
-      "property_type": "Flat"
+      "property_type": "Flat",
+      "airport_drive_min": 100,
+      "beach_min": 85,
+      "needs_renovation": false,
+      "airbnb_night_rate": 40,
+      "airbnb_occupancy_pct": 42
     },
     {
       "title": "2-Bed Detached House - Adriani, Drama",
@@ -295,7 +395,12 @@
         "Village setting"
       ],
       "roi": "5-6%",
-      "property_type": "Detached house"
+      "property_type": "Detached house",
+      "airport_drive_min": 110,
+      "beach_min": 90,
+      "needs_renovation": true,
+      "airbnb_night_rate": 45,
+      "airbnb_occupancy_pct": 35
     },
     {
       "title": "4-Bed Detached House - Rodolivos, Serres",
@@ -312,7 +417,12 @@
         "Large family home"
       ],
       "roi": "5-6%",
-      "property_type": "Detached house"
+      "property_type": "Detached house",
+      "airport_drive_min": 90,
+      "beach_min": 80,
+      "needs_renovation": false,
+      "airbnb_night_rate": 55,
+      "airbnb_occupancy_pct": 38
     },
     {
       "title": "2-Bed Property - Alonnisos Island",
@@ -330,7 +440,12 @@
         "Reduced price"
       ],
       "roi": "4-5% (seasonal)",
-      "property_type": "Property"
+      "property_type": "Property",
+      "airport_drive_min": 60,
+      "beach_min": 5,
+      "needs_renovation": true,
+      "airbnb_night_rate": 75,
+      "airbnb_occupancy_pct": 45
     },
     {
       "title": "Detached House - Portaria, Pelion",
@@ -347,7 +462,12 @@
         "Character property"
       ],
       "roi": "4-5%",
-      "property_type": "Detached house"
+      "property_type": "Detached house",
+      "airport_drive_min": 40,
+      "beach_min": 15,
+      "needs_renovation": true,
+      "airbnb_night_rate": 70,
+      "airbnb_occupancy_pct": 50
     },
     {
       "title": "2-Bed Flat - Zografos, Athens (University area)",
@@ -365,7 +485,12 @@
         "Strong rental demand"
       ],
       "roi": "5-6%",
-      "property_type": "Flat"
+      "property_type": "Flat",
+      "airport_drive_min": 45,
+      "beach_min": 25,
+      "needs_renovation": false,
+      "airbnb_night_rate": 60,
+      "airbnb_occupancy_pct": 65
     }
   ],
   "market_context": {

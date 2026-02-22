@@ -1,5 +1,5 @@
 {
-  "scraped_date": "2026-02-22T09:03:57.641540",
+  "scraped_date": "2026-02-22T09:27:15.670160",
   "total_properties": 18,
   "regions": {
     "ionian_islands": {
@@ -109,7 +109,14 @@
       "beach_min": 10,
       "needs_renovation": true,
       "airbnb_night_rate": 65,
-      "airbnb_occupancy_pct": 55
+      "airbnb_occupancy_pct": 55,
+      "lat": 39.6243,
+      "lng": 19.9217,
+      "area_photos": [
+        "https://images.unsplash.com/photo-1586861203927-800a5acdcc4d?w=600",
+        "https://images.unsplash.com/photo-1601985705311-7e2ab26c618d?w=600",
+        "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600"
+      ]
     },
     {
       "title": "2-Bed Property - Episkepsi, Corfu",
@@ -131,7 +138,14 @@
       "beach_min": 15,
       "needs_renovation": true,
       "airbnb_night_rate": 70,
-      "airbnb_occupancy_pct": 50
+      "airbnb_occupancy_pct": 50,
+      "lat": 39.781,
+      "lng": 19.838,
+      "area_photos": [
+        "https://images.unsplash.com/photo-1586861203927-800a5acdcc4d?w=600",
+        "https://images.unsplash.com/photo-1560703650-ef3e0f2c3cb2?w=600",
+        "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600"
+      ]
     },
     {
       "title": "2-Bed House - Karoussades, Corfu",
@@ -153,7 +167,14 @@
       "beach_min": 8,
       "needs_renovation": false,
       "airbnb_night_rate": 75,
-      "airbnb_occupancy_pct": 55
+      "airbnb_occupancy_pct": 55,
+      "lat": 39.787,
+      "lng": 19.835,
+      "area_photos": [
+        "https://images.unsplash.com/photo-1586861203927-800a5acdcc4d?w=600",
+        "https://images.unsplash.com/photo-1601985705311-7e2ab26c618d?w=600",
+        "https://images.unsplash.com/photo-1560703650-ef3e0f2c3cb2?w=600"
+      ]
     },
     {
       "title": "3-Bed Property - Karoussades, Corfu",
@@ -175,7 +196,14 @@
       "beach_min": 8,
       "needs_renovation": true,
       "airbnb_night_rate": 80,
-      "airbnb_occupancy_pct": 52
+      "airbnb_occupancy_pct": 52,
+      "lat": 39.787,
+      "lng": 19.835,
+      "area_photos": [
+        "https://images.unsplash.com/photo-1586861203927-800a5acdcc4d?w=600",
+        "https://images.unsplash.com/photo-1601985705311-7e2ab26c618d?w=600",
+        "https://images.unsplash.com/photo-1560703650-ef3e0f2c3cb2?w=600"
+      ]
     },
     {
       "title": "Property - Lakones, Corfu (Paleokastritsa area)",
@@ -197,7 +225,14 @@
       "beach_min": 5,
       "needs_renovation": true,
       "airbnb_night_rate": 85,
-      "airbnb_occupancy_pct": 60
+      "airbnb_occupancy_pct": 60,
+      "lat": 39.67,
+      "lng": 19.727,
+      "area_photos": [
+        "https://images.unsplash.com/photo-1601985705311-7e2ab26c618d?w=600",
+        "https://images.unsplash.com/photo-1586861203927-800a5acdcc4d?w=600",
+        "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600"
+      ]
     },
     {
       "title": "2-Bed House - Agia Irini, Cephalonia",
@@ -219,7 +254,14 @@
       "beach_min": 12,
       "needs_renovation": false,
       "airbnb_night_rate": 70,
-      "airbnb_occupancy_pct": 48
+      "airbnb_occupancy_pct": 48,
+      "lat": 38.22,
+      "lng": 20.444,
+      "area_photos": [
+        "https://images.unsplash.com/photo-1598889272584-85d3c7011d36?w=600",
+        "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600",
+        "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600"
+      ]
     },
     {
       "title": "1-Bed Detached House - Kaminarata, Cephalonia",
@@ -241,7 +283,14 @@
       "beach_min": 10,
       "needs_renovation": false,
       "airbnb_night_rate": 65,
-      "airbnb_occupancy_pct": 45
+      "airbnb_occupancy_pct": 45,
+      "lat": 38.174,
+      "lng": 20.39,
+      "area_photos": [
+        "https://images.unsplash.com/photo-1598889272584-85d3c7011d36?w=600",
+        "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600",
+        "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600"
+      ]
     },
     {
       "title": "2-Bed Detached House - Topolia, Chania, Crete",
@@ -264,7 +313,14 @@
       "beach_min": 20,
       "needs_renovation": true,
       "airbnb_night_rate": 90,
-      "airbnb_occupancy_pct": 58
+      "airbnb_occupancy_pct": 58,
+      "lat": 35.434,
+      "lng": 23.63,
+      "area_photos": [
+        "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600",
+        "https://images.unsplash.com/photo-1504512485720-7d83a16ee930?w=600",
+        "https://images.unsplash.com/photo-1515861209540-57b87aa1f947?w=600"
+      ]
     },
     {
       "title": "Studio Flat - Drama City Centre",
@@ -287,7 +343,14 @@
       "beach_min": 90,
       "needs_renovation": false,
       "airbnb_night_rate": 35,
-      "airbnb_occupancy_pct": 40
+      "airbnb_occupancy_pct": 40,
+      "lat": 41.151,
+      "lng": 24.146,
+      "area_photos": [
+        "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600",
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+        "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600"
+      ]
     },
     {
       "title": "2-Bed Detached House - Efkarpia, Serres",
@@ -310,7 +373,14 @@
       "beach_min": 75,
       "needs_renovation": false,
       "airbnb_night_rate": 40,
-      "airbnb_occupancy_pct": 35
+      "airbnb_occupancy_pct": 35,
+      "lat": 41.088,
+      "lng": 23.531,
+      "area_photos": [
+        "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600",
+        "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600",
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"
+      ]
     },
     {
       "title": "5-Bed Detached House - Chryso, Serres",
@@ -333,7 +403,14 @@
       "beach_min": 80,
       "needs_renovation": true,
       "airbnb_night_rate": 55,
-      "airbnb_occupancy_pct": 35
+      "airbnb_occupancy_pct": 35,
+      "lat": 41.17,
+      "lng": 23.41,
+      "area_photos": [
+        "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600",
+        "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600",
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"
+      ]
     },
     {
       "title": "Studio Flat - Serres City",
@@ -355,7 +432,14 @@
       "beach_min": 80,
       "needs_renovation": false,
       "airbnb_night_rate": 35,
-      "airbnb_occupancy_pct": 38
+      "airbnb_occupancy_pct": 38,
+      "lat": 41.0858,
+      "lng": 23.5497,
+      "area_photos": [
+        "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600",
+        "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600",
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"
+      ]
     },
     {
       "title": "2-Bed Flat - Drama City",
@@ -377,7 +461,14 @@
       "beach_min": 85,
       "needs_renovation": false,
       "airbnb_night_rate": 40,
-      "airbnb_occupancy_pct": 42
+      "airbnb_occupancy_pct": 42,
+      "lat": 41.154,
+      "lng": 24.144,
+      "area_photos": [
+        "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600",
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
+        "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600"
+      ]
     },
     {
       "title": "2-Bed Detached House - Adriani, Drama",
@@ -400,7 +491,14 @@
       "beach_min": 90,
       "needs_renovation": true,
       "airbnb_night_rate": 45,
-      "airbnb_occupancy_pct": 35
+      "airbnb_occupancy_pct": 35,
+      "lat": 41.122,
+      "lng": 24.215,
+      "area_photos": [
+        "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600",
+        "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600",
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"
+      ]
     },
     {
       "title": "4-Bed Detached House - Rodolivos, Serres",
@@ -422,7 +520,14 @@
       "beach_min": 80,
       "needs_renovation": false,
       "airbnb_night_rate": 55,
-      "airbnb_occupancy_pct": 38
+      "airbnb_occupancy_pct": 38,
+      "lat": 41.233,
+      "lng": 23.649,
+      "area_photos": [
+        "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600",
+        "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600",
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"
+      ]
     },
     {
       "title": "2-Bed Property - Alonnisos Island",
@@ -445,7 +550,14 @@
       "beach_min": 5,
       "needs_renovation": true,
       "airbnb_night_rate": 75,
-      "airbnb_occupancy_pct": 45
+      "airbnb_occupancy_pct": 45,
+      "lat": 39.156,
+      "lng": 23.865,
+      "area_photos": [
+        "https://images.unsplash.com/photo-1601985705311-7e2ab26c618d?w=600",
+        "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600",
+        "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600"
+      ]
     },
     {
       "title": "Detached House - Portaria, Pelion",
@@ -467,7 +579,14 @@
       "beach_min": 15,
       "needs_renovation": true,
       "airbnb_night_rate": 70,
-      "airbnb_occupancy_pct": 50
+      "airbnb_occupancy_pct": 50,
+      "lat": 39.393,
+      "lng": 22.992,
+      "area_photos": [
+        "https://images.unsplash.com/photo-1601985705311-7e2ab26c618d?w=600",
+        "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600",
+        "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600"
+      ]
     },
     {
       "title": "2-Bed Flat - Zografos, Athens (University area)",
@@ -490,7 +609,14 @@
       "beach_min": 25,
       "needs_renovation": false,
       "airbnb_night_rate": 60,
-      "airbnb_occupancy_pct": 65
+      "airbnb_occupancy_pct": 65,
+      "lat": 37.973,
+      "lng": 23.768,
+      "area_photos": [
+        "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600",
+        "https://images.unsplash.com/photo-1603565816030-6b389eeb23cb?w=600",
+        "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600"
+      ]
     }
   ],
   "market_context": {

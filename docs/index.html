@@ -144,25 +144,8 @@ input[type="range"]::-webkit-slider-thumb {
 .score-info .title { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #92400e; }
 .score-info .desc { font-size: 0.72rem; color: var(--muted); line-height: 1.4; }
 
-/* ── Sections ── */
-.section { padding: 40px 0 16px; }
-.section-header { margin-bottom: 18px; padding: 0 20px; max-width: 1100px; margin-left: auto; margin-right: auto; }
-.section-emoji { font-size: 1.5rem; margin-bottom: 4px; display: block; }
-.section-title { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.3px; }
-.section-sub { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
-.section-divider { width: 40px; height: 3px; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--sunset)); margin-top: 10px; }
-
-/* ── Horizontal scroll row ── */
-.scroll-row {
-  display: flex; gap: 16px; overflow-x: auto; padding: 0 20px 16px;
-  max-width: 1100px; margin: 0 auto;
-  scroll-snap-type: x mandatory; -ms-overflow-style: none; scrollbar-width: none;
-}
-.scroll-row::-webkit-scrollbar { display: none; }
-
 /* ── Card ── */
 .card {
-  flex: 0 0 280px; scroll-snap-align: start;
   background: var(--card); border-radius: 16px; overflow: hidden;
   border: 1px solid var(--border); transition: all 0.25s; cursor: pointer;
 }
@@ -205,6 +188,37 @@ input[type="range"]::-webkit-slider-thumb {
 .bar-fill.mid { background: linear-gradient(90deg, #f0c27f, #e6a756); }
 .bar-fill.low { background: #b8c9d6; }
 .bar-num { font-size: 0.7rem; font-weight: 800; color: var(--ocean-dark); min-width: 20px; transition: all 0.3s; }
+
+/* ── Area photos row ── */
+.card-photos { display: flex; gap: 3px; padding: 0 3px; margin-top: -2px; }
+.card-photos img { flex: 1; height: 50px; object-fit: cover; border-radius: 4px; opacity: 0.85; transition: opacity 0.2s; }
+.card:hover .card-photos img { opacity: 1; }
+
+/* ── Maps button on card ── */
+.card-maps-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 0.68rem; font-weight: 600; color: var(--ocean);
+  margin-top: 6px; padding: 3px 8px; border-radius: 6px;
+  background: #e0f2fe; text-decoration: none; transition: background 0.2s;
+}
+.card-maps-btn:hover { background: #bae6fd; }
+
+/* ── Modal area gallery ── */
+.m-gallery { display: flex; gap: 4px; margin-bottom: 10px; }
+.m-gallery img { flex: 1; height: 80px; object-fit: cover; border-radius: 8px; cursor: pointer; transition: opacity 0.2s; }
+.m-gallery img:hover { opacity: 0.8; }
+.m-maps-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.m-maps-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 0.78rem; font-weight: 600; color: var(--ocean);
+  padding: 8px 14px; border-radius: 10px; background: #e0f2fe;
+  text-decoration: none; transition: all 0.2s; flex: 1; justify-content: center;
+}
+.m-maps-btn:hover { background: #bae6fd; }
+.m-maps-btn.listing {
+  background: #fef3c7; color: #92400e;
+}
+.m-maps-btn.listing:hover { background: #fde68a; }
 
 /* ── Explainer ── */
 .explainer { max-width: 1100px; margin: 32px auto 0; padding: 0 20px; }
@@ -493,12 +507,11 @@ input[type="range"]::-webkit-slider-thumb {
           <div class="desc" id="heroScoreDesc">Best match based on your weights</div>
         </div>
       </div>
+      <div id="heroGallery" class="m-gallery" style="margin-top:12px"></div>
+      <div id="heroMaps" class="m-maps-row" style="margin-top:8px"></div>
     </div>
   </div>
 </div>
-
-<!-- CURATED SECTIONS -->
-<div id="sections"></div>
 
 <!-- EXPLAINER -->
 <div class="explainer">
@@ -630,6 +643,8 @@ input[type="range"]::-webkit-slider-thumb {
         <div class="m-airbnb-title">🏠 Airbnb Rental Estimate</div>
         <div class="m-airbnb-grid" id="mAirbnbGrid"></div>
       </div>
+      <div class="m-gallery" id="mGallery"></div>
+      <div class="m-maps-row" id="mMapsRow"></div>
       <div class="m-badges" id="mBadges"></div>
       <a class="m-book" id="mLink" href="#" target="_blank">View on Rightmove →</a>
     </div>
@@ -643,24 +658,24 @@ input[type="range"]::-webkit-slider-thumb {
 
 <script>
 const DATA = [
-  {id:0,title:"1-Bed Stone House - Corfu Island",price:58000,cad:85840,area:55,psqm:1054,beds:"1",bedsN:1,roi:"4-6% (Airbnb)",ptype:"House",region:"ionian_islands",regionName:"Corfu & Cephalonia, Ionian Islands",airport:25,beach:10,reno:1,airbnbRate:65,airbnbOcc:55,annualIncome:13048,grossYield:22.5,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/f501791a2/169757939/f501791a2928226c700059ba540bd212_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/169757939#/?channel=OVERSEAS",source:"Rightmove",features:["Stone house", "Renovation potential", "Corfu island"]},
-  {id:1,title:"2-Bed Property - Episkepsi, Corfu",price:60000,cad:88800,area:65,psqm:923,beds:"2",bedsN:2,roi:"4-5%",ptype:"Property",region:"ionian_islands",regionName:"Corfu & Cephalonia, Ionian Islands",airport:30,beach:15,reno:1,airbnbRate:70,airbnbOcc:50,annualIncome:12775,grossYield:21.3,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/52bf02e40/147192746/52bf02e402b24e10d1554e133d5e1f20_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/147192746#/?channel=OVERSEAS",source:"Rightmove",features:["2 bedrooms", "North Corfu village", "Character property"]},
-  {id:2,title:"2-Bed House - Karoussades, Corfu",price:69000,cad:102120,area:70,psqm:985,beds:"2",bedsN:2,roi:"4-5%",ptype:"House",region:"ionian_islands",regionName:"Corfu & Cephalonia, Ionian Islands",airport:20,beach:8,reno:0,airbnbRate:75,airbnbOcc:55,annualIncome:15056,grossYield:21.8,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/1b5a9b9fe/157731170/1b5a9b9fe22825c0dbe215304a13d6d3_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/157731170#/?channel=OVERSEAS",source:"Rightmove",features:["2 bedrooms", "Near north coast beaches", "Village charm"]},
-  {id:3,title:"3-Bed Property - Karoussades, Corfu",price:70000,cad:103600,area:85,psqm:823,beds:"3",bedsN:3,roi:"4-5%",ptype:"Property",region:"ionian_islands",regionName:"Corfu & Cephalonia, Ionian Islands",airport:20,beach:8,reno:1,airbnbRate:80,airbnbOcc:52,annualIncome:15184,grossYield:21.7,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/00fb7730c/147192809/00fb7730c403292ec505cb1ff08ed713_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/147192809#/?channel=OVERSEAS",source:"Rightmove",features:["3 bedrooms", "North Corfu", "Near beaches"]},
-  {id:4,title:"Property - Lakones, Corfu (Paleokastritsa area)",price:69000,cad:102120,area:60,psqm:1150,beds:"N/A",bedsN:0,roi:"4-6% (Airbnb)",ptype:"Property",region:"ionian_islands",regionName:"Corfu & Cephalonia, Ionian Islands",airport:35,beach:5,reno:1,airbnbRate:85,airbnbOcc:60,annualIncome:18615,grossYield:27.0,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/9ee07dcfe/147192770/9ee07dcfe83bebe53a96d432940f7c3a_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/147192770#/?channel=OVERSEAS",source:"Rightmove",features:["Near Paleokastritsa", "Corfu west coast", "Scenic location"]},
-  {id:5,title:"2-Bed House - Agia Irini, Cephalonia",price:58000,cad:85840,area:70,psqm:828,beds:"2",bedsN:2,roi:"4-5%",ptype:"House",region:"ionian_islands",regionName:"Corfu & Cephalonia, Ionian Islands",airport:25,beach:12,reno:0,airbnbRate:70,airbnbOcc:48,annualIncome:12264,grossYield:21.1,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/ccbf671f7/164335409/ccbf671f791c9dd8962d06901e2cd4c7_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/164335409#/?channel=OVERSEAS",source:"Rightmove",features:["2 bedrooms", "Cephalonia island", "Reduced price"]},
-  {id:6,title:"1-Bed Detached House - Kaminarata, Cephalonia",price:60000,cad:88800,area:50,psqm:1200,beds:"1",bedsN:1,roi:"4-5%",ptype:"Detached house",region:"ionian_islands",regionName:"Corfu & Cephalonia, Ionian Islands",airport:30,beach:10,reno:0,airbnbRate:65,airbnbOcc:45,annualIncome:10676,grossYield:17.8,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/f02587829/169522346/f025878293b87c713ee22cc648c961cd_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/169522346#/?channel=OVERSEAS",source:"Rightmove",features:["Detached house", "Cephalonia village", "Close to beaches"]},
-  {id:7,title:"2-Bed Detached House - Topolia, Chania, Crete",price:60000,cad:88800,area:70,psqm:857,beds:"2",bedsN:2,roi:"3-5%",ptype:"Detached house",region:"crete",regionName:"Chania, Western Crete",airport:35,beach:20,reno:1,airbnbRate:90,airbnbOcc:58,annualIncome:19053,grossYield:31.8,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/a2b84270d/159737804/a2b84270d253ce62ea8aecae2c83f063_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/159737804#/?channel=OVERSEAS",source:"Rightmove",features:["2 bedrooms", "Chania area", "Mountain village", "Character property"]},
-  {id:8,title:"Studio Flat - Drama City Centre",price:56000,cad:82880,area:40,psqm:1400,beds:"Studio",bedsN:0,roi:"5-7%",ptype:"Studio flat",region:"northern_greece",regionName:"Drama & Serres, Northern Greece",airport:100,beach:90,reno:0,airbnbRate:35,airbnbOcc:40,annualIncome:5110,grossYield:9.1,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/793fe631c/162955775/793fe631cab7895c47f2ceebada11d35_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/162955775#/?channel=OVERSEAS",source:"Rightmove",features:["City centre", "Studio", "Ready to rent", "Lowest entry price"]},
-  {id:9,title:"2-Bed Detached House - Efkarpia, Serres",price:57000,cad:84360,area:85,psqm:670,beds:"2",bedsN:2,roi:"5-6%",ptype:"Detached house",region:"northern_greece",regionName:"Drama & Serres, Northern Greece",airport:80,beach:75,reno:0,airbnbRate:40,airbnbOcc:35,annualIncome:5110,grossYield:9.0,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/88e10b9f3/166495556/88e10b9f3311b29c12fc0c634fbe0f1b_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/166495556#/?channel=OVERSEAS",source:"Rightmove",features:["2 bedrooms", "Detached", "85m\u00b2", "Serres area"]},
-  {id:10,title:"5-Bed Detached House - Chryso, Serres",price:57000,cad:84360,area:120,psqm:475,beds:"5",bedsN:5,roi:"5-7%",ptype:"Detached house",region:"northern_greece",regionName:"Drama & Serres, Northern Greece",airport:95,beach:80,reno:1,airbnbRate:55,airbnbOcc:35,annualIncome:7026,grossYield:12.3,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/4c5da3c84/169430747/4c5da3c841ead16360bc9541203fad0b_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/169430747#/?channel=OVERSEAS",source:"Rightmove",features:["5 bedrooms", "120m\u00b2", "Large family home", "Incredible value"]},
-  {id:11,title:"Studio Flat - Serres City",price:58000,cad:85840,area:38,psqm:1526,beds:"Studio",bedsN:0,roi:"5-7%",ptype:"Studio flat",region:"northern_greece",regionName:"Drama & Serres, Northern Greece",airport:85,beach:80,reno:0,airbnbRate:35,airbnbOcc:38,annualIncome:4854,grossYield:8.4,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/705ae7346/170088143/705ae7346705e8d66d72ed72f1d04ed9_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/170088143#/?channel=OVERSEAS",source:"Rightmove",features:["City location", "Studio flat", "Rental ready"]},
-  {id:12,title:"2-Bed Flat - Drama City",price:70000,cad:103600,area:65,psqm:1076,beds:"2",bedsN:2,roi:"5-6%",ptype:"Flat",region:"northern_greece",regionName:"Drama & Serres, Northern Greece",airport:100,beach:85,reno:0,airbnbRate:40,airbnbOcc:42,annualIncome:6132,grossYield:8.8,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/b8e9e150e/169011563/b8e9e150e454d86cf1bab5110e7d7ae4_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/169011563#/?channel=OVERSEAS",source:"Rightmove",features:["2 bedrooms", "City apartment", "Ready to move in"]},
-  {id:13,title:"2-Bed Detached House - Adriani, Drama",price:70000,cad:103600,area:80,psqm:875,beds:"2",bedsN:2,roi:"5-6%",ptype:"Detached house",region:"northern_greece",regionName:"Drama & Serres, Northern Greece",airport:110,beach:90,reno:1,airbnbRate:45,airbnbOcc:35,annualIncome:5748,grossYield:8.2,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/443ad7c8a/159071498/443ad7c8a30b49564efaf26ffc4464c7_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/159071498#/?channel=OVERSEAS",source:"Rightmove",features:["2 bedrooms", "Detached", "80m\u00b2", "Village setting"]},
-  {id:14,title:"4-Bed Detached House - Rodolivos, Serres",price:70000,cad:103600,area:130,psqm:538,beds:"4",bedsN:4,roi:"5-6%",ptype:"Detached house",region:"northern_greece",regionName:"Drama & Serres, Northern Greece",airport:90,beach:80,reno:0,airbnbRate:55,airbnbOcc:38,annualIncome:7628,grossYield:10.9,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/3633cb896/169742507/3633cb89629d936b52fb63a8b6e2b50e_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/169742507#/?channel=OVERSEAS",source:"Rightmove",features:["4 bedrooms", "130m\u00b2", "Large family home"]},
-  {id:15,title:"2-Bed Property - Alonnisos Island",price:60000,cad:88800,area:55,psqm:1090,beds:"2",bedsN:2,roi:"4-5% (seasonal)",ptype:"Property",region:"pelion_sporades",regionName:"Pelion & Alonnisos, Thessaly",airport:60,beach:5,reno:1,airbnbRate:75,airbnbOcc:45,annualIncome:12318,grossYield:20.5,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/ada9f3d64/169527362/ada9f3d641dc27ff3d07974a56d7e5d3_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/169527362#/?channel=OVERSEAS",source:"Rightmove",features:["Island living", "2 bedrooms", "Marine park island", "Reduced price"]},
-  {id:16,title:"Detached House - Portaria, Pelion",price:70000,cad:103600,area:75,psqm:933,beds:"N/A",bedsN:0,roi:"4-5%",ptype:"Detached house",region:"pelion_sporades",regionName:"Pelion & Alonnisos, Thessaly",airport:40,beach:15,reno:1,airbnbRate:70,airbnbOcc:50,annualIncome:12775,grossYield:18.2,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/6331d4b20/172463645/6331d4b209afdc646bc0370a530a2c1f_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/172463645#/?channel=OVERSEAS",source:"Rightmove",features:["Pelion mountain village", "Near beaches", "Character property"]},
-  {id:17,title:"2-Bed Flat - Zografos, Athens (University area)",price:73000,cad:108040,area:65,psqm:1123,beds:"2",bedsN:2,roi:"5-6%",ptype:"Flat",region:"attica",regionName:"Athens / Attica",airport:45,beach:25,reno:0,airbnbRate:60,airbnbOcc:65,annualIncome:14235,grossYield:19.5,img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/db7d7fd42/172039565/db7d7fd420cb1ededdddb6734a54cc59_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/172039565#/?channel=OVERSEAS",source:"Rightmove",features:["Athens location", "2 bedrooms", "Near university", "Strong rental demand"]}
+  {id:0,title:"1-Bed Stone House - Corfu Island",price:58000,cad:85840,area:55,psqm:1054,beds:"1",bedsN:1,roi:"4-6% (Airbnb)",ptype:"House",region:"ionian_islands",regionName:"Corfu & Cephalonia, Ionian Islands",airport:25,beach:10,reno:1,airbnbRate:65,airbnbOcc:55,annualIncome:13048,grossYield:22.5,lat:39.6243,lng:19.9217,mapsUrl:"https://www.google.com/maps?q=39.6243,19.9217&z=14",img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/f501791a2/169757939/f501791a2928226c700059ba540bd212_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/169757939#/?channel=OVERSEAS",source:"Rightmove",features:["Stone house", "Renovation potential", "Corfu island"],areaPhotos:["https://images.unsplash.com/photo-1586861203927-800a5acdcc4d?w=600", "https://images.unsplash.com/photo-1601985705311-7e2ab26c618d?w=600", "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600"]},
+  {id:1,title:"2-Bed Property - Episkepsi, Corfu",price:60000,cad:88800,area:65,psqm:923,beds:"2",bedsN:2,roi:"4-5%",ptype:"Property",region:"ionian_islands",regionName:"Corfu & Cephalonia, Ionian Islands",airport:30,beach:15,reno:1,airbnbRate:70,airbnbOcc:50,annualIncome:12775,grossYield:21.3,lat:39.781,lng:19.838,mapsUrl:"https://www.google.com/maps?q=39.781,19.838&z=14",img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/52bf02e40/147192746/52bf02e402b24e10d1554e133d5e1f20_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/147192746#/?channel=OVERSEAS",source:"Rightmove",features:["2 bedrooms", "North Corfu village", "Character property"],areaPhotos:["https://images.unsplash.com/photo-1586861203927-800a5acdcc4d?w=600", "https://images.unsplash.com/photo-1560703650-ef3e0f2c3cb2?w=600", "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600"]},
+  {id:2,title:"2-Bed House - Karoussades, Corfu",price:69000,cad:102120,area:70,psqm:985,beds:"2",bedsN:2,roi:"4-5%",ptype:"House",region:"ionian_islands",regionName:"Corfu & Cephalonia, Ionian Islands",airport:20,beach:8,reno:0,airbnbRate:75,airbnbOcc:55,annualIncome:15056,grossYield:21.8,lat:39.787,lng:19.835,mapsUrl:"https://www.google.com/maps?q=39.787,19.835&z=14",img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/1b5a9b9fe/157731170/1b5a9b9fe22825c0dbe215304a13d6d3_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/157731170#/?channel=OVERSEAS",source:"Rightmove",features:["2 bedrooms", "Near north coast beaches", "Village charm"],areaPhotos:["https://images.unsplash.com/photo-1586861203927-800a5acdcc4d?w=600", "https://images.unsplash.com/photo-1601985705311-7e2ab26c618d?w=600", "https://images.unsplash.com/photo-1560703650-ef3e0f2c3cb2?w=600"]},
+  {id:3,title:"3-Bed Property - Karoussades, Corfu",price:70000,cad:103600,area:85,psqm:823,beds:"3",bedsN:3,roi:"4-5%",ptype:"Property",region:"ionian_islands",regionName:"Corfu & Cephalonia, Ionian Islands",airport:20,beach:8,reno:1,airbnbRate:80,airbnbOcc:52,annualIncome:15184,grossYield:21.7,lat:39.787,lng:19.835,mapsUrl:"https://www.google.com/maps?q=39.787,19.835&z=14",img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/00fb7730c/147192809/00fb7730c403292ec505cb1ff08ed713_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/147192809#/?channel=OVERSEAS",source:"Rightmove",features:["3 bedrooms", "North Corfu", "Near beaches"],areaPhotos:["https://images.unsplash.com/photo-1586861203927-800a5acdcc4d?w=600", "https://images.unsplash.com/photo-1601985705311-7e2ab26c618d?w=600", "https://images.unsplash.com/photo-1560703650-ef3e0f2c3cb2?w=600"]},
+  {id:4,title:"Property - Lakones, Corfu (Paleokastritsa area)",price:69000,cad:102120,area:60,psqm:1150,beds:"N/A",bedsN:0,roi:"4-6% (Airbnb)",ptype:"Property",region:"ionian_islands",regionName:"Corfu & Cephalonia, Ionian Islands",airport:35,beach:5,reno:1,airbnbRate:85,airbnbOcc:60,annualIncome:18615,grossYield:27.0,lat:39.67,lng:19.727,mapsUrl:"https://www.google.com/maps?q=39.67,19.727&z=14",img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/9ee07dcfe/147192770/9ee07dcfe83bebe53a96d432940f7c3a_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/147192770#/?channel=OVERSEAS",source:"Rightmove",features:["Near Paleokastritsa", "Corfu west coast", "Scenic location"],areaPhotos:["https://images.unsplash.com/photo-1601985705311-7e2ab26c618d?w=600", "https://images.unsplash.com/photo-1586861203927-800a5acdcc4d?w=600", "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600"]},
+  {id:5,title:"2-Bed House - Agia Irini, Cephalonia",price:58000,cad:85840,area:70,psqm:828,beds:"2",bedsN:2,roi:"4-5%",ptype:"House",region:"ionian_islands",regionName:"Corfu & Cephalonia, Ionian Islands",airport:25,beach:12,reno:0,airbnbRate:70,airbnbOcc:48,annualIncome:12264,grossYield:21.1,lat:38.22,lng:20.444,mapsUrl:"https://www.google.com/maps?q=38.22,20.444&z=14",img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/ccbf671f7/164335409/ccbf671f791c9dd8962d06901e2cd4c7_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/164335409#/?channel=OVERSEAS",source:"Rightmove",features:["2 bedrooms", "Cephalonia island", "Reduced price"],areaPhotos:["https://images.unsplash.com/photo-1598889272584-85d3c7011d36?w=600", "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600", "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600"]},
+  {id:6,title:"1-Bed Detached House - Kaminarata, Cephalonia",price:60000,cad:88800,area:50,psqm:1200,beds:"1",bedsN:1,roi:"4-5%",ptype:"Detached house",region:"ionian_islands",regionName:"Corfu & Cephalonia, Ionian Islands",airport:30,beach:10,reno:0,airbnbRate:65,airbnbOcc:45,annualIncome:10676,grossYield:17.8,lat:38.174,lng:20.39,mapsUrl:"https://www.google.com/maps?q=38.174,20.39&z=14",img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/f02587829/169522346/f025878293b87c713ee22cc648c961cd_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/169522346#/?channel=OVERSEAS",source:"Rightmove",features:["Detached house", "Cephalonia village", "Close to beaches"],areaPhotos:["https://images.unsplash.com/photo-1598889272584-85d3c7011d36?w=600", "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600", "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600"]},
+  {id:7,title:"2-Bed Detached House - Topolia, Chania, Crete",price:60000,cad:88800,area:70,psqm:857,beds:"2",bedsN:2,roi:"3-5%",ptype:"Detached house",region:"crete",regionName:"Chania, Western Crete",airport:35,beach:20,reno:1,airbnbRate:90,airbnbOcc:58,annualIncome:19053,grossYield:31.8,lat:35.434,lng:23.63,mapsUrl:"https://www.google.com/maps?q=35.434,23.63&z=14",img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/a2b84270d/159737804/a2b84270d253ce62ea8aecae2c83f063_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/159737804#/?channel=OVERSEAS",source:"Rightmove",features:["2 bedrooms", "Chania area", "Mountain village", "Character property"],areaPhotos:["https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600", "https://images.unsplash.com/photo-1504512485720-7d83a16ee930?w=600", "https://images.unsplash.com/photo-1515861209540-57b87aa1f947?w=600"]},
+  {id:8,title:"Studio Flat - Drama City Centre",price:56000,cad:82880,area:40,psqm:1400,beds:"Studio",bedsN:0,roi:"5-7%",ptype:"Studio flat",region:"northern_greece",regionName:"Drama & Serres, Northern Greece",airport:100,beach:90,reno:0,airbnbRate:35,airbnbOcc:40,annualIncome:5110,grossYield:9.1,lat:41.151,lng:24.146,mapsUrl:"https://www.google.com/maps?q=41.151,24.146&z=14",img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/793fe631c/162955775/793fe631cab7895c47f2ceebada11d35_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/162955775#/?channel=OVERSEAS",source:"Rightmove",features:["City centre", "Studio", "Ready to rent", "Lowest entry price"],areaPhotos:["https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600", "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600", "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600"]},
+  {id:9,title:"2-Bed Detached House - Efkarpia, Serres",price:57000,cad:84360,area:85,psqm:670,beds:"2",bedsN:2,roi:"5-6%",ptype:"Detached house",region:"northern_greece",regionName:"Drama & Serres, Northern Greece",airport:80,beach:75,reno:0,airbnbRate:40,airbnbOcc:35,annualIncome:5110,grossYield:9.0,lat:41.088,lng:23.531,mapsUrl:"https://www.google.com/maps?q=41.088,23.531&z=14",img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/88e10b9f3/166495556/88e10b9f3311b29c12fc0c634fbe0f1b_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/166495556#/?channel=OVERSEAS",source:"Rightmove",features:["2 bedrooms", "Detached", "85m\u00b2", "Serres area"],areaPhotos:["https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600", "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600", "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"]},
+  {id:10,title:"5-Bed Detached House - Chryso, Serres",price:57000,cad:84360,area:120,psqm:475,beds:"5",bedsN:5,roi:"5-7%",ptype:"Detached house",region:"northern_greece",regionName:"Drama & Serres, Northern Greece",airport:95,beach:80,reno:1,airbnbRate:55,airbnbOcc:35,annualIncome:7026,grossYield:12.3,lat:41.17,lng:23.41,mapsUrl:"https://www.google.com/maps?q=41.17,23.41&z=14",img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/4c5da3c84/169430747/4c5da3c841ead16360bc9541203fad0b_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/169430747#/?channel=OVERSEAS",source:"Rightmove",features:["5 bedrooms", "120m\u00b2", "Large family home", "Incredible value"],areaPhotos:["https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600", "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600", "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"]},
+  {id:11,title:"Studio Flat - Serres City",price:58000,cad:85840,area:38,psqm:1526,beds:"Studio",bedsN:0,roi:"5-7%",ptype:"Studio flat",region:"northern_greece",regionName:"Drama & Serres, Northern Greece",airport:85,beach:80,reno:0,airbnbRate:35,airbnbOcc:38,annualIncome:4854,grossYield:8.4,lat:41.0858,lng:23.5497,mapsUrl:"https://www.google.com/maps?q=41.0858,23.5497&z=14",img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/705ae7346/170088143/705ae7346705e8d66d72ed72f1d04ed9_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/170088143#/?channel=OVERSEAS",source:"Rightmove",features:["City location", "Studio flat", "Rental ready"],areaPhotos:["https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600", "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600", "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"]},
+  {id:12,title:"2-Bed Flat - Drama City",price:70000,cad:103600,area:65,psqm:1076,beds:"2",bedsN:2,roi:"5-6%",ptype:"Flat",region:"northern_greece",regionName:"Drama & Serres, Northern Greece",airport:100,beach:85,reno:0,airbnbRate:40,airbnbOcc:42,annualIncome:6132,grossYield:8.8,lat:41.154,lng:24.144,mapsUrl:"https://www.google.com/maps?q=41.154,24.144&z=14",img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/b8e9e150e/169011563/b8e9e150e454d86cf1bab5110e7d7ae4_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/169011563#/?channel=OVERSEAS",source:"Rightmove",features:["2 bedrooms", "City apartment", "Ready to move in"],areaPhotos:["https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600", "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600", "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600"]},
+  {id:13,title:"2-Bed Detached House - Adriani, Drama",price:70000,cad:103600,area:80,psqm:875,beds:"2",bedsN:2,roi:"5-6%",ptype:"Detached house",region:"northern_greece",regionName:"Drama & Serres, Northern Greece",airport:110,beach:90,reno:1,airbnbRate:45,airbnbOcc:35,annualIncome:5748,grossYield:8.2,lat:41.122,lng:24.215,mapsUrl:"https://www.google.com/maps?q=41.122,24.215&z=14",img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/443ad7c8a/159071498/443ad7c8a30b49564efaf26ffc4464c7_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/159071498#/?channel=OVERSEAS",source:"Rightmove",features:["2 bedrooms", "Detached", "80m\u00b2", "Village setting"],areaPhotos:["https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600", "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600", "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"]},
+  {id:14,title:"4-Bed Detached House - Rodolivos, Serres",price:70000,cad:103600,area:130,psqm:538,beds:"4",bedsN:4,roi:"5-6%",ptype:"Detached house",region:"northern_greece",regionName:"Drama & Serres, Northern Greece",airport:90,beach:80,reno:0,airbnbRate:55,airbnbOcc:38,annualIncome:7628,grossYield:10.9,lat:41.233,lng:23.649,mapsUrl:"https://www.google.com/maps?q=41.233,23.649&z=14",img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/3633cb896/169742507/3633cb89629d936b52fb63a8b6e2b50e_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/169742507#/?channel=OVERSEAS",source:"Rightmove",features:["4 bedrooms", "130m\u00b2", "Large family home"],areaPhotos:["https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600", "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600", "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"]},
+  {id:15,title:"2-Bed Property - Alonnisos Island",price:60000,cad:88800,area:55,psqm:1090,beds:"2",bedsN:2,roi:"4-5% (seasonal)",ptype:"Property",region:"pelion_sporades",regionName:"Pelion & Alonnisos, Thessaly",airport:60,beach:5,reno:1,airbnbRate:75,airbnbOcc:45,annualIncome:12318,grossYield:20.5,lat:39.156,lng:23.865,mapsUrl:"https://www.google.com/maps?q=39.156,23.865&z=14",img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/ada9f3d64/169527362/ada9f3d641dc27ff3d07974a56d7e5d3_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/169527362#/?channel=OVERSEAS",source:"Rightmove",features:["Island living", "2 bedrooms", "Marine park island", "Reduced price"],areaPhotos:["https://images.unsplash.com/photo-1601985705311-7e2ab26c618d?w=600", "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600", "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600"]},
+  {id:16,title:"Detached House - Portaria, Pelion",price:70000,cad:103600,area:75,psqm:933,beds:"N/A",bedsN:0,roi:"4-5%",ptype:"Detached house",region:"pelion_sporades",regionName:"Pelion & Alonnisos, Thessaly",airport:40,beach:15,reno:1,airbnbRate:70,airbnbOcc:50,annualIncome:12775,grossYield:18.2,lat:39.393,lng:22.992,mapsUrl:"https://www.google.com/maps?q=39.393,22.992&z=14",img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/6331d4b20/172463645/6331d4b209afdc646bc0370a530a2c1f_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/172463645#/?channel=OVERSEAS",source:"Rightmove",features:["Pelion mountain village", "Near beaches", "Character property"],areaPhotos:["https://images.unsplash.com/photo-1601985705311-7e2ab26c618d?w=600", "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600", "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600"]},
+  {id:17,title:"2-Bed Flat - Zografos, Athens (University area)",price:73000,cad:108040,area:65,psqm:1123,beds:"2",bedsN:2,roi:"5-6%",ptype:"Flat",region:"attica",regionName:"Athens / Attica",airport:45,beach:25,reno:0,airbnbRate:60,airbnbOcc:65,annualIncome:14235,grossYield:19.5,lat:37.973,lng:23.768,mapsUrl:"https://www.google.com/maps?q=37.973,23.768&z=14",img:"https://media.rightmove.co.uk/dir/crop/10:9-16:9/property-photo/db7d7fd42/172039565/db7d7fd420cb1ededdddb6734a54cc59_max_476x317.jpeg",url:"https://www.rightmove.co.uk/properties/172039565#/?channel=OVERSEAS",source:"Rightmove",features:["Athens location", "2 bedrooms", "Near university", "Strong rental demand"],areaPhotos:["https://images.unsplash.com/photo-1555993539-1732b0258235?w=600", "https://images.unsplash.com/photo-1603565816030-6b389eeb23cb?w=600", "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600"]}
 ];
 const REGIONS = {"ionian_islands":{name:"Corfu & Cephalonia, Ionian Islands",airportCode:"CFU / EFL",airportMin:20,airportNote:"CFU 10-30 min from most Corfu properties; EFL 15-40 min on Cephalonia",beachMin:5,yieldMid:5.0,avgPsqm:900},"northern_greece":{name:"Drama & Serres, Northern Greece",airportCode:"SKG",airportMin:90,airportNote:"Thessaloniki International (SKG) is a 1-2 hour drive. Major hub with year-round flights",beachMin:75,yieldMid:6.0,avgPsqm:500},"crete":{name:"Chania, Western Crete",airportCode:"CHQ",airportMin:25,airportNote:"Chania International (CHQ) 15-40 min from most properties. Direct flights across Europe",beachMin:10,yieldMid:4.5,avgPsqm:1400},"pelion_sporades":{name:"Pelion & Alonnisos, Thessaly",airportCode:"VOL / SKG",airportMin:45,airportNote:"Volos Nea Anchialos (VOL) 30-60 min seasonal; Thessaloniki (SKG) 2.5 hr year-round",beachMin:10,yieldMid:4.5,avgPsqm:800},"attica":{name:"Athens / Attica",airportCode:"ATH",airportMin:40,airportNote:"Athens International (ATH) 30-60 min by metro/car. Greece's main hub, hundreds of routes",beachMin:20,yieldMid:5.5,avgPsqm:1800}};
 
@@ -708,19 +723,24 @@ function score(d) {
 function scoreTier(s) { return s >= 65 ? 'high' : s >= 40 ? 'mid' : 'low'; }
 function scoreColor(s) { return s >= 65 ? '#d4363b' : s >= 40 ? '#e6a756' : '#b8c9d6'; }
 
-function makeCard(d, rank) {
+function makeCard(d) {
   const s = score(d);
   const t = scoreTier(s);
+  const photoRow = d.areaPhotos && d.areaPhotos.length ? `
+    <div class="card-photos">
+      ${d.areaPhotos.map(u => `<img src="${u}" alt="Area" loading="lazy" onerror="this.style.display='none'">`).join('')}
+    </div>` : '';
   return `
     <div class="card" onclick="openModal(${d.id})">
       <div class="card-img-wrap">
         <img class="card-img" src="${d.img}" alt="${d.title}" loading="lazy"
              onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
         <div class="card-overlay"></div>
-        <div class="card-rank ${t}">${rank !== null ? '#'+rank : Math.round(s)}</div>
+        <div class="card-rank ${t}">${Math.round(s)}</div>
         <div class="card-price-tag">€${d.price.toLocaleString()}</div>
         <div class="card-airport-tag">✈️ ${d.airport} min</div>
       </div>
+      ${photoRow}
       <div class="card-body">
         <div class="card-name">${d.title}</div>
         <div class="card-area">📍 ${d.regionName}</div>
@@ -729,6 +749,7 @@ function makeCard(d, rank) {
           <div class="bar-track"><div class="bar-fill ${t}" style="width:${s.toFixed(0)}%"></div></div>
           <span class="bar-num">${Math.round(s)}</span>
         </div>
+        ${d.mapsUrl !== '#' ? `<a class="card-maps-btn" href="${d.mapsUrl}" target="_blank" onclick="event.stopPropagation()">📍 View on Google Maps</a>` : ''}
       </div>
     </div>`;
 }
@@ -762,22 +783,9 @@ function makeAirbnbCard(d) {
 
 function rebuild() {
   const ranked = DATA.map(d => ({...d, sc: score(d)})).sort((a,b) => b.sc - a.sc);
-  const used = new Set();
-
-  function pick(pool, n) {
-    const result = [];
-    for (const d of pool) {
-      if (used.has(d.id)) continue;
-      result.push(d);
-      used.add(d.id);
-      if (result.length >= n) break;
-    }
-    return result;
-  }
 
   // Hero = #1
   const hero = ranked[0];
-  used.add(hero.id);
   const hs = hero.sc;
 
   document.getElementById('heroImg').src = hero.img;
@@ -794,47 +802,18 @@ function rebuild() {
   ring.style.stroke = scoreColor(hs);
   ring.style.strokeDashoffset = 125.6 * (1 - hs / 100);
 
-  // ── Curated sections ──
-  const bestValue = pick(ranked, 5);
+  // Hero area gallery
+  const hGallery = document.getElementById('heroGallery');
+  if (hero.areaPhotos && hero.areaPhotos.length) {
+    hGallery.innerHTML = hero.areaPhotos.map(u => `<img src="${u}" alt="Area" loading="lazy" onerror="this.style.display='none'">`).join('');
+  } else { hGallery.innerHTML = ''; }
 
-  const closestAirport = [...ranked].sort((a,b) => a.airport - b.airport);
-  const airportPicks = pick(closestAirport, 4);
-
-  const closestBeach = [...ranked].sort((a,b) => a.beach - b.beach);
-  const beachPicks = pick(closestBeach, 4);
-
-  const highYieldPool = [...ranked].sort((a,b) => b.grossYield - a.grossYield);
-  const yieldPicks = pick(highYieldPool, 4);
-
-  const biggestPool = [...ranked].sort((a,b) => b.area - a.area);
-  const bigPicks = pick(biggestPool, 4);
-
-  const sections = [
-    { emoji: '🎯', title: 'Best Overall Match', sub: 'Highest score based on your current weights', cards: bestValue, ranked: true },
-    { emoji: '✈️', title: 'Closest to Airport', sub: 'Shortest drive to nearest international airport', cards: airportPicks },
-    { emoji: '🏖️', title: 'Closest to Beach', sub: 'Walk or quick drive to the sea', cards: beachPicks },
-    { emoji: '📈', title: 'Highest Rental Yield', sub: 'Best Airbnb income relative to purchase price', cards: yieldPicks },
-    { emoji: '📐', title: 'Most Space for Money', sub: 'Largest properties in the budget', cards: bigPicks },
-  ].filter(s => s.cards.length > 0);
-
-  let globalRank = 2;
-  const html = sections.map(sec => `
-    <div class="section">
-      <div class="section-header">
-        <span class="section-emoji">${sec.emoji}</span>
-        <div class="section-title">${sec.title}</div>
-        <div class="section-sub">${sec.sub}</div>
-        <div class="section-divider"></div>
-      </div>
-      <div class="scroll-row">
-        ${sec.cards.map(d => {
-          const rank = sec.ranked ? globalRank++ : null;
-          return makeCard(d, rank);
-        }).join('')}
-      </div>
-    </div>
-  `).join('');
-  document.getElementById('sections').innerHTML = html;
+  // Hero maps buttons
+  const hMaps = document.getElementById('heroMaps');
+  let mapsHtml = '';
+  if (hero.mapsUrl !== '#') mapsHtml += `<a class="m-maps-btn" href="${hero.mapsUrl}" target="_blank" onclick="event.stopPropagation()">📍 Google Maps</a>`;
+  mapsHtml += `<a class="m-maps-btn listing" href="${hero.url}" target="_blank" onclick="event.stopPropagation()">🏠 View Listing</a>`;
+  hMaps.innerHTML = mapsHtml;
 
   // Update formula display
   const total = wPrice + wAirport + wBeach + wSize + wYield + wReno || 1;
@@ -870,7 +849,7 @@ function rebuildBrowse() {
     .sort((a, b) => b.sc - a.sc);
 
   document.getElementById('browseCount').textContent = filtered.length;
-  document.getElementById('browseGrid').innerHTML = filtered.map(d => makeCard(d, null)).join('');
+  document.getElementById('browseGrid').innerHTML = filtered.map(d => makeCard(d)).join('');
 }
 
 function rebuildAirbnb() {
@@ -953,6 +932,18 @@ function openModal(id) {
     <div class="m-stat"><div class="v" style="color:var(--gold)">€${d.annualIncome.toLocaleString()}/yr</div><div class="l">Annual</div></div>
     <div class="m-stat"><div class="v" style="color:var(--ocean)">${d.grossYield}%</div><div class="l">Gross Yield</div></div>
   `;
+
+  // Area gallery
+  const gallery = document.getElementById('mGallery');
+  if (d.areaPhotos && d.areaPhotos.length) {
+    gallery.innerHTML = d.areaPhotos.map(u => `<img src="${u}" alt="Area" loading="lazy" onerror="this.style.display='none'">`).join('');
+  } else { gallery.innerHTML = ''; }
+
+  // Maps + listing buttons
+  let mRow = '';
+  if (d.mapsUrl !== '#') mRow += `<a class="m-maps-btn" href="${d.mapsUrl}" target="_blank">📍 Open in Google Maps</a>`;
+  mRow += `<a class="m-maps-btn listing" href="${d.url}" target="_blank">🏠 View Listing</a>`;
+  document.getElementById('mMapsRow').innerHTML = mRow;
 
   let b = '';
   if (s >= 65) b += '<span class="m-badge fire">🔥 Top Match</span>';

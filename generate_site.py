@@ -38,6 +38,11 @@ def generate_site():
         annual_income = int(airbnb_rate * 365 * airbnb_occ / 100)
         gross_yield = round(annual_income / price * 100, 1) if price else 0
 
+        lat = p.get("lat", 0)
+        lng = p.get("lng", 0)
+        maps_url = f"https://www.google.com/maps?q={lat},{lng}&z=14" if lat else "#"
+        area_photos = p.get("area_photos", [])
+
         js_data_items.append(
             f'{{id:{i},title:"{p.get("title","").replace(chr(34),chr(39))}",'
             f'price:{price},cad:{cad},area:{area},psqm:{psqm},'
@@ -53,10 +58,13 @@ def generate_site():
             f'airbnbOcc:{airbnb_occ},'
             f'annualIncome:{annual_income},'
             f'grossYield:{gross_yield},'
+            f'lat:{lat},lng:{lng},'
+            f'mapsUrl:"{maps_url}",'
             f'img:"{img}",'
             f'url:"{p.get("url","#")}",'
             f'source:"{p.get("source","")}",'
-            f'features:{json.dumps(features[:4])}'
+            f'features:{json.dumps(features[:4])},'
+            f'areaPhotos:{json.dumps(area_photos[:3])}'
             f'}}'
         )
 
@@ -234,25 +242,8 @@ input[type="range"]::-webkit-slider-thumb {{
 .score-info .title {{ font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #92400e; }}
 .score-info .desc {{ font-size: 0.72rem; color: var(--muted); line-height: 1.4; }}
 
-/* ── Sections ── */
-.section {{ padding: 40px 0 16px; }}
-.section-header {{ margin-bottom: 18px; padding: 0 20px; max-width: 1100px; margin-left: auto; margin-right: auto; }}
-.section-emoji {{ font-size: 1.5rem; margin-bottom: 4px; display: block; }}
-.section-title {{ font-size: 1.2rem; font-weight: 800; letter-spacing: -0.3px; }}
-.section-sub {{ font-size: 0.82rem; color: var(--muted); margin-top: 2px; }}
-.section-divider {{ width: 40px; height: 3px; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--sunset)); margin-top: 10px; }}
-
-/* ── Horizontal scroll row ── */
-.scroll-row {{
-  display: flex; gap: 16px; overflow-x: auto; padding: 0 20px 16px;
-  max-width: 1100px; margin: 0 auto;
-  scroll-snap-type: x mandatory; -ms-overflow-style: none; scrollbar-width: none;
-}}
-.scroll-row::-webkit-scrollbar {{ display: none; }}
-
 /* ── Card ── */
 .card {{
-  flex: 0 0 280px; scroll-snap-align: start;
   background: var(--card); border-radius: 16px; overflow: hidden;
   border: 1px solid var(--border); transition: all 0.25s; cursor: pointer;
 }}
@@ -295,6 +286,37 @@ input[type="range"]::-webkit-slider-thumb {{
 .bar-fill.mid {{ background: linear-gradient(90deg, #f0c27f, #e6a756); }}
 .bar-fill.low {{ background: #b8c9d6; }}
 .bar-num {{ font-size: 0.7rem; font-weight: 800; color: var(--ocean-dark); min-width: 20px; transition: all 0.3s; }}
+
+/* ── Area photos row ── */
+.card-photos {{ display: flex; gap: 3px; padding: 0 3px; margin-top: -2px; }}
+.card-photos img {{ flex: 1; height: 50px; object-fit: cover; border-radius: 4px; opacity: 0.85; transition: opacity 0.2s; }}
+.card:hover .card-photos img {{ opacity: 1; }}
+
+/* ── Maps button on card ── */
+.card-maps-btn {{
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 0.68rem; font-weight: 600; color: var(--ocean);
+  margin-top: 6px; padding: 3px 8px; border-radius: 6px;
+  background: #e0f2fe; text-decoration: none; transition: background 0.2s;
+}}
+.card-maps-btn:hover {{ background: #bae6fd; }}
+
+/* ── Modal area gallery ── */
+.m-gallery {{ display: flex; gap: 4px; margin-bottom: 10px; }}
+.m-gallery img {{ flex: 1; height: 80px; object-fit: cover; border-radius: 8px; cursor: pointer; transition: opacity 0.2s; }}
+.m-gallery img:hover {{ opacity: 0.8; }}
+.m-maps-row {{ display: flex; gap: 8px; margin-bottom: 10px; }}
+.m-maps-btn {{
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 0.78rem; font-weight: 600; color: var(--ocean);
+  padding: 8px 14px; border-radius: 10px; background: #e0f2fe;
+  text-decoration: none; transition: all 0.2s; flex: 1; justify-content: center;
+}}
+.m-maps-btn:hover {{ background: #bae6fd; }}
+.m-maps-btn.listing {{
+  background: #fef3c7; color: #92400e;
+}}
+.m-maps-btn.listing:hover {{ background: #fde68a; }}
 
 /* ── Explainer ── */
 .explainer {{ max-width: 1100px; margin: 32px auto 0; padding: 0 20px; }}
@@ -583,12 +605,11 @@ input[type="range"]::-webkit-slider-thumb {{
           <div class="desc" id="heroScoreDesc">Best match based on your weights</div>
         </div>
       </div>
+      <div id="heroGallery" class="m-gallery" style="margin-top:12px"></div>
+      <div id="heroMaps" class="m-maps-row" style="margin-top:8px"></div>
     </div>
   </div>
 </div>
-
-<!-- CURATED SECTIONS -->
-<div id="sections"></div>
 
 <!-- EXPLAINER -->
 <div class="explainer">
@@ -714,6 +735,8 @@ input[type="range"]::-webkit-slider-thumb {{
         <div class="m-airbnb-title">🏠 Airbnb Rental Estimate</div>
         <div class="m-airbnb-grid" id="mAirbnbGrid"></div>
       </div>
+      <div class="m-gallery" id="mGallery"></div>
+      <div class="m-maps-row" id="mMapsRow"></div>
       <div class="m-badges" id="mBadges"></div>
       <a class="m-book" id="mLink" href="#" target="_blank">View on Rightmove →</a>
     </div>
@@ -773,19 +796,24 @@ function score(d) {{
 function scoreTier(s) {{ return s >= 65 ? 'high' : s >= 40 ? 'mid' : 'low'; }}
 function scoreColor(s) {{ return s >= 65 ? '#d4363b' : s >= 40 ? '#e6a756' : '#b8c9d6'; }}
 
-function makeCard(d, rank) {{
+function makeCard(d) {{
   const s = score(d);
   const t = scoreTier(s);
+  const photoRow = d.areaPhotos && d.areaPhotos.length ? `
+    <div class="card-photos">
+      ${{d.areaPhotos.map(u => `<img src="${{u}}" alt="Area" loading="lazy" onerror="this.style.display='none'">`).join('')}}
+    </div>` : '';
   return `
     <div class="card" onclick="openModal(${{d.id}})">
       <div class="card-img-wrap">
         <img class="card-img" src="${{d.img}}" alt="${{d.title}}" loading="lazy"
              onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
         <div class="card-overlay"></div>
-        <div class="card-rank ${{t}}">${{rank !== null ? '#'+rank : Math.round(s)}}</div>
+        <div class="card-rank ${{t}}">${{Math.round(s)}}</div>
         <div class="card-price-tag">\u20ac${{d.price.toLocaleString()}}</div>
         <div class="card-airport-tag">✈️ ${{d.airport}} min</div>
       </div>
+      ${{photoRow}}
       <div class="card-body">
         <div class="card-name">${{d.title}}</div>
         <div class="card-area">📍 ${{d.regionName}}</div>
@@ -794,6 +822,7 @@ function makeCard(d, rank) {{
           <div class="bar-track"><div class="bar-fill ${{t}}" style="width:${{s.toFixed(0)}}%"></div></div>
           <span class="bar-num">${{Math.round(s)}}</span>
         </div>
+        ${{d.mapsUrl !== '#' ? `<a class="card-maps-btn" href="${{d.mapsUrl}}" target="_blank" onclick="event.stopPropagation()">📍 View on Google Maps</a>` : ''}}
       </div>
     </div>`;
 }}
@@ -827,22 +856,9 @@ function makeAirbnbCard(d) {{
 
 function rebuild() {{
   const ranked = DATA.map(d => ({{...d, sc: score(d)}})).sort((a,b) => b.sc - a.sc);
-  const used = new Set();
-
-  function pick(pool, n) {{
-    const result = [];
-    for (const d of pool) {{
-      if (used.has(d.id)) continue;
-      result.push(d);
-      used.add(d.id);
-      if (result.length >= n) break;
-    }}
-    return result;
-  }}
 
   // Hero = #1
   const hero = ranked[0];
-  used.add(hero.id);
   const hs = hero.sc;
 
   document.getElementById('heroImg').src = hero.img;
@@ -859,47 +875,18 @@ function rebuild() {{
   ring.style.stroke = scoreColor(hs);
   ring.style.strokeDashoffset = 125.6 * (1 - hs / 100);
 
-  // ── Curated sections ──
-  const bestValue = pick(ranked, 5);
+  // Hero area gallery
+  const hGallery = document.getElementById('heroGallery');
+  if (hero.areaPhotos && hero.areaPhotos.length) {{
+    hGallery.innerHTML = hero.areaPhotos.map(u => `<img src="${{u}}" alt="Area" loading="lazy" onerror="this.style.display='none'">`).join('');
+  }} else {{ hGallery.innerHTML = ''; }}
 
-  const closestAirport = [...ranked].sort((a,b) => a.airport - b.airport);
-  const airportPicks = pick(closestAirport, 4);
-
-  const closestBeach = [...ranked].sort((a,b) => a.beach - b.beach);
-  const beachPicks = pick(closestBeach, 4);
-
-  const highYieldPool = [...ranked].sort((a,b) => b.grossYield - a.grossYield);
-  const yieldPicks = pick(highYieldPool, 4);
-
-  const biggestPool = [...ranked].sort((a,b) => b.area - a.area);
-  const bigPicks = pick(biggestPool, 4);
-
-  const sections = [
-    {{ emoji: '🎯', title: 'Best Overall Match', sub: 'Highest score based on your current weights', cards: bestValue, ranked: true }},
-    {{ emoji: '✈️', title: 'Closest to Airport', sub: 'Shortest drive to nearest international airport', cards: airportPicks }},
-    {{ emoji: '🏖️', title: 'Closest to Beach', sub: 'Walk or quick drive to the sea', cards: beachPicks }},
-    {{ emoji: '📈', title: 'Highest Rental Yield', sub: 'Best Airbnb income relative to purchase price', cards: yieldPicks }},
-    {{ emoji: '📐', title: 'Most Space for Money', sub: 'Largest properties in the budget', cards: bigPicks }},
-  ].filter(s => s.cards.length > 0);
-
-  let globalRank = 2;
-  const html = sections.map(sec => `
-    <div class="section">
-      <div class="section-header">
-        <span class="section-emoji">${{sec.emoji}}</span>
-        <div class="section-title">${{sec.title}}</div>
-        <div class="section-sub">${{sec.sub}}</div>
-        <div class="section-divider"></div>
-      </div>
-      <div class="scroll-row">
-        ${{sec.cards.map(d => {{
-          const rank = sec.ranked ? globalRank++ : null;
-          return makeCard(d, rank);
-        }}).join('')}}
-      </div>
-    </div>
-  `).join('');
-  document.getElementById('sections').innerHTML = html;
+  // Hero maps buttons
+  const hMaps = document.getElementById('heroMaps');
+  let mapsHtml = '';
+  if (hero.mapsUrl !== '#') mapsHtml += `<a class="m-maps-btn" href="${{hero.mapsUrl}}" target="_blank" onclick="event.stopPropagation()">📍 Google Maps</a>`;
+  mapsHtml += `<a class="m-maps-btn listing" href="${{hero.url}}" target="_blank" onclick="event.stopPropagation()">🏠 View Listing</a>`;
+  hMaps.innerHTML = mapsHtml;
 
   // Update formula display
   const total = wPrice + wAirport + wBeach + wSize + wYield + wReno || 1;
@@ -935,7 +922,7 @@ function rebuildBrowse() {{
     .sort((a, b) => b.sc - a.sc);
 
   document.getElementById('browseCount').textContent = filtered.length;
-  document.getElementById('browseGrid').innerHTML = filtered.map(d => makeCard(d, null)).join('');
+  document.getElementById('browseGrid').innerHTML = filtered.map(d => makeCard(d)).join('');
 }}
 
 function rebuildAirbnb() {{
@@ -1018,6 +1005,18 @@ function openModal(id) {{
     <div class="m-stat"><div class="v" style="color:var(--gold)">\u20ac${{d.annualIncome.toLocaleString()}}/yr</div><div class="l">Annual</div></div>
     <div class="m-stat"><div class="v" style="color:var(--ocean)">${{d.grossYield}}%</div><div class="l">Gross Yield</div></div>
   `;
+
+  // Area gallery
+  const gallery = document.getElementById('mGallery');
+  if (d.areaPhotos && d.areaPhotos.length) {{
+    gallery.innerHTML = d.areaPhotos.map(u => `<img src="${{u}}" alt="Area" loading="lazy" onerror="this.style.display='none'">`).join('');
+  }} else {{ gallery.innerHTML = ''; }}
+
+  // Maps + listing buttons
+  let mRow = '';
+  if (d.mapsUrl !== '#') mRow += `<a class="m-maps-btn" href="${{d.mapsUrl}}" target="_blank">📍 Open in Google Maps</a>`;
+  mRow += `<a class="m-maps-btn listing" href="${{d.url}}" target="_blank">🏠 View Listing</a>`;
+  document.getElementById('mMapsRow').innerHTML = mRow;
 
   let b = '';
   if (s >= 65) b += '<span class="m-badge fire">🔥 Top Match</span>';

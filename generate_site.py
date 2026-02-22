@@ -124,7 +124,7 @@ body {{ font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); 
 
 /* ── Hamburger Nav ── */
 .hamburger-btn {{
-  position: fixed; top: 14px; right: 16px; z-index: 9999;
+  position: fixed; top: 14px; left: 16px; z-index: 9999;
   background: rgba(0,0,0,0.25); backdrop-filter: blur(8px);
   border: 1px solid rgba(255,255,255,0.2); border-radius: 10px;
   width: 40px; height: 40px; cursor: pointer;
@@ -147,12 +147,12 @@ body {{ font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); 
 .nav-drawer-overlay.open {{ opacity: 1; pointer-events: auto; }}
 
 .nav-drawer {{
-  position: fixed; top: 0; right: -300px; width: 280px; height: 100%;
+  position: fixed; top: 0; left: -300px; width: 280px; height: 100%;
   background: linear-gradient(180deg, #1e3a5f 0%, #0e4a6f 100%);
-  z-index: 9995; padding: 70px 24px 32px; transition: right 0.3s ease;
-  box-shadow: -4px 0 20px rgba(0,0,0,0.3);
+  z-index: 9995; padding: 70px 24px 32px; transition: left 0.3s ease;
+  box-shadow: 4px 0 20px rgba(0,0,0,0.3);
 }}
-.nav-drawer.open {{ right: 0; }}
+.nav-drawer.open {{ left: 0; }}
 .nav-drawer h3 {{
   color: rgba(255,255,255,0.5); font-size: 0.7rem; text-transform: uppercase;
   letter-spacing: 1.5px; margin-bottom: 16px; font-weight: 600;

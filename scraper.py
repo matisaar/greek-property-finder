@@ -48,41 +48,55 @@ AIRPORTS = {
     "SKU": {"name": "Skyros (SKU)", "lat": 38.9676, "lng": 24.4872, "year_round": False},
 }
 
-# ── Coastal reference points (for beach distance estimates) ─────────
-# Sample of Greek coastal/beach points spread around the country
-BEACH_POINTS = [
-    # Ionian coast
-    (39.62, 19.92), (39.78, 19.83), (39.67, 19.73), (38.17, 20.49),
-    (37.79, 20.90), (38.83, 20.71), (38.72, 20.64),
-    # Western Peloponnese
-    (37.04, 21.73), (37.72, 21.43), (36.50, 22.97),
-    # Attica / Saronic
-    (37.82, 23.72), (37.73, 23.77), (37.84, 24.04),
-    # Thessaloniki & Halkidiki
-    (40.55, 22.94), (40.27, 23.32), (40.14, 23.75), (39.98, 23.88),
-    # Eastern coasts
-    (40.94, 24.41), (40.85, 24.70), (39.16, 23.87),
-    # Pelion
-    (39.37, 23.04), (39.17, 23.12),
-    # Crete north coast
-    (35.51, 24.02), (35.34, 25.13), (35.42, 24.47), (35.19, 25.72),
-    # Crete south coast
-    (34.93, 24.11), (35.00, 24.47), (35.05, 25.74),
-    # Dodecanese
-    (36.44, 28.22), (36.89, 27.18), (36.67, 27.07),
-    # Cyclades
-    (37.42, 25.33), (36.40, 25.46), (37.09, 25.38), (36.70, 24.44),
-    # NE Aegean
-    (38.37, 26.14), (37.75, 26.98), (39.10, 26.55),
-    # Sporades
-    (39.16, 23.87), (39.20, 23.72),
-    # Evvia
-    (38.47, 23.60), (38.90, 23.17),
-    # Kavala coast
-    (40.93, 24.40), (40.78, 24.35),
-    # Pieria
-    (40.26, 22.59),
-]
+# ── Beach data from OpenStreetMap (loaded at runtime) ──────────────
+_BEACHES_CACHE = None
+
+def _load_beaches():
+    """Load 7000+ real beach coordinates from OSM Overpass data."""
+    global _BEACHES_CACHE
+    if _BEACHES_CACHE is not None:
+        return _BEACHES_CACHE
+
+    beach_file = os.path.join(os.path.dirname(__file__), "data", "greek_beaches.json")
+    if os.path.exists(beach_file):
+        with open(beach_file, "r", encoding="utf-8") as f:
+            _BEACHES_CACHE = json.load(f)
+        print(f"    Loaded {len(_BEACHES_CACHE)} real beaches from OSM data")
+    else:
+        print("    WARNING: data/greek_beaches.json not found, fetching from Overpass API...")
+        _BEACHES_CACHE = _fetch_beaches_from_overpass()
+    return _BEACHES_CACHE
+
+
+def _fetch_beaches_from_overpass():
+    """Fetch all beaches in Greece from OpenStreetMap Overpass API."""
+    query = """
+    [out:json][timeout:60];
+    area["ISO3166-1"="GR"][admin_level=2]->.gr;
+    (
+      node["natural"="beach"](area.gr);
+      way["natural"="beach"](area.gr);
+      node["leisure"="beach_resort"](area.gr);
+      way["leisure"="beach_resort"](area.gr);
+    );
+    out center;
+    """
+    r = requests.post("https://overpass-api.de/api/interpreter",
+                      data={"data": query}, timeout=90)
+    data = r.json()
+    beaches = []
+    for el in data.get("elements", []):
+        lat = el.get("lat") or el.get("center", {}).get("lat")
+        lng = el.get("lon") or el.get("center", {}).get("lon")
+        name = el.get("tags", {}).get("name", "")
+        if lat and lng:
+            beaches.append({"lat": lat, "lng": lng, "name": name})
+
+    os.makedirs("data", exist_ok=True)
+    with open(os.path.join("data", "greek_beaches.json"), "w", encoding="utf-8") as f:
+        json.dump(beaches, f, ensure_ascii=False)
+    print(f"    Fetched and cached {len(beaches)} beaches from Overpass API")
+    return beaches
 
 # ── Greek cities/towns (for "near civilization" distance) ───────────
 CITIES = [
@@ -144,15 +158,40 @@ def nearest_airport(lat, lng):
     return code, info["name"], drive_min, info["year_round"]
 
 
-def nearest_beach_min(lat, lng):
-    """Estimate driving minutes to nearest beach."""
-    min_km = min(_haversine_km(lat, lng, blat, blng) for blat, blng in BEACH_POINTS)
-    # If within 2 km, basically on the beach
-    if min_km < 2:
-        return 5
-    # Road factor + average speed
-    drive_min = int(min_km * 1.3 / 40 * 60)
-    return max(5, min(drive_min, 120))
+def nearest_beach(lat, lng):
+    """Find nearest real beach from OSM data.
+    Returns (name, beach_lat, beach_lng, km, drive_min, directions_url).
+    """
+    beaches = _load_beaches()
+    if not beaches:
+        url = f"https://www.google.com/maps/search/beach/@{lat},{lng},13z"
+        return "Unknown", lat, lng, 0, 30, url
+
+    best = None
+    best_km = 9999
+    for b in beaches:
+        km = _haversine_km(lat, lng, b["lat"], b["lng"])
+        if km < best_km:
+            best_km = km
+            best = b
+
+    beach_name = best.get("name", "") or "Beach"
+    blat, blng = best["lat"], best["lng"]
+
+    # Driving estimate: road factor 1.3x, 40 km/h average on Greek roads
+    if best_km < 0.5:
+        drive_min = 2  # basically on the beach
+    elif best_km < 2:
+        drive_min = 5
+    else:
+        drive_min = max(5, int(best_km * 1.3 / 40 * 60))
+    drive_min = min(drive_min, 180)
+
+    # Google Maps directions link from property to beach
+    directions_url = (f"https://www.google.com/maps/dir/{lat},{lng}/"
+                      f"{blat},{blng}")
+
+    return beach_name, blat, blng, round(best_km, 1), drive_min, directions_url
 
 
 def nearest_city(lat, lng):
@@ -332,6 +371,14 @@ def scrape_rightmove_overseas(max_pages=10):
                 lng = loc.get("longitude")
                 display_addr = rp.get("displayAddress", "")
 
+                # Fix bad coordinates (e.g. negative lat for Greece)
+                if lat and lng:
+                    lat = abs(float(lat))
+                    lng = abs(float(lng))
+                    # Sanity: Greece is roughly lat 34-42, lng 19-30
+                    if not (33 < lat < 43 and 18 < lng < 31):
+                        lat, lng = None, None
+
                 # Images
                 images = rp.get("images", [])
                 image_url = images[0].get("srcUrl", "") if images else ""
@@ -361,13 +408,14 @@ def scrape_rightmove_overseas(max_pages=10):
 
                 # Compute distances if we have coords
                 airport_code, airport_name, airport_min, airport_yr = "", "", 60, False
-                beach_min_val = 30
+                beach_name, beach_lat, beach_lng, beach_km = "Unknown", 0, 0, 0
+                beach_min_val, beach_directions_url = 30, ""
                 city_name, city_pop, city_min = "", 0, 60
                 region = "other"
 
                 if lat and lng:
                     airport_code, airport_name, airport_min, airport_yr = nearest_airport(lat, lng)
-                    beach_min_val = nearest_beach_min(lat, lng)
+                    beach_name, beach_lat, beach_lng, beach_km, beach_min_val, beach_directions_url = nearest_beach(lat, lng)
                     city_name, city_pop, city_min = nearest_city(lat, lng)
                     region = classify_region(lat, lng, display_addr)
 
@@ -394,6 +442,11 @@ def scrape_rightmove_overseas(max_pages=10):
                     "airport_code": airport_code,
                     "airport_name": airport_name,
                     "beach_min": beach_min_val,
+                    "beach_km": beach_km,
+                    "beach_name": beach_name,
+                    "beach_lat": beach_lat,
+                    "beach_lng": beach_lng,
+                    "beach_directions_url": beach_directions_url,
                     "nearest_city": city_name,
                     "nearest_city_pop": city_pop,
                     "nearest_city_min": city_min,
@@ -491,16 +544,20 @@ def _estimate_airbnb(price_eur, region, bedrooms, beach_min, city_min):
     return int(base_rate), min(70, int(base_occ))
 
 
-# ── Wikimedia Commons area-photo fetcher ──────────────────────────────
+# ── Area photo fetcher (geotagged Wikimedia + satellite fallback) ─────
 
 _PHOTO_BLACKLIST = re.compile(
     r'(logo|icon|map\b|flag|coat.of.arms|diagram|chart|stamp|sign\b|badge|seal|'
     r'woman.holding|fashion|coffee.cup|faux.fur|portrait|people.icon|'
     r'placeholder|symbol|\.svg|empty.highway|ISS\d|View.of.Earth|'
     r'Abandoned.Quarry|Ottoman.Archit|Singer|Showcase|elevation.model|'
-    r'census|population|admin|district.map|municipalities)',
+    r'census|population|admin|district.map|municipalities|silhouette|'
+    r'Blank\b|Template|Wikidata|OpenStreetMap)',
     re.IGNORECASE,
 )
+
+_WM_HEADERS = {"User-Agent": "GreekPropertyFinder/1.0"}
+
 
 def _extract_location_hint(title: str) -> str:
     if " - " in title:
@@ -510,90 +567,123 @@ def _extract_location_hint(title: str) -> str:
     return title.strip().strip(",").strip()
 
 
-def _score_photo(fname: str, hint: str) -> int:
-    score = 0
-    fname_lower = fname.lower()
-    for word in hint.lower().replace(",", " ").split():
-        if len(word) > 2 and word in fname_lower:
-            score += 10
-    for kw in ("panoramio", "view", "beach", "coast", "village", "town",
-               "harbour", "harbor", "church", "bay", "landscape", "street"):
-        if kw in fname_lower:
-            score += 3
-    if "unsplash" in fname_lower:
-        score -= 2
-    return score
+def _wikimedia_geosearch(lat, lng, radius_m=10000, limit=20):
+    """Fetch geotagged photos from Wikimedia Commons near (lat, lng)."""
+    results = []
+    try:
+        resp = requests.get(
+            "https://commons.wikimedia.org/w/api.php",
+            params={
+                "action": "query", "generator": "geosearch",
+                "ggscoord": f"{lat}|{lng}", "ggsradius": str(radius_m),
+                "ggsnamespace": "6", "ggslimit": str(limit),
+                "prop": "imageinfo", "iiprop": "url|mime", "iiurlwidth": "600",
+                "format": "json",
+            },
+            headers=_WM_HEADERS, timeout=12,
+        )
+        pages = resp.json().get("query", {}).get("pages", {})
+        for p in pages.values():
+            fname = p.get("title", "")
+            ii = (p.get("imageinfo") or [{}])[0]
+            mime = ii.get("mime", "")
+            thumb = ii.get("thumburl", "")
+            if not thumb or "image/" not in mime:
+                continue
+            if _PHOTO_BLACKLIST.search(fname):
+                continue
+            results.append(thumb)
+    except Exception:
+        pass
+    return results
+
+
+def _wikimedia_text_search(query, limit=10):
+    """Fallback: text search Wikimedia Commons for a place name."""
+    results = []
+    try:
+        resp = requests.get(
+            "https://commons.wikimedia.org/w/api.php",
+            params={
+                "action": "query", "generator": "search",
+                "gsrsearch": query, "gsrnamespace": "6", "gsrlimit": str(limit),
+                "prop": "imageinfo", "iiprop": "url|mime", "iiurlwidth": "600",
+                "format": "json",
+            },
+            headers=_WM_HEADERS, timeout=12,
+        )
+        pages = resp.json().get("query", {}).get("pages", {})
+        for p in pages.values():
+            fname = p.get("title", "")
+            ii = (p.get("imageinfo") or [{}])[0]
+            mime = ii.get("mime", "")
+            thumb = ii.get("thumburl", "")
+            if not thumb or "image/" not in mime:
+                continue
+            if _PHOTO_BLACKLIST.search(fname):
+                continue
+            results.append(thumb)
+    except Exception:
+        pass
+    return results
+
+
+def _satellite_url(lat, lng, zoom=14, w=600, h=400):
+    """Generate a static satellite map image URL (ArcGIS World Imagery)."""
+    # ESRI/ArcGIS World Imagery — free for visualization, no key needed
+    return (
+        f"https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery"
+        f"/MapServer/export?bbox={lng-0.015},{lat-0.01},{lng+0.015},{lat+0.01}"
+        f"&bboxSR=4326&size={w},{h}&imageSR=4326&format=jpg&f=image"
+    )
 
 
 def fetch_area_photos(lat, lng, title, n=3):
+    """
+    Get photos of the EXACT area around (lat, lng).
+    Priority:
+      1. Wikimedia geotagged photos (taken within 5→10→20 km of the property)
+      2. Wikimedia text search for the specific village/town name
+      3. Static satellite image of the property location
+    """
     hint = _extract_location_hint(title)
-    candidates = []
-
-    for query in [f"{hint} Greece", f"{hint} landscape beach"]:
-        try:
-            resp = requests.get(
-                "https://commons.wikimedia.org/w/api.php",
-                params={
-                    "action": "query", "generator": "search",
-                    "gsrsearch": query, "gsrnamespace": "6", "gsrlimit": "20",
-                    "prop": "imageinfo", "iiprop": "url|mime", "iiurlwidth": "600",
-                    "format": "json",
-                },
-                headers={"User-Agent": "GreekPropertyFinder/1.0"},
-                timeout=12,
-            )
-            pages = resp.json().get("query", {}).get("pages", {})
-            for p in pages.values():
-                fname = p.get("title", "")
-                ii = (p.get("imageinfo") or [{}])[0]
-                mime = ii.get("mime", "")
-                thumb = ii.get("thumburl", "")
-                if not thumb or "image/" not in mime:
-                    continue
-                if _PHOTO_BLACKLIST.search(fname):
-                    continue
-                candidates.append((_score_photo(fname, hint), thumb))
-        except Exception:
-            pass
-
-    if lat and lng:
-        try:
-            resp = requests.get(
-                "https://commons.wikimedia.org/w/api.php",
-                params={
-                    "action": "query", "generator": "geosearch",
-                    "ggscoord": f"{lat}|{lng}", "ggsradius": "10000",
-                    "ggsnamespace": "6", "ggslimit": "20",
-                    "prop": "imageinfo", "iiprop": "url|mime", "iiurlwidth": "600",
-                    "format": "json",
-                },
-                headers={"User-Agent": "GreekPropertyFinder/1.0"},
-                timeout=12,
-            )
-            pages = resp.json().get("query", {}).get("pages", {})
-            for p in pages.values():
-                fname = p.get("title", "")
-                ii = (p.get("imageinfo") or [{}])[0]
-                mime = ii.get("mime", "")
-                thumb = ii.get("thumburl", "")
-                if not thumb or "image/" not in mime:
-                    continue
-                if _PHOTO_BLACKLIST.search(fname):
-                    continue
-                candidates.append((_score_photo(fname, hint), thumb))
-        except Exception:
-            pass
-
-    candidates.sort(key=lambda x: x[0], reverse=True)
     seen = set()
     results = []
-    for _score, thumb in candidates:
-        if thumb not in seen:
-            seen.add(thumb)
-            results.append(thumb)
-        if len(results) >= n:
-            break
-    return results
+
+    def _add(urls):
+        for u in urls:
+            if u not in seen:
+                seen.add(u)
+                results.append(u)
+
+    # ── Step 1: Geotagged photos (progressively wider radius) ────────
+    if lat and lng:
+        for radius in [5000, 10000, 20000]:
+            _add(_wikimedia_geosearch(lat, lng, radius_m=radius))
+            if len(results) >= n:
+                break
+
+    # ── Step 2: Text search for the exact village/town (last resort) ─
+    if len(results) < n:
+        # Extract just the most specific place name (last part of address)
+        parts = [p.strip() for p in hint.replace(",", " ").split() if len(p.strip()) > 2]
+        if parts:
+            # Use the most specific name (first part after splitting, usually village)
+            specific = parts[0] if len(parts) == 1 else parts[0]
+            for part in hint.split(","):
+                part = part.strip()
+                if len(part) > 3 and part.lower() not in ("greece", "crete", "ionian", "islands"):
+                    specific = part
+                    break
+            _add(_wikimedia_text_search(f'"{specific}" Greece landscape'))
+            if len(results) < n:
+                _add(_wikimedia_text_search(f'"{specific}" village town'))
+
+    # ── Step 3: Satellite image fallback ─────────────────────────────
+    if len(results) < n and lat and lng:
+        _add([_satellite_url(lat, lng)])
+
+    return results[:n]
 
 
 # ── Dynamic region info builder ─────────────────────────────────────

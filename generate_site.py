@@ -31,7 +31,8 @@ def generate_site():
         psqm = price // area if area else 0
         cad = int(price * 1.48)
         features = p.get("features", [])
-        img = p.get("image_url", "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600")
+        sat_fallback = f"https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox={p.get('lng',23)-0.015},{p.get('lat',38)-0.01},{p.get('lng',23)+0.015},{p.get('lat',38)+0.01}&bboxSR=4326&size=600,400&imageSR=4326&format=jpg&f=image"
+        img = p.get("image_url", sat_fallback)
 
         airbnb_rate = p.get("airbnb_night_rate", 50)
         airbnb_occ = p.get("airbnb_occupancy_pct", 40)
@@ -54,6 +55,9 @@ def generate_site():
             f'airport:{p.get("airport_drive_min", 60)},'
             f'airportName:"{p.get("airport_name","").replace(chr(34),chr(39))}",'
             f'beach:{p.get("beach_min", 30)},'
+            f'beachKm:{p.get("beach_km", 0)},'
+            f'beachName:"{p.get("beach_name","Beach").replace(chr(34),chr(39))}",'
+            f'beachUrl:"{p.get("beach_directions_url","")}",'
             f'reno:{1 if p.get("needs_renovation") else 0},'
             f'nearestCity:"{p.get("nearest_city","").replace(chr(34),chr(39))}",'
             f'nearestCityMin:{p.get("nearest_city_min", 60)},'
@@ -173,7 +177,7 @@ body {{ font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); 
 }}
 .page-hero::before {{
   content: ''; position: absolute; inset: 0;
-  background: url('https://images.unsplash.com/photo-1555993539-1732b0258235?w=1600') center/cover;
+  background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Santorini_HDR_sunset.jpg/1600px-Santorini_HDR_sunset.jpg') center/cover;
   opacity: 0.12;
 }}
 .page-hero > * {{ position: relative; z-index: 1; }}
@@ -351,6 +355,8 @@ input[type="range"]::-webkit-slider-thumb {{
   background: #e0f2fe; text-decoration: none; transition: background 0.2s;
 }}
 .card-maps-btn:hover {{ background: #bae6fd; }}
+.beach-link {{ color: var(--ocean); text-decoration: underline dotted; cursor: pointer; font-weight: 600; }}
+.beach-link:hover {{ color: var(--ocean-dark); text-decoration: underline; }}
 
 /* ── Modal area gallery ── */
 .m-gallery {{ display: flex; gap: 4px; margin-bottom: 10px; }}
@@ -830,7 +836,7 @@ input[type="range"]::-webkit-slider-thumb {{
 const prices = DATA.map(d => d.price);
 const areas = DATA.map(d => d.area);
 const airports = DATA.map(d => d.airport);
-const beaches = DATA.map(d => d.beach);
+const beaches = DATA.map(d => d.beachKm);
 const yields = DATA.map(d => d.grossYield);
 
 const minPrice = Math.min(...prices), maxPrice = Math.max(...prices);
@@ -843,7 +849,7 @@ DATA.forEach(d => {{
   d.nPrice = maxPrice === minPrice ? 0.5 : (maxPrice - d.price) / (maxPrice - minPrice);
   d.nArea = maxArea === minArea ? 0.5 : (d.area - minArea) / (maxArea - minArea);
   d.nAirport = maxAirport === minAirport ? 0.5 : (maxAirport - d.airport) / (maxAirport - minAirport);
-  d.nBeach = maxBeach === minBeach ? 0.5 : (maxBeach - d.beach) / (maxBeach - minBeach);
+  d.nBeach = maxBeach === minBeach ? 0.5 : (maxBeach - d.beachKm) / (maxBeach - minBeach);
   d.nYield = maxYield === minYield ? 0.5 : (d.grossYield - minYield) / (maxYield - minYield);
   d.nReno = d.reno === 0 ? 1 : 0;
 }});
@@ -875,13 +881,13 @@ function makeCard(d) {{
   const t = scoreTier(s);
   const photoRow = d.areaPhotos && d.areaPhotos.length ? `
     <div class="card-photos">
-      ${{d.areaPhotos.map(u => `<img src="${{u}}" alt="Area" loading="lazy" onerror="this.style.display='none'">`).join('')}}
+      ${{d.areaPhotos.map(u => `<img src="${{u}}" alt="${{d.regionName}} area" loading="lazy" onerror="this.style.display='none'">`).join('')}}
     </div>` : '';
   return `
     <div class="card" onclick="openModal(${{d.id}})">
       <div class="card-img-wrap">
         <img class="card-img" src="${{d.img}}" alt="${{d.title}}" loading="lazy"
-             onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'">
+             onerror="this.style.background='linear-gradient(135deg,#1e3a5f,#0e76a8)';this.style.minHeight='180px'">
         <div class="card-overlay"></div>
         <div class="card-rank ${{t}}">${{Math.round(s)}}</div>
         <div class="card-price-tag">\u20ac${{d.price.toLocaleString()}}</div>
@@ -936,12 +942,12 @@ function rebuild() {{
   const hs = hero.sc;
 
   document.getElementById('heroImg').src = hero.img;
-  document.getElementById('heroImg').onerror = function(){{ this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'; }};
+  document.getElementById('heroImg').onerror = function(){{ this.style.background='linear-gradient(135deg,#1e3a5f,#0e76a8)'; this.style.minHeight='250px'; }};
   document.getElementById('heroName').textContent = hero.title;
   document.getElementById('heroArea').textContent = '📍 ' + hero.regionName + ' · ' + hero.area + 'm² · ' + hero.beds + ' bed';
   document.getElementById('heroPrice').textContent = '\u20ac' + hero.price.toLocaleString();
   document.getElementById('heroAirport').textContent = hero.airport + ' min';
-  document.getElementById('heroBeach').textContent = hero.beach + ' min';
+  document.getElementById('heroBeach').innerHTML = `<a href="${{hero.beachUrl}}" target="_blank" style="color:inherit;text-decoration:underline dotted">${{hero.beachKm}} km</a>`;
   document.getElementById('heroYield').textContent = hero.grossYield + '%';
   document.getElementById('heroScoreNum').textContent = Math.round(hs);
   document.getElementById('heroCard').onclick = () => openModal(hero.id);
@@ -952,7 +958,7 @@ function rebuild() {{
   // Hero area gallery
   const hGallery = document.getElementById('heroGallery');
   if (hero.areaPhotos && hero.areaPhotos.length) {{
-    hGallery.innerHTML = hero.areaPhotos.map(u => `<img src="${{u}}" alt="Area" loading="lazy" onerror="this.style.display='none'">`).join('');
+    hGallery.innerHTML = hero.areaPhotos.map(u => `<img src="${{u}}" alt="${{hero.regionName}} area" loading="lazy" onerror="this.style.display='none'">`).join('');
   }} else {{ hGallery.innerHTML = ''; }}
 
   // Hero maps buttons
@@ -1053,7 +1059,7 @@ function openModal(id) {{
   if (!d) return;
   const s = score(d);
   document.getElementById('mImg').src = d.img;
-  document.getElementById('mImg').onerror = function(){{ this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'; }};
+  document.getElementById('mImg').onerror = function(){{ this.style.background='linear-gradient(135deg,#1e3a5f,#0e76a8)'; this.style.minHeight='200px'; }};
   document.getElementById('mName').textContent = d.title;
   document.getElementById('mArea').textContent = '📍 ' + d.regionName;
   document.getElementById('mScore').textContent = Math.round(s) + '/100';
@@ -1062,7 +1068,7 @@ function openModal(id) {{
   document.getElementById('mBreakdown').innerHTML = `
     <div><div class="v">\u20ac${{d.price.toLocaleString()}}</div>Price</div>
     <div><div class="v">${{d.airport}} min</div>Airport</div>
-    <div><div class="v">${{d.beach}} min</div>Beach</div>
+    <div><a href="${{d.beachUrl}}" target="_blank" style="text-decoration:none"><div class="v" style="text-decoration:underline dotted;cursor:pointer">${{d.beachKm}} km</div></a>Beach</div>
   `;
 
   document.getElementById('mStats').innerHTML = `
@@ -1071,7 +1077,7 @@ function openModal(id) {{
     <div class="m-stat"><div class="v">${{d.area}}m\u00b2</div><div class="l">Size</div></div>
     <div class="m-stat"><div class="v">${{d.beds}}</div><div class="l">Beds</div></div>
     <div class="m-stat"><div class="v">${{d.airport}} min</div><div class="l">✈️ Airport</div></div>
-    <div class="m-stat"><div class="v">${{d.beach}} min</div><div class="l">🏖️ Beach</div></div>
+    <div class="m-stat"><a href="${{d.beachUrl}}" target="_blank" style="text-decoration:none"><div class="v" style="text-decoration:underline dotted">${{d.beachKm}} km</div><div class="l">🏖️ ${{d.beachName}}</div></a></div>
   `;
 
   document.getElementById('mAirbnbGrid').innerHTML = `
@@ -1086,8 +1092,9 @@ function openModal(id) {{
     gallery.innerHTML = d.areaPhotos.map(u => `<img src="${{u}}" alt="Area" loading="lazy" onerror="this.style.display='none'">`).join('');
   }} else {{ gallery.innerHTML = ''; }}
 
-  // Maps + listing buttons
+  // Maps + listing + beach buttons
   let mRow = '';
+  if (d.beachUrl) mRow += `<a class="m-maps-btn" href="${{d.beachUrl}}" target="_blank">🏖️ ${{d.beachKm}} km to ${{d.beachName}}</a>`;
   if (d.mapsUrl !== '#') mRow += `<a class="m-maps-btn" href="${{d.mapsUrl}}" target="_blank">📍 Open in Google Maps</a>`;
   mRow += `<a class="m-maps-btn listing" href="${{d.url}}" target="_blank">🏠 View Listing</a>`;
   document.getElementById('mMapsRow').innerHTML = mRow;
@@ -1095,7 +1102,7 @@ function openModal(id) {{
   let b = '';
   if (s >= 65) b += '<span class="m-badge fire">🔥 Top Match</span>';
   if (d.airport <= 30) b += '<span class="m-badge red">✈️ Close Airport</span>';
-  if (d.beach <= 10) b += '<span class="m-badge blue">🏖️ Beach Nearby</span>';
+  if (d.beachKm <= 2) b += '<span class="m-badge blue">🏖️ Beach Nearby</span>';
   if (d.grossYield >= 6) b += '<span class="m-badge green">📈 High Yield</span>';
   if (d.reno === 0) b += '<span class="m-badge gold">✅ Move-in Ready</span>';
   if (d.area >= 100) b += '<span class="m-badge blue">📐 Large Property</span>';

@@ -148,13 +148,14 @@ body {{ font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); 
 /* ── EU Notice ── */
 .eu-bar {{
   background: linear-gradient(90deg, #d1fae5, #e0f2fe);
-  border-bottom: 1px solid #a7f3d0; padding: 12px 20px;
-  text-align: center; font-size: 0.82rem; color: #065f46;
+  border-bottom: 1px solid #a7f3d0; padding: 14px 24px;
+  text-align: center; font-size: 0.85rem; color: #065f46;
+  line-height: 1.6; overflow: visible;
 }}
 .eu-bar strong {{ color: #047857; }}
 
 /* ── Weight Sliders Panel ── */
-.weights-panel {{ margin: -20px auto 0; max-width: 1100px; padding: 0 20px; position: relative; z-index: 20; }}
+.weights-panel {{ margin: 16px auto 0; max-width: 1100px; padding: 0 20px; position: relative; z-index: 20; }}
 .weights-card {{
   background: var(--card); border-radius: 16px; padding: 20px 24px;
   box-shadow: 0 8px 30px rgba(0,0,0,0.08); border: 1px solid var(--border);

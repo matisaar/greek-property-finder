@@ -218,6 +218,144 @@ def scrape_tranio_coastal():
     return properties
 
 
+# ── Wikimedia Commons area-photo fetcher ──────────────────────────────
+
+# Blacklist patterns for irrelevant Commons images
+_PHOTO_BLACKLIST = re.compile(
+    r'(logo|icon|map\b|flag|coat.of.arms|diagram|chart|stamp|sign\b|badge|seal|'
+    r'woman.holding|fashion|coffee.cup|faux.fur|portrait|people.icon|'
+    r'placeholder|symbol|\.svg|empty.highway|ISS\d|View.of.Earth|'
+    r'Abandoned.Quarry|Ottoman.Archit|Singer|Showcase|elevation.model|'
+    r'census|population|admin|district.map|municipalities)',
+    re.IGNORECASE,
+)
+
+def _extract_location_hint(title: str) -> str:
+    """Pull a useful search term from a property title like
+    '2-Bed House - Karoussades, Corfu' → 'Karoussades Corfu'."""
+    # Drop the type prefix (everything before the dash)
+    if " - " in title:
+        title = title.split(" - ", 1)[1]
+    # Remove parenthetical notes
+    title = re.sub(r'\([^)]*\)', '', title)
+    # Remove words like "City", "Centre", "area", "Island"
+    title = re.sub(r'\b(city|centre|center|area|island|university)\b', '', title, flags=re.I)
+    return title.strip().strip(",").strip()
+
+
+def _score_photo(fname: str, hint: str) -> int:
+    """Score a photo by how relevant its filename is to the location hint."""
+    score = 0
+    fname_lower = fname.lower()
+    # Boost if location name words appear in filename
+    for word in hint.lower().split(","):
+        word = word.strip()
+        if len(word) > 2 and word in fname_lower:
+            score += 10
+    # Boost for scenic keywords
+    for kw in ("panoramio", "view", "beach", "coast", "village", "town",
+               "harbour", "harbor", "church", "bay", "landscape", "street"):
+        if kw in fname_lower:
+            score += 3
+    # Penalise very generic names
+    if "unsplash" in fname_lower:
+        score -= 2
+    return score
+
+
+def fetch_area_photos(lat: float, lng: float, title: str, n: int = 3) -> list:
+    """
+    Fetch n geo-relevant photos from Wikimedia Commons.
+    Strategy:
+      1. Text-search Commons for the location name + "Greece"
+      2. Fall back to geosearch near the coordinates
+      3. Filter out non-photo files, rank by relevance
+    Returns a list of up to n thumbnail URLs (600px wide).
+    """
+    hint = _extract_location_hint(title)
+    candidates = []  # list of (score, thumburl)
+
+    # Strategy 1: text search on Commons
+    for query in [f"{hint} Greece", f"{hint} landscape beach"]:
+        try:
+            resp = requests.get(
+                "https://commons.wikimedia.org/w/api.php",
+                params={
+                    "action": "query",
+                    "generator": "search",
+                    "gsrsearch": query,
+                    "gsrnamespace": "6",  # File namespace
+                    "gsrlimit": "20",
+                    "prop": "imageinfo",
+                    "iiprop": "url|mime",
+                    "iiurlwidth": "600",
+                    "format": "json",
+                },
+                headers={"User-Agent": "GreekPropertyFinder/1.0 (property research tool)"},
+                timeout=12,
+            )
+            pages = resp.json().get("query", {}).get("pages", {})
+            for p in pages.values():
+                fname = p.get("title", "")
+                ii = (p.get("imageinfo") or [{}])[0]
+                mime = ii.get("mime", "")
+                thumb = ii.get("thumburl", "")
+                if not thumb or "image/" not in mime:
+                    continue
+                if _PHOTO_BLACKLIST.search(fname):
+                    continue
+                candidates.append((_score_photo(fname, hint), thumb))
+        except Exception:
+            pass
+
+    # Strategy 2: geosearch fallback
+    if lat and lng:
+        try:
+            resp = requests.get(
+                "https://commons.wikimedia.org/w/api.php",
+                params={
+                    "action": "query",
+                    "generator": "geosearch",
+                    "ggscoord": f"{lat}|{lng}",
+                    "ggsradius": "10000",
+                    "ggsnamespace": "6",
+                    "ggslimit": "20",
+                    "prop": "imageinfo",
+                    "iiprop": "url|mime",
+                    "iiurlwidth": "600",
+                    "format": "json",
+                },
+                headers={"User-Agent": "GreekPropertyFinder/1.0 (property research tool)"},
+                timeout=12,
+            )
+            pages = resp.json().get("query", {}).get("pages", {})
+            for p in pages.values():
+                fname = p.get("title", "")
+                ii = (p.get("imageinfo") or [{}])[0]
+                mime = ii.get("mime", "")
+                thumb = ii.get("thumburl", "")
+                if not thumb or "image/" not in mime:
+                    continue
+                if _PHOTO_BLACKLIST.search(fname):
+                    continue
+                candidates.append((_score_photo(fname, hint), thumb))
+        except Exception:
+            pass
+
+    # Sort by relevance score (highest first), deduplicate, return top n
+    candidates.sort(key=lambda x: x[0], reverse=True)
+    seen = set()
+    results = []
+    for _score, thumb in candidates:
+        if thumb not in seen:
+            seen.add(thumb)
+            results.append(thumb)
+        if len(results) >= n:
+            break
+
+    return results
+
+
 def get_curated_properties():
     """
     Curated budget properties from Rightmove Overseas, verified Feb 2026.
@@ -237,11 +375,6 @@ def get_curated_properties():
             "airport_drive_min": 25, "beach_min": 10, "needs_renovation": True,
             "airbnb_night_rate": 65, "airbnb_occupancy_pct": 55,
             "lat": 39.6243, "lng": 19.9217,
-            "area_photos": [
-                "https://images.unsplash.com/photo-1586861203927-800a5acdcc4d?w=600",
-                "https://images.unsplash.com/photo-1601985705311-7e2ab26c618d?w=600",
-                "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600"
-            ],
         },
         {
             "title": "2-Bed Property - Episkepsi, Corfu",
@@ -254,11 +387,6 @@ def get_curated_properties():
             "airport_drive_min": 30, "beach_min": 15, "needs_renovation": True,
             "airbnb_night_rate": 70, "airbnb_occupancy_pct": 50,
             "lat": 39.7810, "lng": 19.8380,
-            "area_photos": [
-                "https://images.unsplash.com/photo-1586861203927-800a5acdcc4d?w=600",
-                "https://images.unsplash.com/photo-1560703650-ef3e0f2c3cb2?w=600",
-                "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600"
-            ],
         },
         {
             "title": "2-Bed House - Karoussades, Corfu",
@@ -271,11 +399,6 @@ def get_curated_properties():
             "airport_drive_min": 20, "beach_min": 8, "needs_renovation": False,
             "airbnb_night_rate": 75, "airbnb_occupancy_pct": 55,
             "lat": 39.7870, "lng": 19.8350,
-            "area_photos": [
-                "https://images.unsplash.com/photo-1586861203927-800a5acdcc4d?w=600",
-                "https://images.unsplash.com/photo-1601985705311-7e2ab26c618d?w=600",
-                "https://images.unsplash.com/photo-1560703650-ef3e0f2c3cb2?w=600"
-            ],
         },
         {
             "title": "3-Bed Property - Karoussades, Corfu",
@@ -288,11 +411,6 @@ def get_curated_properties():
             "airport_drive_min": 20, "beach_min": 8, "needs_renovation": True,
             "airbnb_night_rate": 80, "airbnb_occupancy_pct": 52,
             "lat": 39.7870, "lng": 19.8350,
-            "area_photos": [
-                "https://images.unsplash.com/photo-1586861203927-800a5acdcc4d?w=600",
-                "https://images.unsplash.com/photo-1601985705311-7e2ab26c618d?w=600",
-                "https://images.unsplash.com/photo-1560703650-ef3e0f2c3cb2?w=600"
-            ],
         },
         {
             "title": "Property - Lakones, Corfu (Paleokastritsa area)",
@@ -305,11 +423,6 @@ def get_curated_properties():
             "airport_drive_min": 35, "beach_min": 5, "needs_renovation": True,
             "airbnb_night_rate": 85, "airbnb_occupancy_pct": 60,
             "lat": 39.6700, "lng": 19.7270,
-            "area_photos": [
-                "https://images.unsplash.com/photo-1601985705311-7e2ab26c618d?w=600",
-                "https://images.unsplash.com/photo-1586861203927-800a5acdcc4d?w=600",
-                "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600"
-            ],
         },
 
         # === CEPHALONIA, IONIAN ISLANDS ===
@@ -324,11 +437,6 @@ def get_curated_properties():
             "airport_drive_min": 25, "beach_min": 12, "needs_renovation": False,
             "airbnb_night_rate": 70, "airbnb_occupancy_pct": 48,
             "lat": 38.2200, "lng": 20.4440,
-            "area_photos": [
-                "https://images.unsplash.com/photo-1598889272584-85d3c7011d36?w=600",
-                "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600",
-                "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600"
-            ],
         },
         {
             "title": "1-Bed Detached House - Kaminarata, Cephalonia",
@@ -341,11 +449,6 @@ def get_curated_properties():
             "airport_drive_min": 30, "beach_min": 10, "needs_renovation": False,
             "airbnb_night_rate": 65, "airbnb_occupancy_pct": 45,
             "lat": 38.1740, "lng": 20.3900,
-            "area_photos": [
-                "https://images.unsplash.com/photo-1598889272584-85d3c7011d36?w=600",
-                "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600",
-                "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600"
-            ],
         },
 
         # === CRETE (CHANIA AREA) ===
@@ -360,11 +463,6 @@ def get_curated_properties():
             "airport_drive_min": 35, "beach_min": 20, "needs_renovation": True,
             "airbnb_night_rate": 90, "airbnb_occupancy_pct": 58,
             "lat": 35.4340, "lng": 23.6300,
-            "area_photos": [
-                "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600",
-                "https://images.unsplash.com/photo-1504512485720-7d83a16ee930?w=600",
-                "https://images.unsplash.com/photo-1515861209540-57b87aa1f947?w=600"
-            ],
         },
 
         # === NORTHERN GREECE (DRAMA & SERRES) ===
@@ -379,11 +477,6 @@ def get_curated_properties():
             "airport_drive_min": 100, "beach_min": 90, "needs_renovation": False,
             "airbnb_night_rate": 35, "airbnb_occupancy_pct": 40,
             "lat": 41.1510, "lng": 24.1460,
-            "area_photos": [
-                "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600",
-                "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
-                "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600"
-            ],
         },
         {
             "title": "2-Bed Detached House - Efkarpia, Serres",
@@ -396,11 +489,6 @@ def get_curated_properties():
             "airport_drive_min": 80, "beach_min": 75, "needs_renovation": False,
             "airbnb_night_rate": 40, "airbnb_occupancy_pct": 35,
             "lat": 41.0880, "lng": 23.5310,
-            "area_photos": [
-                "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600",
-                "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600",
-                "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"
-            ],
         },
         {
             "title": "5-Bed Detached House - Chryso, Serres",
@@ -413,11 +501,6 @@ def get_curated_properties():
             "airport_drive_min": 95, "beach_min": 80, "needs_renovation": True,
             "airbnb_night_rate": 55, "airbnb_occupancy_pct": 35,
             "lat": 41.1700, "lng": 23.4100,
-            "area_photos": [
-                "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600",
-                "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600",
-                "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"
-            ],
         },
         {
             "title": "Studio Flat - Serres City",
@@ -430,11 +513,6 @@ def get_curated_properties():
             "airport_drive_min": 85, "beach_min": 80, "needs_renovation": False,
             "airbnb_night_rate": 35, "airbnb_occupancy_pct": 38,
             "lat": 41.0858, "lng": 23.5497,
-            "area_photos": [
-                "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600",
-                "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600",
-                "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"
-            ],
         },
         {
             "title": "2-Bed Flat - Drama City",
@@ -447,11 +525,6 @@ def get_curated_properties():
             "airport_drive_min": 100, "beach_min": 85, "needs_renovation": False,
             "airbnb_night_rate": 40, "airbnb_occupancy_pct": 42,
             "lat": 41.1540, "lng": 24.1440,
-            "area_photos": [
-                "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600",
-                "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600",
-                "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600"
-            ],
         },
         {
             "title": "2-Bed Detached House - Adriani, Drama",
@@ -464,11 +537,6 @@ def get_curated_properties():
             "airport_drive_min": 110, "beach_min": 90, "needs_renovation": True,
             "airbnb_night_rate": 45, "airbnb_occupancy_pct": 35,
             "lat": 41.1220, "lng": 24.2150,
-            "area_photos": [
-                "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600",
-                "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600",
-                "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"
-            ],
         },
         {
             "title": "4-Bed Detached House - Rodolivos, Serres",
@@ -481,11 +549,6 @@ def get_curated_properties():
             "airport_drive_min": 90, "beach_min": 80, "needs_renovation": False,
             "airbnb_night_rate": 55, "airbnb_occupancy_pct": 38,
             "lat": 41.2330, "lng": 23.6490,
-            "area_photos": [
-                "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600",
-                "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600",
-                "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600"
-            ],
         },
 
         # === PELION & SPORADES ===
@@ -500,11 +563,6 @@ def get_curated_properties():
             "airport_drive_min": 60, "beach_min": 5, "needs_renovation": True,
             "airbnb_night_rate": 75, "airbnb_occupancy_pct": 45,
             "lat": 39.1560, "lng": 23.8650,
-            "area_photos": [
-                "https://images.unsplash.com/photo-1601985705311-7e2ab26c618d?w=600",
-                "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600",
-                "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600"
-            ],
         },
         {
             "title": "Detached House - Portaria, Pelion",
@@ -517,11 +575,6 @@ def get_curated_properties():
             "airport_drive_min": 40, "beach_min": 15, "needs_renovation": True,
             "airbnb_night_rate": 70, "airbnb_occupancy_pct": 50,
             "lat": 39.3930, "lng": 22.9920,
-            "area_photos": [
-                "https://images.unsplash.com/photo-1601985705311-7e2ab26c618d?w=600",
-                "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=600",
-                "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600"
-            ],
         },
 
         # === ATTICA / ATHENS ===
@@ -536,11 +589,6 @@ def get_curated_properties():
             "airport_drive_min": 45, "beach_min": 25, "needs_renovation": False,
             "airbnb_night_rate": 60, "airbnb_occupancy_pct": 65,
             "lat": 37.9730, "lng": 23.7680,
-            "area_photos": [
-                "https://images.unsplash.com/photo-1555993539-1732b0258235?w=600",
-                "https://images.unsplash.com/photo-1603565816030-6b389eeb23cb?w=600",
-                "https://images.unsplash.com/photo-1534430480872-3498386e7856?w=600"
-            ],
         },
     ]
 
@@ -588,6 +636,22 @@ def run_scraper():
 
     print(f"\nTotal unique properties: {len(all_properties)}")
     print(f"Budget properties (<=€75k / ~100k CAD): {len(investment_properties)}")
+
+    # Fetch area photos from Wikimedia Commons
+    print(f"\n[3/3] Fetching area photos from Wikimedia Commons...")
+    for i, p in enumerate(investment_properties):
+        lat = p.get("lat")
+        lng = p.get("lng")
+        title = p.get("title", "")
+        if lat and lng:
+            photos = fetch_area_photos(lat, lng, title)
+            p["area_photos"] = photos
+            status = f"{len(photos)} photos" if photos else "none found"
+            print(f"  [{i+1}/{len(investment_properties)}] {title[:45]:45s} → {status}")
+            time.sleep(0.5)  # Be polite to Wikimedia API
+        else:
+            p["area_photos"] = []
+            print(f"  [{i+1}/{len(investment_properties)}] {title[:45]:45s} → skipped (no coords)")
 
     # Save to JSON
     output = {
